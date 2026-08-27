@@ -2,6 +2,16 @@
 
 All notable changes to AIS+ are documented here.
 
+## 2.1.0 — Experimental, local only
+
+- Added an optional English-language **Boss Fight** fun mode.
+- Added a sidebar switch and a separate responsive arena.
+- Added subject selection across cached STU AIS semesters.
+- Connected battle damage to the `SÚČET` value on continuous-assessment pages.
+- Added the A–FX rank system with a 56-point victory threshold.
+- Added automatic ECTS lookup and official subject information links through the STU course catalogue.
+- Kept all Boss Fight preferences, cached subjects and scores in local browser storage.
+
 ## 2.0.1 — 2026-08-27
 
 - Added the English, Slovak and Czech panel-language selector to the extension popup.

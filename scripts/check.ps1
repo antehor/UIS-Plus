@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $required = @(
-  "manifest.json", "content.js", "styles.css", "popup.html", "popup.css", "popup.js",
+  "manifest.json", "content.js", "styles.css", "boss-fight.js", "boss-fight.css", "popup.html", "popup.css", "popup.js",
   "icons/icon-16.png", "icons/icon-32.png", "icons/icon-48.png", "icons/icon-128.png"
 )
 
@@ -19,6 +19,7 @@ if ($manifest.permissions -contains "tabs") { throw "Unexpected tabs permission"
 $node = Get-Command node -ErrorAction SilentlyContinue
 if ($node) {
   & $node.Source --check (Join-Path $root "content.js")
+  & $node.Source --check (Join-Path $root "boss-fight.js")
   & $node.Source --check (Join-Path $root "popup.js")
   if ($LASTEXITCODE -ne 0) { throw "JavaScript syntax check failed" }
 }

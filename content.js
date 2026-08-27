@@ -550,7 +550,9 @@
       });
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== "local") return;
-        for (const [key, change] of Object.entries(changes)) settings[key] = change.newValue;
+        const displayChanges = Object.entries(changes).filter(([key]) => Object.hasOwn(DEFAULTS, key));
+        if (!displayChanges.length) return;
+        for (const [key, change] of displayChanges) settings[key] = change.newValue;
         applySettings();
         if (settings.enabled) observePage();
       });

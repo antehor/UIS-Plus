@@ -27,10 +27,12 @@ jobs:
       - name: Check JavaScript syntax
         run: |
           node --check content.js
+          node --check boss-fight.js
           node --check popup.js
       - name: Check required files
         run: |
           test -f styles.css
+          test -f boss-fight.css
           test -f popup.html
           test -f icons/icon-128.png
           test -f LICENSE

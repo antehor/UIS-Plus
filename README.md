@@ -24,6 +24,9 @@
 
 ---
 
+> **Experimental local build 2.1.0:** this working branch includes the optional Boss Fight fun mode.
+> It has not been published to GitHub Releases. See [Boss Fight documentation](docs/BOSS-FIGHT.md).
+
 **AIS+** is an open-source browser extension and personal redesign for the
 [Slovak University of Technology in Bratislava](https://www.stuba.sk/) Academic Information System at
 `is.stuba.sk`. It keeps the real STU AIS pages, forms and data, while adding a clearer navigation,

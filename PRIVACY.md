@@ -17,10 +17,15 @@ The extension uses the browser `storage` permission only for these preferences:
 - light, dark or system theme;
 - compact mode;
 - collapsed sidebar state;
-- English, Slovak or Czech panel language.
+- English, Slovak or Czech panel language;
+- whether experimental Boss Fight mode is enabled;
+- selected subject bosses, cached semester links, SÚČET values and detected ECTS credits.
 
 These preferences stay in the browser profile and can be removed by uninstalling the extension or
 clearing its storage.
+
+Boss Fight reads subject and assessment pages only from `is.stuba.sk` using the currently signed-in
+browser session. The cached game data is not sent anywhere.
 
 ## Website access
 

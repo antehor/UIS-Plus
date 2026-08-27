@@ -1,0 +1,413 @@
+/* AIS+ experimental game layer */
+html.stu-modern .stu-boss-sidebar {
+  display: grid;
+  gap: 6px;
+  margin-top: 13px;
+  padding: 13px 0 4px;
+  border-top: 1px solid rgb(255 255 255 / 12%);
+}
+
+html.stu-modern .stu-boss-mode-toggle,
+html.stu-modern .stu-boss-enter {
+  display: flex !important;
+  width: 100%;
+  min-height: 40px;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 9px !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  color: rgb(255 242 247 / 82%) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  text-align: left;
+}
+
+html.stu-modern .stu-boss-mode-toggle:hover,
+html.stu-modern .stu-boss-sidebar.is-enabled .stu-boss-mode-toggle {
+  color: #fff !important;
+  background: rgb(255 255 255 / 9%) !important;
+}
+
+.stu-boss-sidebar-icon {
+  display: grid;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  place-items: center;
+  color: #ffd76f;
+  font-size: 16px;
+  filter: drop-shadow(0 0 8px rgb(255 215 111 / 28%));
+}
+
+.stu-boss-sidebar-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  line-height: 1.05;
+}
+
+.stu-boss-sidebar-copy b { color: inherit; font-size: 11px; font-weight: 750; }
+.stu-boss-sidebar-copy small { margin-top: 4px; color: rgb(255 235 241 / 45%); font-size: 7px; font-weight: 800; letter-spacing: .14em; }
+
+.stu-boss-mini-switch {
+  position: relative;
+  width: 27px;
+  height: 16px;
+  flex: 0 0 27px;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 10px;
+  background: rgb(18 7 12 / 22%);
+}
+
+.stu-boss-mini-switch i {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 55%);
+  transition: transform .2s ease, background .2s ease;
+}
+
+.stu-boss-sidebar.is-enabled .stu-boss-mini-switch { border-color: rgb(255 215 111 / 45%); background: rgb(255 215 111 / 14%); }
+.stu-boss-sidebar.is-enabled .stu-boss-mini-switch i { background: #ffd76f; box-shadow: 0 0 9px rgb(255 215 111 / 45%); transform: translateX(11px); }
+
+html.stu-modern .stu-boss-enter {
+  min-height: 32px;
+  justify-content: space-between;
+  padding: 6px 9px 6px 39px !important;
+  color: rgb(255 238 244 / 63%) !important;
+  font-size: 9px;
+}
+
+html.stu-modern .stu-boss-enter:hover { color: #fff !important; background: rgb(255 255 255 / 7%) !important; }
+.stu-boss-enter b { display: grid; min-width: 18px; height: 18px; place-items: center; border-radius: 5px; color: #561026; background: #ffd76f; font-size: 8px; }
+
+html.stu-sidebar-collapsed .stu-boss-sidebar { justify-items: center; padding-top: 12px; }
+html.stu-sidebar-collapsed .stu-boss-mode-toggle { width: 44px; justify-content: center; padding: 8px !important; }
+html.stu-sidebar-collapsed .stu-boss-sidebar-copy,
+html.stu-sidebar-collapsed .stu-boss-mini-switch { display: none; }
+html.stu-sidebar-collapsed .stu-boss-enter { width: 34px; min-height: 30px; justify-content: center; padding: 5px !important; }
+html.stu-sidebar-collapsed .stu-boss-enter span { display: none; }
+html.stu-sidebar-collapsed .stu-boss-enter::before { color: #ffd76f; content: "⚔"; }
+html.stu-sidebar-collapsed .stu-boss-enter b { position: absolute; margin: -21px -26px 0 0; min-width: 14px; height: 14px; font-size: 7px; }
+
+html.stu-boss-open,
+html.stu-boss-open body { overflow: hidden !important; }
+
+.stu-boss-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100020;
+  display: none;
+  place-items: center;
+  padding: 24px;
+  color: #eef4ff;
+  background: rgb(5 8 15 / 78%);
+  font-family: "Segoe UI Variable Text", "Segoe UI", Arial, sans-serif;
+  backdrop-filter: blur(8px);
+}
+
+.stu-boss-overlay.is-open { display: grid; animation: stu-boss-fade .18s ease both; }
+
+.stu-boss-dialog {
+  display: grid;
+  width: min(1180px, 100%);
+  max-height: min(880px, calc(100vh - 48px));
+  grid-template-rows: auto auto minmax(0, 1fr) auto;
+  overflow: hidden;
+  border: 1px solid #2d3850;
+  border-radius: 18px;
+  color: #eef4ff;
+  background:
+    radial-gradient(circle at 13% 0%, rgb(50 109 184 / 16%), transparent 30%),
+    radial-gradient(circle at 88% 2%, rgb(151 33 80 / 14%), transparent 26%),
+    #0b1019;
+  box-shadow: 0 34px 100px rgb(0 0 0 / 58%);
+}
+
+.stu-boss-header {
+  display: flex;
+  min-height: 86px;
+  align-items: center;
+  gap: 15px;
+  padding: 17px 20px;
+  border-bottom: 1px solid #273044;
+  background: rgb(14 21 33 / 82%);
+}
+
+.stu-boss-emblem {
+  display: grid;
+  width: 50px;
+  height: 50px;
+  flex: 0 0 50px;
+  place-items: center;
+  border: 1px solid rgb(255 210 95 / 34%);
+  border-radius: 14px;
+  color: #ffd25f;
+  background: linear-gradient(145deg, rgb(255 210 95 / 15%), rgb(255 210 95 / 3%));
+  box-shadow: inset 0 0 20px rgb(255 210 95 / 6%);
+  font-size: 24px;
+}
+
+.stu-boss-header > div:nth-child(2) { min-width: 0; }
+.stu-boss-header small { color: #76839a; font-size: 8px; font-weight: 800; letter-spacing: .19em; }
+html.stu-modern .stu-boss-header h2 {
+  margin: 3px 0 0 !important;
+  color: #fff !important;
+  font-size: 22px !important;
+  font-weight: 850 !important;
+  letter-spacing: .08em !important;
+}
+
+.stu-boss-header-meta { display: flex; gap: 9px; margin-left: auto; }
+.stu-boss-header-meta span { padding: 7px 10px; border: 1px solid #2b3549; border-radius: 7px; color: #7f8ba0; background: #0a0f18; font-size: 8px; font-weight: 750; letter-spacing: .08em; }
+.stu-boss-header-meta b { color: #eaf1ff; }
+
+html.stu-modern .stu-boss-close {
+  display: grid !important;
+  width: 35px;
+  height: 35px;
+  min-width: 35px !important;
+  place-items: center;
+  padding: 0 !important;
+  border: 1px solid #30394b !important;
+  border-radius: 8px !important;
+  color: #8792a5 !important;
+  background: #111824 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  font-size: 21px;
+  line-height: 1;
+}
+.stu-boss-close:hover { color: #fff !important; border-color: #526079 !important; }
+
+.stu-boss-tabs {
+  display: flex;
+  gap: 3px;
+  padding: 8px 18px 0;
+  border-bottom: 1px solid #252e40;
+  background: #0e141f;
+}
+
+html.stu-modern .stu-boss-tabs button {
+  display: flex !important;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px !important;
+  border: 0 !important;
+  border-bottom: 2px solid transparent !important;
+  border-radius: 6px 6px 0 0 !important;
+  color: #7e899c !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.stu-boss-tabs button:hover { color: #cbd5e5 !important; background: rgb(255 255 255 / 3%) !important; }
+.stu-boss-tabs button.is-active { border-bottom-color: #ffd25f !important; color: #fff !important; }
+.stu-boss-tabs button i { color: #ffd25f; font-style: normal; }
+.stu-boss-tabs button b { display: grid; min-width: 18px; height: 18px; place-items: center; border-radius: 5px; color: #95a0b2; background: #202a3a; font-size: 8px; }
+
+.stu-boss-content {
+  min-height: 320px;
+  overflow: auto;
+  padding: 22px;
+  scrollbar-color: #354059 #0b1019;
+  scrollbar-width: thin;
+}
+
+.stu-boss-footer { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px; border-top: 1px solid #222b3c; color: #657187; background: #0b1018; font-size: 8px; letter-spacing: .06em; }
+.stu-boss-footer span { width: 6px; height: 6px; border-radius: 50%; background: #4dd4a8; box-shadow: 0 0 0 3px rgb(77 212 168 / 10%); }
+
+.stu-boss-arena-head,
+.stu-boss-manager-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.stu-boss-arena-head small,
+.stu-boss-manager-head small,
+.stu-boss-ranks-head small { color: #67748a; font-size: 8px; font-weight: 800; letter-spacing: .17em; }
+html.stu-modern .stu-boss-arena-head h3,
+html.stu-modern .stu-boss-manager-head h3,
+html.stu-modern .stu-boss-ranks-head h3 {
+  margin: 3px 0 0 !important;
+  color: #f4f7fc !important;
+  font-size: 17px !important;
+  font-weight: 820 !important;
+  letter-spacing: .035em !important;
+}
+.stu-boss-manager-head p,
+.stu-boss-ranks-head p { margin: 5px 0 0 !important; color: #8490a3 !important; font-size: 10px; }
+.stu-boss-arena-head > div:last-child { display: flex; gap: 7px; }
+
+html.stu-modern .stu-boss-arena-head button,
+html.stu-modern .stu-boss-manager-empty button,
+html.stu-modern .stu-boss-empty button,
+html.stu-modern .stu-boss-semester-bar button {
+  min-height: 34px;
+  padding: 7px 11px !important;
+  border: 1px solid #303a4e !important;
+  border-radius: 7px !important;
+  color: #aab5c7 !important;
+  background: #111925 !important;
+  box-shadow: none !important;
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+}
+.stu-boss-arena-head button:hover,
+.stu-boss-semester-bar button:hover { border-color: #56647c !important; color: #fff !important; }
+html.stu-modern .stu-boss-arena-head button.is-primary,
+html.stu-modern .stu-boss-empty button { border-color: #b99138 !important; color: #181004 !important; background: #ffd25f !important; }
+
+.stu-boss-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 430px), 1fr)); gap: 14px; }
+
+.stu-boss-card {
+  position: relative;
+  overflow: hidden;
+  padding: 18px;
+  border: 1px solid color-mix(in srgb, var(--boss-color) 24%, #2c3548);
+  border-radius: 12px;
+  background: linear-gradient(145deg, color-mix(in srgb, var(--boss-color) 5%, #111824), #0d131d 55%);
+  box-shadow: inset 0 1px rgb(255 255 255 / 3%);
+}
+
+.stu-boss-card-glow { position: absolute; top: -90px; right: -70px; width: 210px; height: 180px; border-radius: 50%; background: var(--boss-color); filter: blur(80px); opacity: .09; pointer-events: none; }
+.stu-boss-card > header { position: relative; display: flex; align-items: start; gap: 12px; }
+.stu-boss-avatar { display: grid; width: 48px; height: 48px; flex: 0 0 48px; place-items: center; border: 1px solid color-mix(in srgb, var(--boss-color) 42%, transparent); border-radius: 11px; color: var(--boss-color); background: color-mix(in srgb, var(--boss-color) 10%, transparent); box-shadow: inset 0 0 20px color-mix(in srgb, var(--boss-color) 5%, transparent); font-size: 24px; }
+.stu-boss-identity { min-width: 0; flex: 1; }
+.stu-boss-identity small { color: #78859a; font-size: 7px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+html.stu-modern .stu-boss-identity h3 { margin: 3px 0 2px !important; color: #fff !important; font-size: 15px !important; font-weight: 850 !important; letter-spacing: .04em !important; }
+.stu-boss-identity p { overflow: hidden; margin: 0 !important; color: #929db0 !important; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+
+.stu-boss-rank { display: flex; align-items: center; gap: 5px; padding: 4px 6px 4px 4px; border: 1px solid color-mix(in srgb, var(--rank-color) 32%, transparent); border-radius: 6px; color: var(--rank-color); background: color-mix(in srgb, var(--rank-color) 7%, transparent); font-size: 7px; font-weight: 800; letter-spacing: .06em; }
+.stu-boss-rank b { display: grid; width: 17px; height: 17px; place-items: center; border-radius: 4px; color: #0a0e16; background: var(--rank-color); font-size: 9px; }
+
+.stu-boss-hp-copy { display: flex; align-items: end; justify-content: space-between; margin-top: 18px; }
+.stu-boss-hp-copy span { color: #748196; font-size: 7px; font-weight: 800; letter-spacing: .13em; }
+.stu-boss-hp-copy strong { color: #fff; font-size: 20px; line-height: 1; }
+.stu-boss-hp-copy strong small { color: #657287; font-size: 9px; }
+
+.stu-boss-hp { position: relative; height: 10px; margin-top: 8px; overflow: visible; border: 1px solid #293246; border-radius: 6px; background: #070b12; box-shadow: inset 0 1px 4px rgb(0 0 0 / 50%); }
+.stu-boss-hp > i { display: block; height: 100%; max-width: 100%; border-radius: 5px; background: linear-gradient(90deg, color-mix(in srgb, var(--boss-color) 65%, #fff), var(--boss-color)); box-shadow: 0 0 12px color-mix(in srgb, var(--boss-color) 28%, transparent); transition: width .5s ease; }
+.stu-boss-hp > b { position: absolute; top: -4px; width: 2px; height: 16px; border-radius: 2px; background: #ffd25f; box-shadow: 0 0 7px rgb(255 210 95 / 55%); transform: translateX(-1px); }
+.stu-boss-threshold { display: flex; justify-content: space-between; margin-top: 5px; color: #58657a; font-size: 7px; font-weight: 750; }
+.stu-boss-threshold span:nth-child(2) { color: #c5a54f; }
+
+.stu-boss-victory { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding: 10px; border: 1px solid rgb(255 210 95 / 22%); border-radius: 8px; background: linear-gradient(90deg, rgb(255 210 95 / 10%), transparent); }
+.stu-boss-victory > span { font-size: 21px; }
+.stu-boss-victory div { display: flex; flex-direction: column; }
+.stu-boss-victory b { color: #ffd25f; font-size: 11px; letter-spacing: .08em; }
+.stu-boss-victory small { margin-top: 2px; color: #99a4b5; font-size: 8px; }
+.stu-boss-rewards { display: flex; gap: 7px; margin-top: 7px; }
+.stu-boss-rewards span { flex: 1; padding: 6px 8px; border: 1px solid #273146; border-radius: 6px; color: #a9b3c4; background: #0b111b; font-size: 8px; }
+
+.stu-boss-progress-copy { display: flex; align-items: center; justify-content: space-between; margin-top: 14px; padding: 9px 10px; border: 1px solid #273146; border-radius: 7px; background: #0a1019; }
+.stu-boss-progress-copy span { color: var(--boss-color); font-size: 8px; font-weight: 800; letter-spacing: .07em; }
+.stu-boss-progress-copy b { color: #a2adbf; font-size: 8px; }
+.stu-boss-error { margin: 8px 0 0 !important; color: #ff8798 !important; font-size: 8px; }
+
+.stu-boss-card > footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; padding-top: 12px; border-top: 1px solid #222b3c; color: #606d82; font-size: 7px; }
+.stu-boss-card > footer > div { display: flex; gap: 5px; }
+html.stu-modern .stu-boss-card > footer button,
+html.stu-modern .stu-boss-card > footer a { display: inline-flex !important; min-height: 28px; align-items: center; padding: 5px 8px !important; border: 1px solid #303a4e !important; border-radius: 6px !important; color: #aeb8c9 !important; background: #121a27 !important; box-shadow: none !important; cursor: pointer; font-size: 8px; }
+html.stu-modern .stu-boss-card > footer a:hover,
+html.stu-modern .stu-boss-card > footer button:hover { border-color: color-mix(in srgb, var(--boss-color) 55%, #303a4e) !important; color: #fff !important; }
+.stu-boss-card > footer button:disabled { cursor: wait; opacity: .55; }
+
+.stu-boss-empty { display: grid; min-height: 390px; place-items: center; align-content: center; padding: 30px; text-align: center; }
+.stu-boss-empty-icon { display: grid; width: 76px; height: 76px; place-items: center; margin-bottom: 16px; border: 1px solid #4d4226; border-radius: 22px; color: #ffd25f; background: linear-gradient(145deg, rgb(255 210 95 / 11%), transparent); font-size: 34px; }
+.stu-boss-empty small { color: #6e7b91; font-size: 8px; font-weight: 800; letter-spacing: .18em; }
+html.stu-modern .stu-boss-empty h3 { margin: 5px 0 !important; color: #fff !important; font-size: 20px !important; }
+.stu-boss-empty p { max-width: 480px; margin: 0 0 16px !important; color: #8793a6 !important; font-size: 11px; }
+
+html.stu-modern .stu-boss-manager-head > a { display: inline-flex !important; min-height: 34px; align-items: center; padding: 7px 10px; border: 1px solid #303a4e; border-radius: 7px; color: #aab5c7 !important; background: #111925; font-size: 9px; }
+html.stu-modern .stu-boss-manager-head > a:hover { border-color: #56647c; color: #fff !important; }
+
+.stu-boss-semester-bar { display: grid; grid-template-columns: minmax(230px, 1fr) auto minmax(180px, 1fr); align-items: end; gap: 8px; margin-bottom: 13px; padding: 11px; border: 1px solid #283247; border-radius: 9px; background: #0e151f; }
+.stu-boss-semester-bar label { display: grid; gap: 5px; }
+.stu-boss-semester-bar label span { color: #77849a; font-size: 7px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+html.stu-modern .stu-boss-semester-bar select { width: 100%; height: 35px; padding: 0 10px !important; border: 1px solid #303b50 !important; border-radius: 7px !important; color: #e8edf6 !important; background: #111a27 !important; font-size: 10px !important; }
+.stu-boss-semester-bar > span { align-self: center; color: #7d899c; font-size: 8px; }
+
+.stu-boss-subject-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 360px), 1fr)); gap: 8px; }
+html.stu-modern .stu-boss-subject-list > button { display: flex !important; min-height: 74px; align-items: center; gap: 11px; padding: 10px !important; border: 1px solid #283247 !important; border-radius: 9px !important; color: #c5cede !important; background: #0e151f !important; box-shadow: none !important; cursor: pointer; text-align: left; }
+html.stu-modern .stu-boss-subject-list > button:hover { border-color: color-mix(in srgb, var(--boss-color) 48%, #283247) !important; background: #111a26 !important; }
+html.stu-modern .stu-boss-subject-list > button.is-selected { border-color: color-mix(in srgb, var(--boss-color) 55%, #283247) !important; box-shadow: inset 3px 0 var(--boss-color) !important; }
+.stu-boss-subject-list > button > i { display: grid; width: 38px; height: 38px; flex: 0 0 38px; place-items: center; border: 1px solid color-mix(in srgb, var(--boss-color) 30%, transparent); border-radius: 9px; color: var(--boss-color); background: color-mix(in srgb, var(--boss-color) 8%, transparent); font-size: 18px; font-style: normal; }
+.stu-boss-subject-list > button > span { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.stu-boss-subject-list small { color: #6f7c91; font-size: 7px; font-weight: 750; }
+.stu-boss-subject-list b { overflow: hidden; margin-top: 3px; color: #dfe6f1; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+.stu-boss-subject-list em { margin-top: 3px; color: var(--boss-color); font-size: 7px; font-style: normal; font-weight: 750; letter-spacing: .04em; }
+.stu-boss-subject-list strong { padding: 5px 6px; border-radius: 5px; color: #7d899c; background: #1a2332; font-size: 7px; }
+.stu-boss-subject-list .is-selected strong { color: #08110f; background: #63e6be; }
+
+.stu-boss-manager-empty { display: grid; min-height: 250px; place-items: center; align-content: center; gap: 7px; color: #8995a8; text-align: center; }
+.stu-boss-manager-empty b { color: #dbe2ed; font-size: 12px; }
+.stu-boss-manager-empty span { font-size: 9px; }
+
+.stu-boss-ranks-head { margin-bottom: 16px; }
+.stu-boss-rank-table { overflow: hidden; border: 1px solid #2a3448; border-radius: 10px; background: #0e151f; }
+.stu-boss-rank-table > div { display: grid; min-height: 49px; grid-template-columns: .7fr 1.35fr 1fr; align-items: center; padding: 8px 15px; border-bottom: 1px solid #222c3e; }
+.stu-boss-rank-table > div:last-child { border-bottom: 0; }
+.stu-boss-rank-table > div:not(.is-header):hover { background: rgb(255 255 255 / 2%); }
+.stu-boss-rank-table .is-header { min-height: 35px; color: #6e7b90; background: #121a27; font-size: 7px; font-weight: 800; letter-spacing: .13em; }
+.stu-boss-rank-table > div > span { color: #d4dce8; font-size: 10px; font-weight: 700; }
+.stu-boss-rank-table strong { display: flex; align-items: center; gap: 8px; color: var(--rank-color); font-size: 10px; letter-spacing: .035em; }
+.stu-boss-rank-table strong i { display: grid; width: 21px; height: 21px; place-items: center; border-radius: 5px; color: #080c13; background: var(--rank-color); font-size: 10px; font-style: normal; }
+.stu-boss-rank-table em { color: #778398; font-size: 8px; font-style: normal; font-weight: 700; letter-spacing: .07em; }
+
+.stu-boss-rules { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 12px; }
+.stu-boss-rules div { display: flex; min-height: 65px; flex-direction: column; justify-content: center; padding: 10px; border: 1px solid #283247; border-radius: 8px; background: #0e151f; }
+.stu-boss-rules b { color: #ffd25f; font-size: 15px; }
+.stu-boss-rules span { margin-top: 3px; color: #778398; font-size: 7px; }
+
+@keyframes stu-boss-fade { from { opacity: 0; } to { opacity: 1; } }
+
+@media (max-width: 980px) {
+  html.stu-modern .stu-boss-sidebar { margin-top: 10px; }
+  .stu-boss-overlay { padding: 12px; }
+  .stu-boss-dialog { max-height: calc(100vh - 24px); }
+}
+
+@media (max-width: 720px) {
+  .stu-boss-overlay { padding: 0; }
+  .stu-boss-dialog { width: 100%; height: 100vh; max-height: none; border: 0; border-radius: 0; }
+  .stu-boss-header { min-height: 72px; padding: 12px; }
+  .stu-boss-emblem { width: 42px; height: 42px; flex-basis: 42px; font-size: 20px; }
+  .stu-boss-header-meta { display: none; }
+  .stu-boss-tabs { padding-inline: 8px; }
+  html.stu-modern .stu-boss-tabs button { flex: 1; justify-content: center; padding-inline: 7px !important; }
+  .stu-boss-content { padding: 14px; }
+  .stu-boss-arena-head,
+  .stu-boss-manager-head { align-items: stretch; flex-direction: column; }
+  .stu-boss-arena-head > div:last-child { display: grid; grid-template-columns: 1fr 1fr; }
+  .stu-boss-semester-bar { grid-template-columns: 1fr auto; }
+  .stu-boss-semester-bar > span { grid-column: 1 / -1; }
+  .stu-boss-card { padding: 14px; }
+  .stu-boss-rank { display: none; }
+  .stu-boss-card > footer { align-items: stretch; flex-direction: column; }
+  .stu-boss-card > footer > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .stu-boss-rank-table > div { grid-template-columns: .55fr 1.45fr; }
+  .stu-boss-rank-table > div > :last-child { display: none; }
+  .stu-boss-rules { grid-template-columns: 1fr 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stu-boss-overlay.is-open { animation: none; }
+  .stu-boss-hp > i,
+  .stu-boss-mini-switch i { transition: none; }
+}
