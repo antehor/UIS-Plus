@@ -2,6 +2,11 @@
 
 All notable changes to AIS+ are documented here.
 
+## 2.0.1 — 2026-08-27
+
+- Added the English, Slovak and Czech panel-language selector to the extension popup.
+- Improved public-facing popup copy for Chrome and Edge users.
+
 ## 2.0.0 — 2026-08-27
 
 - Renamed the project to AIS+.

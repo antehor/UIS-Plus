@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AIS+",
   "short_name": "AIS+",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "A better way to use STU AIS — a modern, private interface for is.stuba.sk.",
   "author": "Yehor Halytskyi",
   "homepage_url": "https://github.com/antehor/AIS-",

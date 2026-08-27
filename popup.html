@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -14,19 +14,27 @@
   </header>
   <main>
     <label class="setting main-setting">
-      <span><b>Редизайн</b><small>Только на is.stuba.sk</small></span>
+      <span><b>Enable AIS+</b><small>Only on is.stuba.sk</small></span>
       <input id="enabled" type="checkbox"><i class="switch"></i>
     </label>
     <section>
-      <span class="caption">Тема</span>
-      <div class="segments" role="radiogroup" aria-label="Тема">
-        <label><input type="radio" name="theme" value="system"><span>Система</span></label>
-        <label><input type="radio" name="theme" value="light"><span>Светлая</span></label>
-        <label><input type="radio" name="theme" value="dark"><span>Тёмная</span></label>
+      <span class="caption">Appearance</span>
+      <div class="segments" role="radiogroup" aria-label="Appearance">
+        <label><input type="radio" name="theme" value="system"><span>System</span></label>
+        <label><input type="radio" name="theme" value="light"><span>Light</span></label>
+        <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      </div>
+    </section>
+    <section>
+      <span class="caption">Panel language</span>
+      <div class="segments" role="radiogroup" aria-label="Panel language">
+        <label><input type="radio" name="language" value="en"><span>EN</span></label>
+        <label><input type="radio" name="language" value="sk"><span>SK</span></label>
+        <label><input type="radio" name="language" value="cs"><span>CZ</span></label>
       </div>
     </section>
     <label class="setting">
-      <span><b>Компактный режим</b><small>Больше данных на экране</small></span>
+      <span><b>Compact layout</b><small>Show more information at once</small></span>
       <input id="compact" type="checkbox"><i class="switch"></i>
     </label>
   </main>
