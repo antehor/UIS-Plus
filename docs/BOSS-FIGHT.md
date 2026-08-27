@@ -22,13 +22,15 @@ available in the signed-in browser session.
 
 ## Using the experiment
 
-1. Reload the unpacked AIS+ extension after installing build 2.1.0.
+1. Reload the unpacked AIS+ extension after installing build 2.2.0.
 2. Open the sidebar and enable **Boss Fight — Fun Mode**.
-3. Enter the arena and open **Bosses**.
+3. Use the **+** control in the sidebar to open **Manage**.
 4. Select a semester and add any subjects to the campaign. Selections from different semesters can
-   be mixed in one arena.
-5. Press **Sync SÚČET** on one boss or **Sync all scores**.
-6. Use **Subject info** to open the official English STU information sheet.
+   be mixed in one campaign.
+5. Follow every selected boss, score, rank and victory bar directly in the sidebar. AIS+ updates
+   SÚČET automatically after loading the page, returning to the tab or adding a boss.
+6. Use the small refresh control in the campaign header only when an immediate manual recheck is wanted.
+7. Open **Details** for the expanded overview and rank table, or **Info** for the official STU subject sheet.
 
 ## Local data
 

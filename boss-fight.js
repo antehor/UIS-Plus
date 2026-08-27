@@ -10,6 +10,7 @@
   });
   const MAX_SCORE = 100;
   const VICTORY_SCORE = 56;
+  const AUTO_SYNC_TTL = 2 * 60 * 1000;
   const PANEL_SELECTOR = "[data-stu-boss-panel]";
   const SIDEBAR_SELECTOR = "[data-stu-boss-sidebar]";
 
@@ -40,8 +41,18 @@
   let activeSemester = "";
   let managerStatus = "";
   let renderTimer = 0;
+  let autoSyncTimer = 0;
   const pendingScores = new Set();
   const pendingSemesters = new Set();
+
+  const ICONS = Object.freeze({
+    swords: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5.5 4-4 1 1-4 4m-1-1 4 4M9.5 18.5l-4 4-1-1 4-4m1 1-4-4M5 2l17 17-3 3L2 5l3-3Z"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
+    refresh: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6.1 8a7 7 0 0 1 11.6-2.1L20 8M4 16l2.3 2.1A7 7 0 0 0 18 16"/></svg>',
+    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>',
+    external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M18 13v6H5V6h6"/></svg>',
+    chevron: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
+  });
 
   function normalize(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
@@ -80,6 +91,15 @@
     const number = Number(value);
     if (!Number.isFinite(number)) return "—";
     return Number.isInteger(number) ? String(number) : number.toFixed(1).replace(".", ",");
+  }
+
+  function relativeTime(value) {
+    const timestamp = Number(value);
+    if (!Number.isFinite(timestamp) || timestamp <= 0) return "Waiting for first update";
+    const elapsed = Math.max(0, Date.now() - timestamp);
+    if (elapsed < 45 * 1000) return "Updated just now";
+    if (elapsed < 60 * 60 * 1000) return `Updated ${Math.max(1, Math.round(elapsed / 60000))} min ago`;
+    return `Updated ${new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
   }
 
   function rankFor(value) {
@@ -337,6 +357,7 @@
       managerStatus = error.message || "Could not read the subject list.";
     }
     renderPanel();
+    if (state.bossFightEnabled) scheduleAutoSync(80);
   }
 
   async function loadSemester(periodId, force = false) {
@@ -368,19 +389,23 @@
     const subject = state.bossCatalog?.[key];
     if (!subject || pendingScores.has(key)) return;
     pendingScores.add(key);
-    renderPanel();
-    let score = null;
-    let credits = subject.credits ?? null;
+    queueRender();
+    const previous = state.bossScores?.[key] || {};
+    let score = Number.isFinite(Number(previous.points)) ? Number(previous.points) : null;
+    let credits = previous.credits ?? subject.credits ?? null;
     let error = "";
+    let succeeded = false;
     try {
       const pointsPage = await fetchDocument(subject.pointsUrl);
-      score = extractSemesterScore(pointsPage.doc);
+      const freshScore = extractSemesterScore(pointsPage.doc);
+      if (freshScore === null) throw new Error("SÚČET was not found on the assessment page.");
+      score = freshScore;
       credits = extractCredits(pointsPage.doc) ?? credits;
       if (credits === null && subject.infoUrl && subject.infoUrl !== subject.pointsUrl) {
         const infoPage = await fetchDocument(subject.infoUrl);
         credits = extractCredits(infoPage.doc) ?? credits;
       }
-      if (score === null) throw new Error("SÚČET was not found on the assessment page.");
+      succeeded = true;
     } catch (caught) {
       error = caught.message || "Score refresh failed.";
     }
@@ -390,7 +415,8 @@
       [key]: {
         points: score,
         credits,
-        updatedAt: Date.now(),
+        updatedAt: succeeded ? Date.now() : previous.updatedAt || null,
+        lastAttemptAt: Date.now(),
         error
       }
     };
@@ -402,10 +428,29 @@
     writeStorage({ bossScores: nextScores, bossCatalog: nextCatalog });
   }
 
-  async function refreshAllBosses() {
-    const keys = (state.bossRoster || []).filter((key) => state.bossCatalog?.[key]);
+  async function refreshAllBosses({ staleOnly = false } = {}) {
+    const now = Date.now();
+    const keys = (state.bossRoster || []).filter((key) => {
+      if (!state.bossCatalog?.[key]) return false;
+      if (!staleOnly) return true;
+      const updatedAt = Number(state.bossScores?.[key]?.updatedAt) || 0;
+      return !updatedAt || now - updatedAt >= AUTO_SYNC_TTL;
+    });
     if (!keys.length) return;
-    await Promise.all(keys.map(refreshBoss));
+    const queue = [...keys];
+    const worker = async () => {
+      while (queue.length) await refreshBoss(queue.shift());
+    };
+    await Promise.all([worker(), worker()]);
+  }
+
+  function scheduleAutoSync(delay = 450, force = false) {
+    clearTimeout(autoSyncTimer);
+    if (!state.bossFightEnabled || !(state.bossRoster || []).length) return;
+    autoSyncTimer = setTimeout(() => {
+      if (document.visibilityState === "hidden") return;
+      void refreshAllBosses({ staleOnly: !force });
+    }, delay);
   }
 
   function captureCurrentScorePage() {
@@ -443,29 +488,71 @@
     if (changed) writeStorage({ bossCatalog: nextCatalog });
   }
 
+  function sidebarBossCard(subject) {
+    const result = state.bossScores?.[subject.key] || {};
+    const score = Number.isFinite(Number(result.points)) ? clampScore(result.points) : null;
+    const progress = score ?? 0;
+    const defeated = score !== null && score >= VICTORY_SCORE;
+    const rank = score === null ? { grade: "—", title: "WAITING", color: "#d7af5e" } : rankFor(score);
+    const boss = themeFor(subject);
+    const remaining = Math.max(0, VICTORY_SCORE - (score ?? 0));
+    const syncing = pendingScores.has(subject.key);
+    return `
+      <article class="stu-boss-sidebar-card${defeated ? " is-defeated" : ""}${syncing ? " is-syncing" : ""}" style="--boss-color:${boss.color};--rank-color:${rank.color}" title="${escapeAttribute(subject.name)}">
+        <div class="stu-boss-sidebar-card-head">
+          <span class="stu-boss-sidebar-avatar">${boss.icon}</span>
+          <span class="stu-boss-sidebar-name"><b>${escapeHTML(boss.name)}</b><small>${escapeHTML(subject.code)} · ${escapeHTML(subject.semesterLabel)}</small></span>
+          <button type="button" data-boss-remove="${escapeAttribute(subject.key)}" aria-label="Remove ${escapeAttribute(subject.code)} from Boss Fight" title="Remove boss">${ICONS.close}</button>
+        </div>
+        <div class="stu-boss-sidebar-score"><span>${syncing ? "Updating…" : defeated ? "Boss defeated" : score === null ? "Awaiting score" : `${displayNumber(remaining)} DMG left`}</span><b>${score === null ? "—" : displayNumber(score)}<small> / ${MAX_SCORE}</small></b></div>
+        <div class="stu-boss-sidebar-hp" aria-label="${score === null ? "Score is being discovered" : `${score} points out of 100`}"><i style="width:${progress}%"></i><b style="left:${VICTORY_SCORE}%"></b></div>
+        <div class="stu-boss-sidebar-card-foot"><span style="--rank-color:${rank.color}">${rank.grade} · ${rank.title}</span><a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener" aria-label="Open ${escapeAttribute(subject.code)} information">Info ${ICONS.external}</a></div>
+      </article>`;
+  }
+
   function renderSidebar() {
     const sidebar = document.querySelector(".stu-sidebar");
     if (!sidebar || sidebar.querySelector(SIDEBAR_SELECTOR)) return;
+    const subjects = (state.bossRoster || []).map((key) => state.bossCatalog?.[key]).filter(Boolean);
+    const defeated = subjects.filter((subject) => clampScore(state.bossScores?.[subject.key]?.points) >= VICTORY_SCORE).length;
+    const latestUpdate = Math.max(0, ...subjects.map((subject) => Number(state.bossScores?.[subject.key]?.updatedAt) || 0));
+    const syncing = subjects.some((subject) => pendingScores.has(subject.key));
     const block = document.createElement("div");
     block.dataset.stuBossSidebar = "true";
     block.className = `stu-boss-sidebar${state.bossFightEnabled ? " is-enabled" : ""}`;
     block.innerHTML = `
       <button class="stu-boss-mode-toggle" type="button" data-boss-mode-toggle aria-pressed="${Boolean(state.bossFightEnabled)}" title="${state.bossFightEnabled ? "Disable" : "Enable"} Boss Fight">
-        <span class="stu-boss-sidebar-icon">⚔</span>
+        <span class="stu-boss-sidebar-icon">${ICONS.swords}</span>
         <span class="stu-boss-sidebar-copy"><b>Boss Fight</b><small>FUN MODE</small></span>
         <span class="stu-boss-mini-switch" aria-hidden="true"><i></i></span>
       </button>
-      <button class="stu-boss-enter" type="button" data-boss-open ${state.bossFightEnabled ? "" : "hidden"} title="Enter Boss Arena">
-        <span>Enter Arena</span><b>${(state.bossRoster || []).length}</b>
-      </button>`;
+      ${state.bossFightEnabled ? `
+        <div class="stu-boss-sidebar-campaign">
+          <div><small>CAMPAIGN</small><b>${defeated} / ${subjects.length} defeated</b></div>
+          <span class="stu-boss-auto-state${syncing ? " is-syncing" : ""}"><i></i>${syncing ? "Updating" : "Auto"}</span>
+          <button type="button" data-boss-sidebar-refresh class="${syncing ? "is-syncing" : ""}" aria-label="Update scores now" title="Update scores now">${ICONS.refresh}</button>
+          <button type="button" data-boss-manage aria-label="Add or remove bosses" title="Add boss">${ICONS.plus}</button>
+        </div>
+        <div class="stu-boss-sidebar-list">
+          ${subjects.length ? subjects.map(sidebarBossCard).join("") : `<button class="stu-boss-sidebar-empty" type="button" data-boss-manage><span>${ICONS.plus}</span><b>Add your first boss</b><small>Choose a subject from STU AIS</small></button>`}
+        </div>
+        ${subjects.length ? `<button class="stu-boss-enter" type="button" data-boss-open title="Open campaign details"><span>${syncing ? "Scores are updating automatically" : relativeTime(latestUpdate)}</span><b>Details ${ICONS.chevron}</b></button>` : ""}` : ""}`;
     const foot = sidebar.querySelector(".stu-sidebar-foot");
     if (foot) foot.before(block); else sidebar.appendChild(block);
     block.querySelector("[data-boss-mode-toggle]")?.addEventListener("click", () => {
       const enabled = !state.bossFightEnabled;
       writeStorage({ bossFightEnabled: enabled });
-      if (enabled) openPanel("arena"); else closePanel();
+      if (enabled) {
+        if ((state.bossRoster || []).length) scheduleAutoSync(80, true);
+        else openPanel("manage");
+      } else closePanel();
     });
     block.querySelector("[data-boss-open]")?.addEventListener("click", () => openPanel("arena"));
+    block.querySelectorAll("[data-boss-manage]").forEach((button) => button.addEventListener("click", () => openPanel("manage")));
+    block.querySelector("[data-boss-sidebar-refresh]")?.addEventListener("click", () => scheduleAutoSync(0, true));
+    block.querySelectorAll("[data-boss-remove]").forEach((button) => button.addEventListener("click", () => {
+      writeStorage({ bossRoster: (state.bossRoster || []).filter((key) => key !== button.dataset.bossRemove) });
+    }));
   }
 
   function buildPanel() {
@@ -478,14 +565,14 @@
     panel.innerHTML = `
       <section class="stu-boss-dialog" role="dialog" aria-modal="true" aria-label="Boss Fight">
         <header class="stu-boss-header">
-          <div class="stu-boss-emblem">⚔</div>
-          <div><small>AIS+ · FUN MODE</small><h2>BOSS FIGHT</h2></div>
+          <div class="stu-boss-emblem">${ICONS.swords}</div>
+          <div><small>AIS+ · FUN MODE</small><h2>Boss Fight</h2></div>
           <div class="stu-boss-header-meta"><span>VICTORY AT <b>${VICTORY_SCORE} DMG</b></span><span>MAX <b>${MAX_SCORE} HP</b></span></div>
-          <button class="stu-boss-close" type="button" data-boss-close aria-label="Close Boss Fight">×</button>
+          <button class="stu-boss-close" type="button" data-boss-close aria-label="Close Boss Fight">${ICONS.close}</button>
         </header>
         <nav class="stu-boss-tabs" aria-label="Boss Fight sections"></nav>
         <div class="stu-boss-content"></div>
-        <footer class="stu-boss-footer"><span></span>Experimental mode · Data stays in this browser</footer>
+        <footer class="stu-boss-footer"><span></span>Scores update automatically from STU AIS · Data stays in this browser</footer>
       </section>`;
     document.body.appendChild(panel);
     panel.addEventListener("click", handlePanelClick);
@@ -504,6 +591,7 @@
     document.documentElement.classList.add("stu-boss-open");
     renderPanel();
     if (tab === "manage") ensureIndexData();
+    else scheduleAutoSync(120);
     requestAnimationFrame(() => panel.querySelector("[data-boss-close]")?.focus());
   }
 
@@ -517,8 +605,8 @@
   function renderTabs() {
     const rosterCount = (state.bossRoster || []).length;
     return [
-      { key: "arena", label: "Arena", icon: "⚔", count: rosterCount },
-      { key: "manage", label: "Bosses", icon: "＋", count: Object.keys(state.bossCatalog || {}).length },
+      { key: "arena", label: "Overview", icon: "⚔", count: rosterCount },
+      { key: "manage", label: "Manage", icon: "+", count: rosterCount },
       { key: "ranks", label: "Ranks", icon: "★", count: "" }
     ].map((tab) => `<button type="button" data-boss-tab="${tab.key}" class="${activeTab === tab.key ? "is-active" : ""}"><i>${tab.icon}</i>${tab.label}${tab.count !== "" ? `<b>${tab.count}</b>` : ""}</button>`).join("");
   }
@@ -533,7 +621,7 @@
     const boss = themeFor(subject);
     const credits = result.credits ?? subject.credits;
     const remaining = score === null ? VICTORY_SCORE : Math.max(0, VICTORY_SCORE - score);
-    const updated = result.updatedAt ? new Date(result.updatedAt).toLocaleString([], { dateStyle: "short", timeStyle: "short" }) : "Never synced";
+    const updated = relativeTime(result.updatedAt);
     return `
       <article class="stu-boss-card${defeated ? " is-defeated" : ""}" style="--boss-color:${boss.color}">
         <div class="stu-boss-card-glow"></div>
@@ -550,11 +638,11 @@
         ${defeated ? `
           <div class="stu-boss-victory"><span>💥</span><div><b>BOSS DEFEATED!</b><small>${escapeHTML(boss.name)} has been defeated.</small></div></div>
           <div class="stu-boss-rewards"><span>🎓 Subject completed</span><span>⭐ +${credits === null || credits === undefined ? "?" : displayNumber(credits)} credits</span></div>` : `
-          <div class="stu-boss-progress-copy"><span>${score === null ? "◇ AWAITING SCORE" : "⚔ BATTLE IN PROGRESS"}</span><b>${score === null ? "Sync SÚČET to begin" : `${displayNumber(remaining)} DMG until victory`}</b></div>`}
+          <div class="stu-boss-progress-copy"><span>${score === null ? "◇ AWAITING SCORE" : "⚔ BATTLE IN PROGRESS"}</span><b>${score === null ? "AIS+ is checking SÚČET automatically" : `${displayNumber(remaining)} DMG until victory`}</b></div>`}
         ${result.error ? `<p class="stu-boss-error">${escapeHTML(result.error)}</p>` : ""}
         <footer>
-          <span>Last sync: ${escapeHTML(updated)}</span>
-          <div><button type="button" data-boss-refresh="${escapeAttribute(subject.key)}" ${pendingScores.has(subject.key) ? "disabled" : ""}>${pendingScores.has(subject.key) ? "Syncing…" : "Sync SÚČET"}</button><a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener">Subject info ↗</a></div>
+          <span>${pendingScores.has(subject.key) ? "Updating from STU AIS…" : escapeHTML(updated)}</span>
+          <div><button type="button" data-boss-remove="${escapeAttribute(subject.key)}">Remove</button><a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener">Subject info ↗</a></div>
         </footer>
       </article>`;
   }
@@ -568,7 +656,7 @@
     return `
       <div class="stu-boss-arena-head">
         <div><small>SEMESTER CAMPAIGN</small><h3>${defeated} / ${subjects.length} BOSSES DEFEATED</h3></div>
-        <div><button type="button" data-boss-show-manage>Manage Bosses</button><button class="is-primary" type="button" data-boss-refresh-all>↻ Sync all scores</button></div>
+        <div><span class="stu-boss-panel-auto${pendingScores.size ? " is-syncing" : ""}"><i></i>${pendingScores.size ? "Updating scores…" : "Auto-sync is on"}</span><button type="button" data-boss-show-manage>Manage Bosses</button></div>
       </div>
       <div class="stu-boss-grid">${subjects.map(bossCard).join("")}</div>`;
   }
@@ -642,10 +730,16 @@
     }
     if (target.matches("[data-boss-refresh-all]")) return void refreshAllBosses();
     if (target.dataset.bossRefresh) return void refreshBoss(target.dataset.bossRefresh);
+    if (target.dataset.bossRemove) {
+      writeStorage({ bossRoster: (state.bossRoster || []).filter((key) => key !== target.dataset.bossRemove) });
+      return;
+    }
     if (target.dataset.bossSelect) {
       const roster = new Set(state.bossRoster || []);
-      if (roster.has(target.dataset.bossSelect)) roster.delete(target.dataset.bossSelect); else roster.add(target.dataset.bossSelect);
+      const adding = !roster.has(target.dataset.bossSelect);
+      if (!adding) roster.delete(target.dataset.bossSelect); else roster.add(target.dataset.bossSelect);
       writeStorage({ bossRoster: [...roster] });
+      if (adding) setTimeout(() => void refreshBoss(target.dataset.bossSelect), 80);
       return;
     }
     if (target.matches("[data-boss-rescan]")) return void loadSemester(activeSemester, true);
@@ -674,13 +768,20 @@
         state = { ...STORAGE_DEFAULTS, ...(stored || {}) };
         renderSidebar();
         buildPanel();
-        if (state.bossFightEnabled) setTimeout(discoverCurrentPage, 350);
+        if (state.bossFightEnabled) setTimeout(() => {
+          discoverCurrentPage();
+          scheduleAutoSync(500);
+        }, 350);
       });
       chrome.storage.onChanged.addListener((changes, area) => {
         if (area !== "local") return;
         Object.entries(changes).forEach(([key, change]) => { state[key] = change.newValue; });
         if (changes.enabled?.newValue === false || changes.bossFightEnabled?.newValue === false) closePanel();
-        if (changes.bossFightEnabled?.newValue === true) setTimeout(discoverCurrentPage, 100);
+        if (changes.bossFightEnabled?.newValue === true) setTimeout(() => {
+          discoverCurrentPage();
+          scheduleAutoSync(250);
+        }, 100);
+        if ((changes.bossRoster || changes.bossCatalog) && state.bossFightEnabled) scheduleAutoSync(120);
         queueRender();
       });
     } catch (_) {
@@ -694,6 +795,10 @@
     });
     observer.observe(document.body, { childList: true, subtree: true });
     document.addEventListener("keydown", (event) => { if (event.key === "Escape" && panelOpen) closePanel(); });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") scheduleAutoSync(350);
+    });
+    window.addEventListener("focus", () => scheduleAutoSync(350));
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start, { once: true });

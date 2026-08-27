@@ -411,3 +411,363 @@ html.stu-modern .stu-boss-subject-list > button.is-selected { border-color: colo
   .stu-boss-hp > i,
   .stu-boss-mini-switch i { transition: none; }
 }
+
+/* Integrated AIS+ presentation */
+.stu-boss-sidebar svg,
+.stu-boss-dialog svg {
+  width: 1em;
+  height: 1em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+html.stu-modern .stu-boss-sidebar {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px 0 4px;
+  border-top-color: rgb(255 255 255 / 13%);
+}
+
+html.stu-modern .stu-boss-mode-toggle {
+  min-height: 40px;
+  padding: 7px 9px !important;
+  border-radius: 6px !important;
+  font-family: inherit !important;
+}
+
+html.stu-modern .stu-boss-sidebar.is-enabled .stu-boss-mode-toggle {
+  border-color: rgb(255 255 255 / 7%) !important;
+  background: rgb(255 255 255 / 10%) !important;
+}
+
+.stu-boss-sidebar-icon {
+  color: #f4c765;
+  filter: none;
+}
+
+.stu-boss-sidebar-icon svg { width: 18px; height: 18px; }
+.stu-boss-sidebar-copy b { font-size: 12px; font-weight: 650; }
+.stu-boss-sidebar-copy small { color: rgb(255 239 244 / 52%); font-size: 7px; letter-spacing: .12em; }
+
+.stu-boss-sidebar-campaign {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 28px 28px;
+  align-items: center;
+  gap: 5px;
+  padding: 0 3px;
+}
+
+.stu-boss-sidebar-campaign > div { display: flex; min-width: 0; flex-direction: column; }
+.stu-boss-sidebar-campaign > div small { color: rgb(255 239 244 / 44%); font-size: 7px; font-weight: 750; letter-spacing: .11em; }
+.stu-boss-sidebar-campaign > div b { margin-top: 1px; color: rgb(255 249 251 / 88%); font-size: 9px; font-weight: 650; }
+
+.stu-boss-auto-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: rgb(255 244 248 / 60%);
+  font-size: 7px;
+  font-weight: 650;
+}
+
+.stu-boss-auto-state i,
+.stu-boss-panel-auto i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #60d8ac;
+  box-shadow: 0 0 0 3px rgb(96 216 172 / 10%);
+}
+
+.stu-boss-auto-state.is-syncing i,
+.stu-boss-panel-auto.is-syncing i { background: #f4c765; animation: stu-boss-pulse 1s ease infinite; }
+
+html.stu-modern .stu-boss-sidebar-campaign > button {
+  display: grid !important;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  padding: 0 !important;
+  border: 1px solid rgb(255 255 255 / 12%) !important;
+  border-radius: 6px !important;
+  color: rgb(255 246 249 / 72%) !important;
+  background: rgb(255 255 255 / 5%) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+html.stu-modern .stu-boss-sidebar-campaign > button:hover { color: #fff !important; background: rgb(255 255 255 / 11%) !important; }
+.stu-boss-sidebar-campaign > button svg { width: 14px; height: 14px; }
+.stu-boss-sidebar-campaign > button.is-syncing svg { animation: stu-boss-spin .8s linear infinite; }
+
+.stu-boss-sidebar-list { display: grid; gap: 6px; }
+
+.stu-boss-sidebar-card {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  overflow: hidden;
+  padding: 9px;
+  border: 1px solid rgb(255 255 255 / 11%);
+  border-radius: 7px;
+  background: rgb(35 7 18 / 17%);
+  box-shadow: inset 2px 0 color-mix(in srgb, var(--boss-color) 72%, #fff);
+}
+
+.stu-boss-sidebar-card:hover { border-color: rgb(255 255 255 / 18%); background: rgb(255 255 255 / 6%); }
+.stu-boss-sidebar-card.is-syncing { opacity: .78; }
+.stu-boss-sidebar-card-head { display: flex; min-width: 0; align-items: center; gap: 7px; }
+.stu-boss-sidebar-avatar { display: grid; width: 25px; height: 25px; flex: 0 0 25px; place-items: center; border-radius: 6px; color: #33110e; background: color-mix(in srgb, var(--boss-color) 80%, #fff); font-size: 13px; }
+.stu-boss-sidebar-name { display: flex; min-width: 0; flex: 1; flex-direction: column; }
+.stu-boss-sidebar-name b { overflow: hidden; color: #fff; font-size: 8px; font-weight: 750; letter-spacing: .035em; text-overflow: ellipsis; white-space: nowrap; }
+.stu-boss-sidebar-name small { overflow: hidden; margin-top: 2px; color: rgb(255 239 244 / 48%); font-size: 6px; text-overflow: ellipsis; white-space: nowrap; }
+
+html.stu-modern .stu-boss-sidebar-card-head button {
+  display: grid !important;
+  width: 22px;
+  height: 22px;
+  flex: 0 0 22px;
+  place-items: center;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 5px !important;
+  color: rgb(255 246 249 / 42%) !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+html.stu-modern .stu-boss-sidebar-card-head button:hover { color: #fff !important; background: rgb(255 255 255 / 9%) !important; }
+.stu-boss-sidebar-card-head button svg { width: 12px; height: 12px; }
+.stu-boss-sidebar-score { display: flex; align-items: end; justify-content: space-between; gap: 7px; }
+.stu-boss-sidebar-score > span { overflow: hidden; color: rgb(255 244 248 / 64%); font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
+.stu-boss-sidebar-score > b { color: #fff; font-size: 13px; line-height: 1; }
+.stu-boss-sidebar-score > b small { color: rgb(255 239 244 / 44%); font-size: 6px; font-weight: 550; }
+
+.stu-boss-sidebar-hp {
+  position: relative;
+  height: 5px;
+  overflow: visible;
+  border-radius: 4px;
+  background: rgb(28 4 13 / 44%);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 8%);
+}
+
+.stu-boss-sidebar-hp > i { display: block; height: 100%; max-width: 100%; border-radius: inherit; background: color-mix(in srgb, var(--boss-color) 78%, #fff); transition: width .45s ease; }
+.stu-boss-sidebar-hp > b { position: absolute; top: -2px; width: 1px; height: 9px; background: #fff0b8; transform: translateX(-1px); }
+.stu-boss-sidebar-card-foot { display: flex; align-items: center; justify-content: space-between; }
+.stu-boss-sidebar-card-foot > span { color: color-mix(in srgb, var(--rank-color) 78%, #fff); font-size: 6px; font-weight: 750; letter-spacing: .045em; }
+html.stu-modern .stu-boss-sidebar-card-foot a { display: inline-flex !important; align-items: center; gap: 3px; color: rgb(255 244 248 / 56%) !important; font-size: 6px; }
+html.stu-modern .stu-boss-sidebar-card-foot a:hover { color: #fff !important; }
+.stu-boss-sidebar-card-foot a svg { width: 9px; height: 9px; }
+
+html.stu-modern .stu-boss-sidebar-empty {
+  display: grid !important;
+  min-height: 76px;
+  place-items: center;
+  align-content: center;
+  gap: 2px;
+  padding: 8px !important;
+  border: 1px dashed rgb(255 255 255 / 17%) !important;
+  border-radius: 7px !important;
+  color: rgb(255 245 248 / 66%) !important;
+  background: rgb(255 255 255 / 3%) !important;
+  box-shadow: none !important;
+  cursor: pointer;
+}
+
+.stu-boss-sidebar-empty span { display: grid; width: 22px; height: 22px; place-items: center; border-radius: 50%; color: #f4c765; background: rgb(244 199 101 / 12%); }
+.stu-boss-sidebar-empty span svg { width: 12px; height: 12px; }
+.stu-boss-sidebar-empty b { font-size: 8px; }
+.stu-boss-sidebar-empty small { color: rgb(255 239 244 / 42%); font-size: 6px; }
+
+html.stu-modern .stu-boss-enter {
+  min-height: 27px;
+  padding: 4px 4px !important;
+  color: rgb(255 242 247 / 50%) !important;
+  background: transparent !important;
+  font-size: 7px;
+}
+
+.stu-boss-enter > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stu-boss-enter > b { display: inline-flex; width: auto; min-width: 0; height: auto; align-items: center; gap: 2px; padding: 0; color: rgb(255 247 249 / 76%); background: transparent; font-size: 7px; font-weight: 650; }
+.stu-boss-enter > b svg { width: 10px; height: 10px; }
+
+html.stu-sidebar-collapsed .stu-boss-sidebar { padding-top: 10px; }
+html.stu-sidebar-collapsed .stu-boss-sidebar-campaign,
+html.stu-sidebar-collapsed .stu-boss-sidebar-list,
+html.stu-sidebar-collapsed .stu-boss-enter { display: none !important; }
+
+/* The details window follows the same surfaces, spacing and controls as AIS+. */
+.stu-boss-overlay {
+  color: var(--stu-text);
+  background: rgb(15 17 22 / 52%);
+  backdrop-filter: blur(5px);
+}
+
+.stu-boss-dialog {
+  width: min(1160px, 100%);
+  max-height: min(850px, calc(100vh - 48px));
+  border-color: var(--stu-border);
+  border-radius: 10px;
+  color: var(--stu-text);
+  background: var(--stu-surface);
+  box-shadow: var(--stu-shadow-lg);
+}
+
+.stu-boss-header {
+  min-height: 72px;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom-color: var(--stu-border);
+  background: var(--stu-surface);
+}
+
+.stu-boss-emblem {
+  width: 42px;
+  height: 42px;
+  flex-basis: 42px;
+  border-color: color-mix(in srgb, var(--stu-primary) 26%, var(--stu-border));
+  border-radius: 8px;
+  color: var(--stu-primary);
+  background: var(--stu-primary-soft);
+  box-shadow: none;
+}
+
+.stu-boss-emblem svg { width: 20px; height: 20px; }
+.stu-boss-header small { color: var(--stu-text-3); font-size: 8px; letter-spacing: .12em; }
+html.stu-modern .stu-boss-header h2 { margin-top: 2px !important; color: var(--stu-text) !important; font-size: 19px !important; font-weight: 750 !important; letter-spacing: -.015em !important; }
+.stu-boss-header-meta { gap: 6px; }
+.stu-boss-header-meta span { padding: 6px 9px; border-color: var(--stu-border); border-radius: 6px; color: var(--stu-text-3); background: var(--stu-surface-2); font-size: 7px; letter-spacing: .05em; }
+.stu-boss-header-meta b { color: var(--stu-text); }
+
+html.stu-modern .stu-boss-close {
+  width: 32px;
+  height: 32px;
+  min-width: 32px !important;
+  border-color: var(--stu-border) !important;
+  border-radius: 6px !important;
+  color: var(--stu-text-3) !important;
+  background: transparent !important;
+}
+
+.stu-boss-close svg { width: 15px; height: 15px; }
+.stu-boss-close:hover { border-color: color-mix(in srgb, var(--stu-primary) 32%, var(--stu-border)) !important; color: var(--stu-text) !important; background: var(--stu-surface-2) !important; }
+
+.stu-boss-tabs { gap: 4px; padding: 7px 14px 0; border-bottom-color: var(--stu-border); background: var(--stu-surface); }
+html.stu-modern .stu-boss-tabs button { min-height: 38px; padding: 7px 11px !important; color: var(--stu-text-3) !important; font-size: 9px; font-weight: 650; letter-spacing: 0; text-transform: none; }
+.stu-boss-tabs button:hover { color: var(--stu-text) !important; background: var(--stu-surface-2) !important; }
+.stu-boss-tabs button.is-active { border-bottom-color: var(--stu-primary) !important; color: var(--stu-primary) !important; }
+.stu-boss-tabs button i { color: currentColor; }
+.stu-boss-tabs button b { min-width: 17px; height: 17px; color: var(--stu-text-2); background: var(--stu-surface-3); }
+
+.stu-boss-content { padding: 20px; color: var(--stu-text); background: var(--stu-canvas); scrollbar-color: var(--stu-border) transparent; }
+.stu-boss-footer { border-top-color: var(--stu-border); color: var(--stu-text-3); background: var(--stu-surface); font-size: 8px; letter-spacing: 0; }
+
+.stu-boss-arena-head small,
+.stu-boss-manager-head small,
+.stu-boss-ranks-head small { color: var(--stu-text-3); letter-spacing: .1em; }
+html.stu-modern .stu-boss-arena-head h3,
+html.stu-modern .stu-boss-manager-head h3,
+html.stu-modern .stu-boss-ranks-head h3 { color: var(--stu-text) !important; font-size: 16px !important; font-weight: 750 !important; letter-spacing: -.01em !important; }
+.stu-boss-manager-head p,
+.stu-boss-ranks-head p { color: var(--stu-text-2) !important; font-size: 10px; }
+.stu-boss-arena-head > div:last-child { align-items: center; }
+.stu-boss-panel-auto { display: inline-flex; align-items: center; gap: 6px; color: var(--stu-text-3); font-size: 8px; }
+
+html.stu-modern .stu-boss-arena-head button,
+html.stu-modern .stu-boss-manager-empty button,
+html.stu-modern .stu-boss-empty button,
+html.stu-modern .stu-boss-semester-bar button {
+  border-color: var(--stu-border) !important;
+  border-radius: 6px !important;
+  color: var(--stu-text-2) !important;
+  background: var(--stu-surface) !important;
+  font-size: 9px;
+}
+
+.stu-boss-arena-head button:hover,
+.stu-boss-semester-bar button:hover { border-color: color-mix(in srgb, var(--stu-primary) 35%, var(--stu-border)) !important; color: var(--stu-primary) !important; }
+html.stu-modern .stu-boss-empty button { border-color: var(--stu-primary) !important; color: #fff !important; background: var(--stu-primary) !important; }
+
+.stu-boss-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); gap: 10px; }
+.stu-boss-card { padding: 15px; border-color: color-mix(in srgb, var(--boss-color) 20%, var(--stu-border)); border-radius: 8px; background: var(--stu-surface); box-shadow: var(--stu-shadow-sm), inset 3px 0 color-mix(in srgb, var(--boss-color) 72%, var(--stu-primary)); }
+.stu-boss-card-glow { display: none; }
+.stu-boss-avatar { width: 42px; height: 42px; flex-basis: 42px; border-color: color-mix(in srgb, var(--boss-color) 35%, var(--stu-border)); border-radius: 8px; color: color-mix(in srgb, var(--boss-color) 72%, var(--stu-text)); background: color-mix(in srgb, var(--boss-color) 11%, var(--stu-surface)); box-shadow: none; font-size: 20px; }
+.stu-boss-identity small { color: var(--stu-text-3); letter-spacing: .06em; }
+html.stu-modern .stu-boss-identity h3 { color: var(--stu-text) !important; font-size: 13px !important; font-weight: 750 !important; letter-spacing: .02em !important; }
+.stu-boss-identity p { color: var(--stu-text-2) !important; }
+.stu-boss-rank { border-color: color-mix(in srgb, var(--rank-color) 30%, var(--stu-border)); color: color-mix(in srgb, var(--rank-color) 70%, var(--stu-text)); background: color-mix(in srgb, var(--rank-color) 8%, var(--stu-surface)); }
+.stu-boss-rank b { color: var(--stu-surface); }
+.stu-boss-hp-copy { margin-top: 15px; }
+.stu-boss-hp-copy span { color: var(--stu-text-3); letter-spacing: .08em; }
+.stu-boss-hp-copy strong { color: var(--stu-text); font-size: 18px; }
+.stu-boss-hp-copy strong small { color: var(--stu-text-3); }
+.stu-boss-hp { height: 8px; border-color: var(--stu-border); background: var(--stu-surface-3); box-shadow: none; }
+.stu-boss-hp > i { box-shadow: none; }
+.stu-boss-hp > b { background: var(--stu-accent); box-shadow: none; }
+.stu-boss-threshold { color: var(--stu-text-3); }
+.stu-boss-threshold span:nth-child(2) { color: var(--stu-warning); }
+.stu-boss-victory { border-color: color-mix(in srgb, var(--stu-success) 25%, var(--stu-border)); background: color-mix(in srgb, var(--stu-success) 7%, var(--stu-surface)); }
+.stu-boss-victory b { color: var(--stu-success); letter-spacing: .03em; }
+.stu-boss-victory small { color: var(--stu-text-2); }
+.stu-boss-rewards span { border-color: var(--stu-border); color: var(--stu-text-2); background: var(--stu-surface-2); }
+.stu-boss-progress-copy { border-color: var(--stu-border); background: var(--stu-surface-2); }
+.stu-boss-progress-copy span { color: color-mix(in srgb, var(--boss-color) 68%, var(--stu-text)); }
+.stu-boss-progress-copy b { color: var(--stu-text-2); font-weight: 550; }
+.stu-boss-error { color: var(--stu-danger) !important; }
+.stu-boss-card > footer { border-top-color: var(--stu-border); color: var(--stu-text-3); }
+html.stu-modern .stu-boss-card > footer button,
+html.stu-modern .stu-boss-card > footer a { border-color: var(--stu-border) !important; color: var(--stu-text-2) !important; background: var(--stu-surface-2) !important; }
+html.stu-modern .stu-boss-card > footer a:hover,
+html.stu-modern .stu-boss-card > footer button:hover { border-color: color-mix(in srgb, var(--stu-primary) 32%, var(--stu-border)) !important; color: var(--stu-primary) !important; }
+
+.stu-boss-empty-icon { border-color: color-mix(in srgb, var(--stu-primary) 25%, var(--stu-border)); border-radius: 12px; color: var(--stu-primary); background: var(--stu-primary-soft); }
+.stu-boss-empty small { color: var(--stu-text-3); }
+html.stu-modern .stu-boss-empty h3 { color: var(--stu-text) !important; }
+.stu-boss-empty p { color: var(--stu-text-2) !important; }
+html.stu-modern .stu-boss-manager-head > a { border-color: var(--stu-border); border-radius: 6px; color: var(--stu-text-2) !important; background: var(--stu-surface); }
+html.stu-modern .stu-boss-manager-head > a:hover { border-color: color-mix(in srgb, var(--stu-primary) 35%, var(--stu-border)); color: var(--stu-primary) !important; }
+.stu-boss-semester-bar { border-color: var(--stu-border); border-radius: 7px; background: var(--stu-surface); }
+.stu-boss-semester-bar label span,
+.stu-boss-semester-bar > span { color: var(--stu-text-3); }
+html.stu-modern .stu-boss-semester-bar select { border-color: var(--stu-border) !important; border-radius: 6px !important; color: var(--stu-text) !important; background: var(--stu-surface-2) !important; }
+html.stu-modern .stu-boss-subject-list > button { border-color: var(--stu-border) !important; border-radius: 7px !important; color: var(--stu-text-2) !important; background: var(--stu-surface) !important; }
+html.stu-modern .stu-boss-subject-list > button:hover { background: var(--stu-surface-2) !important; }
+.stu-boss-subject-list b { color: var(--stu-text); }
+.stu-boss-subject-list small { color: var(--stu-text-3); }
+.stu-boss-subject-list strong { color: var(--stu-text-3); background: var(--stu-surface-3); }
+.stu-boss-manager-empty { color: var(--stu-text-3); }
+.stu-boss-manager-empty b { color: var(--stu-text); }
+.stu-boss-rank-table { border-color: var(--stu-border); border-radius: 8px; background: var(--stu-surface); }
+.stu-boss-rank-table > div { border-bottom-color: var(--stu-border); }
+.stu-boss-rank-table > div:not(.is-header):hover { background: var(--stu-surface-2); }
+.stu-boss-rank-table .is-header { color: var(--stu-text-3); background: var(--stu-surface-2); }
+.stu-boss-rank-table > div > span { color: var(--stu-text); }
+.stu-boss-rank-table em { color: var(--stu-text-3); }
+.stu-boss-rules div { border-color: var(--stu-border); background: var(--stu-surface); }
+.stu-boss-rules b { color: var(--stu-primary); }
+.stu-boss-rules span { color: var(--stu-text-3); }
+
+@keyframes stu-boss-spin { to { transform: rotate(360deg); } }
+@keyframes stu-boss-pulse { 50% { opacity: .35; transform: scale(.72); } }
+
+@media (max-width: 980px) {
+  html.stu-sidebar-collapsed .stu-boss-sidebar-campaign { display: grid !important; }
+  html.stu-sidebar-collapsed .stu-boss-sidebar-list { display: grid !important; }
+  html.stu-sidebar-collapsed .stu-boss-enter { display: flex !important; }
+  html.stu-sidebar-collapsed .stu-boss-mode-toggle { width: 100%; justify-content: flex-start; }
+  html.stu-sidebar-collapsed .stu-boss-sidebar-copy { display: flex; }
+  html.stu-sidebar-collapsed .stu-boss-mini-switch { display: block; margin-left: auto; }
+}
+
+@media (max-width: 720px) {
+  .stu-boss-dialog { border-radius: 0; }
+  .stu-boss-content { padding: 13px; }
+  .stu-boss-arena-head > div:last-child { grid-template-columns: 1fr; }
+  .stu-boss-panel-auto { justify-content: center; min-height: 28px; }
+}

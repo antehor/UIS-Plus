@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "AIS+",
   "short_name": "AIS+",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "A better way to use STU AIS — experimental Boss Fight edition.",
   "author": "Yehor Halytskyi",
   "homepage_url": "https://github.com/antehor/AIS-",

@@ -2,6 +2,15 @@
 
 All notable changes to AIS+ are documented here.
 
+## 2.2.0 — Experimental, local only
+
+- Moved selected bosses and their live progress directly into the AIS+ sidebar.
+- Added one-click subject addition and removal from the sidebar campaign.
+- Added automatic SÚČET updates on page load, tab focus and after adding a boss.
+- Kept the small sidebar refresh control as an optional fallback instead of the primary workflow.
+- Restyled the Boss Fight details window with the same surfaces, controls, spacing and light/dark themes as AIS+.
+- Preserved the last valid score if STU AIS is temporarily unavailable during a background update.
+
 ## 2.1.0 — Experimental, local only
 
 - Added an optional English-language **Boss Fight** fun mode.

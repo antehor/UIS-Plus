@@ -24,8 +24,18 @@
 
 ---
 
-> **Experimental local build 2.1.0:** this working branch includes the optional Boss Fight fun mode.
+> **Experimental local build 2.2.0:** this working branch includes the optional Boss Fight fun mode
+> with live sidebar progress and automatic score updates.
 > It has not been published to GitHub Releases. See [Boss Fight documentation](docs/BOSS-FIGHT.md).
+
+<details>
+<summary><strong>Preview the experimental Boss Fight sidebar</strong></summary>
+
+![AIS+ Boss Fight bosses and score progress in the sidebar](assets/boss-fight-sidebar.png)
+
+![AIS+ Boss Fight campaign details](assets/boss-fight-arena.png)
+
+</details>
 
 **AIS+** is an open-source browser extension and personal redesign for the
 [Slovak University of Technology in Bratislava](https://www.stuba.sk/) Academic Information System at
@@ -61,6 +71,7 @@ If you searched for a **modern STU AIS interface**, **STU student portal redesig
   so student identifiers are not hard-coded or published.
 - **Private by design**: no analytics, external API, account access or data transmission.
 - **Manifest V3**, with only `storage` permission and access limited to `https://is.stuba.sk/*`.
+- **Optional Boss Fight experiment** with selected bosses in the sidebar and automatic SÚČET progress updates.
 
 <details>
 <summary><strong>Show the dark theme</strong></summary>
@@ -118,9 +129,9 @@ manager are required.
 
 ## Privacy and permissions
 
-AIS+ runs locally in the browser. It stores only the extension preferences (enabled state, theme,
-density, sidebar state and panel language). It does not collect, sell or send personal or academic
-data. See [PRIVACY.md](PRIVACY.md) for the full, readable policy.
+AIS+ runs locally in the browser. It stores interface preferences and, when Boss Fight is enabled,
+the selected subject links plus the last score detected from STU AIS. It does not collect, sell or
+send personal or academic data to any external service. See [PRIVACY.md](PRIVACY.md) for the full policy.
 
 ## Compatibility
 
