@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement for AIS+
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What should be easier?
+      description: Describe the current workflow and the STU AIS section involved.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed personal and academic data from this request.
+          required: true

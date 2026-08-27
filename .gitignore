@@ -1,0 +1,7 @@
+*.zip
+dist/
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/

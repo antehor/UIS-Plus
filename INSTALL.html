@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Установка AIS+</title>
+  <style>
+    :root{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#19202d;background:#f4f6fa}*{box-sizing:border-box}body{margin:0}.hero{padding:60px 24px 92px;color:white;background:linear-gradient(135deg,#9a1239,#690b28)}.wrap{max-width:920px;margin:auto}.brand{display:flex;align-items:center;gap:15px}.dots{display:grid;grid-template-columns:repeat(3,6px);gap:5px;padding:12px;border:1px solid #ffffff3b;border-radius:15px;background:#ffffff14}.dots i{width:6px;height:6px;border-radius:50%;background:white}.brand b{font-size:27px;letter-spacing:.13em}.brand small{display:block;margin-top:4px;color:#ffffffa8;font-size:10px;letter-spacing:.16em}.hero h1{max-width:620px;margin:46px 0 12px;font-size:42px;line-height:1.08;letter-spacing:-.04em}.hero p{max-width:600px;color:#ffffffbd;font-size:16px;line-height:1.65}.content{max-width:920px;margin:-48px auto 60px;padding:0 24px}.card{padding:28px;border:1px solid #e1e5eb;border-radius:20px;background:white;box-shadow:0 20px 60px #12182712}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;padding:5px;border-radius:12px;background:#f0f2f6}.tabs button{padding:11px;border:0;border-radius:9px;color:#697383;background:transparent;font-weight:700;cursor:pointer}.tabs button.active{color:#8d1235;background:white;box-shadow:0 3px 10px #12182712}.steps{display:grid;gap:13px}.step{display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:start;padding:15px;border:1px solid #e5e8ee;border-radius:14px}.step>span{display:grid;width:38px;height:38px;place-items:center;border-radius:11px;color:white;background:#941238;font-weight:800}.step b{display:block;margin:2px 0 5px}.step p{margin:0;color:#687284;line-height:1.5}.address{display:inline-flex;margin-top:8px;padding:7px 10px;border-radius:7px;color:#7c1130;background:#f9e8ee;font-family:Consolas,monospace;font-size:12px}.note{margin-top:18px;padding:15px 17px;border-left:3px solid #cb8b29;border-radius:10px;color:#6d552f;background:#fff7e8}.after{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}.after div{padding:15px;border-radius:13px;background:#f6f7fa}.after b{display:block;margin-bottom:4px;font-size:12px}.after span{color:#758092;font-size:11px;line-height:1.4}@media(max-width:640px){.hero h1{font-size:32px}.after{grid-template-columns:1fr}.card{padding:18px}.content{padding:0 12px}}
+  </style>
+</head>
+<body>
+<section class="hero"><div class="wrap"><div class="brand"><span class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span><div><b>AIS+</b><small>A BETTER WAY TO USE STU AIS</small></div></div><h1>Современный STU AIS — только в вашем браузере</h1><p>Установка занимает несколько минут. Сервер, аккаунт и данные STU не меняются.</p></div></section>
+<main class="content"><div class="card">
+  <div class="tabs"><button class="active" data-browser="chrome">Google Chrome</button><button data-browser="edge">Microsoft Edge</button></div>
+  <div class="steps">
+    <div class="step"><span>1</span><div><b>Распакуйте архив</b><p>Переместите папку <strong>AIS-plus</strong> в постоянное место. Не удаляйте её после установки.</p></div></div>
+    <div class="step"><span>2</span><div><b>Откройте страницу расширений</b><p>Скопируйте адрес ниже в адресную строку браузера и нажмите Enter.</p><code class="address" id="address">chrome://extensions</code></div></div>
+    <div class="step"><span>3</span><div><b>Включите режим разработчика</b><p>Переключатель находится в правом верхнем углу страницы расширений.</p></div></div>
+    <div class="step"><span>4</span><div><b>Загрузите папку</b><p>Нажмите <strong>«Загрузить распакованное расширение»</strong> и выберите папку, внутри которой находится <code>manifest.json</code>.</p></div></div>
+    <div class="step"><span>5</span><div><b>Обновите STU AIS</b><p>Откройте <strong>https://is.stuba.sk/</strong> или обновите уже открытую страницу.</p></div></div>
+  </div>
+  <div class="note">Значок расширения открывает переключатель редизайна, выбор темы и компактный режим.</div>
+  <div class="after"><div><b>Отключить</b><span>Значок расширения → выключить «Редизайн».</span></div><div><b>Обновить</b><span>Заменить файлы → нажать Reload на странице расширений.</span></div><div><b>Удалить</b><span>Страница расширений → «Удалить».</span></div></div>
+</div></main>
+<script>document.querySelectorAll('[data-browser]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-browser]').forEach(x=>x.classList.toggle('active',x===b));document.querySelector('#address').textContent=b.dataset.browser==='edge'?'edge://extensions':'chrome://extensions'})</script>
+</body></html>

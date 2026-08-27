@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AIS+</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <span class="mark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    <div><b>AIS+</b><small>A BETTER STU AIS</small></div>
+    <span class="local">LOCAL</span>
+  </header>
+  <main>
+    <label class="setting main-setting">
+      <span><b>Редизайн</b><small>Только на is.stuba.sk</small></span>
+      <input id="enabled" type="checkbox"><i class="switch"></i>
+    </label>
+    <section>
+      <span class="caption">Тема</span>
+      <div class="segments" role="radiogroup" aria-label="Тема">
+        <label><input type="radio" name="theme" value="system"><span>Система</span></label>
+        <label><input type="radio" name="theme" value="light"><span>Светлая</span></label>
+        <label><input type="radio" name="theme" value="dark"><span>Тёмная</span></label>
+      </div>
+    </section>
+    <label class="setting">
+      <span><b>Компактный режим</b><small>Больше данных на экране</small></span>
+      <input id="compact" type="checkbox"><i class="switch"></i>
+    </label>
+  </main>
+  <footer><span></span>A better way to use STU AIS.</footer>
+  <script src="popup.js"></script>
+</body>
+</html>

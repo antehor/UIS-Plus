@@ -1,0 +1,36 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate source
+        run: |
+          node --check content.js
+          node --check popup.js
+          python -m json.tool manifest.json >/dev/null
+      - name: Build unpacked extension archive
+        run: |
+          mkdir -p package/AIS-plus
+          cp manifest.json content.js styles.css popup.html popup.css popup.js INSTALL.html README.md LICENSE PRIVACY.md package/AIS-plus/
+          cp -R icons package/AIS-plus/icons
+          cp -R assets package/AIS-plus/assets
+          cp -R docs package/AIS-plus/docs
+          cd package
+          zip -r "AIS-plus-${GITHUB_REF_NAME}.zip" AIS-plus
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "package/AIS-plus-${GITHUB_REF_NAME}.zip" \
+            --title "AIS+ ${GITHUB_REF_NAME}" \
+            --generate-notes

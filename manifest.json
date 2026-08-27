@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "AIS+",
+  "short_name": "AIS+",
+  "version": "2.0.0",
+  "description": "A better way to use STU AIS — a modern, private interface for is.stuba.sk.",
+  "author": "Yehor Halytskyi",
+  "homepage_url": "https://github.com/antehor/AIS-",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://is.stuba.sk/*"
+  ],
+  "action": {
+    "default_title": "AIS+",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png",
+    "512": "icons/icon-512.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://is.stuba.sk/*"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start"
+    }
+  ]
+}
