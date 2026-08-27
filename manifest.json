@@ -5,7 +5,7 @@
   "version": "2.2.0",
   "description": "A better way to use STU AIS — experimental Boss Fight edition.",
   "author": "Yehor Halytskyi",
-  "homepage_url": "https://github.com/antehor/AIS-",
+  "homepage_url": "https://github.com/antehor/AIS-Plus",
   "permissions": [
     "storage"
   ],

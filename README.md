@@ -5,18 +5,18 @@
   <p>A modern, fast and private browser interface for the STU Academic Information System.</p>
 
   <p>
-    <a href="https://github.com/antehor/AIS-/releases/latest"><strong>Download latest release</strong></a>
+    <a href="https://github.com/antehor/AIS-Plus/releases/latest"><strong>Download latest release</strong></a>
     ·
     <a href="#quick-install">Quick install</a>
     ·
     <a href="#slovenčina">Slovenčina</a>
     ·
-    <a href="https://github.com/antehor/AIS-/issues">Report a problem</a>
+    <a href="https://github.com/antehor/AIS-Plus/issues">Report a problem</a>
   </p>
 
   <p>
-    <img alt="Version" src="https://img.shields.io/github/v/release/antehor/AIS-?display_name=tag&style=flat-square&color=9b1237">
-    <img alt="License" src="https://img.shields.io/github/license/antehor/AIS-?style=flat-square&color=9b1237">
+    <img alt="Version" src="https://img.shields.io/github/v/release/antehor/AIS-Plus?display_name=tag&style=flat-square&color=9b1237">
+    <img alt="License" src="https://img.shields.io/github/license/antehor/AIS-Plus?style=flat-square&color=9b1237">
     <img alt="Manifest V3" src="https://img.shields.io/badge/Chrome-Manifest%20V3-9b1237?style=flat-square">
     <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%7C%20Edge-9b1237?style=flat-square">
   </p>
@@ -84,7 +84,7 @@ If you searched for a **modern STU AIS interface**, **STU student portal redesig
 
 ### Google Chrome
 
-1. Download [`AIS-plus.zip`](https://github.com/antehor/AIS-/releases/latest) from the latest release.
+1. Download [`AIS-plus.zip`](https://github.com/antehor/AIS-Plus/releases/latest) from the latest release.
 2. Extract the archive to a permanent folder.
 3. Open `chrome://extensions`.
 4. Enable **Developer mode**.
@@ -105,7 +105,7 @@ If you searched for a **modern STU AIS interface**, **STU student portal redesig
 <summary><strong>Install directly from the source code</strong></summary>
 
 ```bash
-git clone git@github.com:antehor/AIS-.git AIS-plus
+git clone git@github.com:antehor/AIS-Plus.git AIS-plus
 ```
 
 Then load the cloned `AIS-plus` directory as an unpacked extension. No build step and no package
@@ -165,7 +165,7 @@ prehľadnejšiu navigáciu, svetlú a tmavú tému, kompaktné zobrazenie a rýc
 
 ### Rýchla inštalácia
 
-1. Stiahnite ZIP z [najnovšieho vydania](https://github.com/antehor/AIS-/releases/latest) a rozbaľte ho.
+1. Stiahnite ZIP z [najnovšieho vydania](https://github.com/antehor/AIS-Plus/releases/latest) a rozbaľte ho.
 2. V Chrome otvorte `chrome://extensions`; v Edge otvorte `edge://extensions`.
 3. Zapnite **Režim pre vývojárov**.
 4. Kliknite na **Načítať rozbalené** a vyberte priečinok s `manifest.json`.

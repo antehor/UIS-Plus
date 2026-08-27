@@ -34,5 +34,5 @@ the real navigation links available to the signed-in user. It does not read or m
 
 ## Contact
 
-Questions can be opened as a [GitHub issue](https://github.com/antehor/AIS-/issues) or sent to the
+Questions can be opened as a [GitHub issue](https://github.com/antehor/AIS-Plus/issues) or sent to the
 maintainer through [LinkedIn](https://www.linkedin.com/in/yehor-halytskyi-392b92427/).

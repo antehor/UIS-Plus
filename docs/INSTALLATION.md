@@ -4,7 +4,7 @@ AIS+ is a Manifest V3 browser extension. It does not need Node.js, a package man
 
 ## Chrome
 
-1. Open the [latest AIS+ release](https://github.com/antehor/AIS-/releases/latest).
+1. Open the [latest AIS+ release](https://github.com/antehor/AIS-Plus/releases/latest).
 2. Download the ZIP asset and extract it to a permanent directory.
 3. Open `chrome://extensions` in the address bar.
 4. Enable **Developer mode** in the top-right corner.
