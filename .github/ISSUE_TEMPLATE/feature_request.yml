@@ -1,5 +1,5 @@
 name: Feature request
-description: Suggest an improvement for AIS+
+description: Suggest an improvement for UIS+
 title: "[Feature]: "
 labels: [enhancement]
 body:
@@ -7,7 +7,7 @@ body:
     id: problem
     attributes:
       label: What should be easier?
-      description: Describe the current workflow and the STU AIS section involved.
+      description: Describe the current workflow and the STU UIS section involved.
     validations:
       required: true
   - type: textarea

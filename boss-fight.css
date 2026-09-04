@@ -1,4 +1,4 @@
-/* AIS+ experimental game layer */
+/* UIS+ experimental game layer */
 html.stu-modern .stu-boss-sidebar {
   display: grid;
   gap: 6px;
@@ -412,7 +412,7 @@ html.stu-modern .stu-boss-subject-list > button.is-selected { border-color: colo
   .stu-boss-mini-switch i { transition: none; }
 }
 
-/* Integrated AIS+ presentation */
+/* Integrated UIS+ presentation */
 .stu-boss-sidebar svg,
 .stu-boss-dialog svg {
   width: 1em;
@@ -602,7 +602,7 @@ html.stu-sidebar-collapsed .stu-boss-sidebar-campaign,
 html.stu-sidebar-collapsed .stu-boss-sidebar-list,
 html.stu-sidebar-collapsed .stu-boss-enter { display: none !important; }
 
-/* The details window follows the same surfaces, spacing and controls as AIS+. */
+/* The details window follows the same surfaces, spacing and controls as UIS+. */
 .stu-boss-overlay {
   color: var(--stu-text);
   background: rgb(15 17 22 / 52%);

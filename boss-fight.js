@@ -332,14 +332,14 @@
     const html = await response.text();
     const doc = new DOMParser().parseFromString(html, "text/html");
     if (doc.querySelector("#loginform") || /prihl[aá]si[ťt]|sign in/i.test(normalize(doc.title)) && !/list|portal/i.test(normalize(doc.title))) {
-      throw new Error("Sign in to STU AIS and try again.");
+      throw new Error("Sign in to STU UIS and try again.");
     }
     return { doc, url: response.url || url };
   }
 
   async function ensureIndexData(force = false) {
     if (!force && state.bossSemesters?.length && Object.keys(state.bossCatalog || {}).length) return;
-    managerStatus = "Scanning STU AIS…";
+    managerStatus = "Scanning STU UIS…";
     renderPanel();
     try {
       const isIndex = /\/student\/list\.pl$/i.test(location.pathname) && !queryValue(location.href, "predmet");
@@ -350,7 +350,7 @@
         const { doc, url } = await fetchDocument(endpoint);
         scanIndexDocument(doc, url);
       }
-      managerStatus = "Subjects loaded from STU AIS.";
+      managerStatus = "Subjects loaded from STU UIS.";
       const first = state.bossSemesters?.find((semester) => semester.id === activeSemester) || state.bossSemesters?.[0];
       if (first) activeSemester = first.id;
     } catch (error) {
@@ -534,7 +534,7 @@
           <button type="button" data-boss-manage aria-label="Add or remove bosses" title="Add boss">${ICONS.plus}</button>
         </div>
         <div class="stu-boss-sidebar-list">
-          ${subjects.length ? subjects.map(sidebarBossCard).join("") : `<button class="stu-boss-sidebar-empty" type="button" data-boss-manage><span>${ICONS.plus}</span><b>Add your first boss</b><small>Choose a subject from STU AIS</small></button>`}
+          ${subjects.length ? subjects.map(sidebarBossCard).join("") : `<button class="stu-boss-sidebar-empty" type="button" data-boss-manage><span>${ICONS.plus}</span><b>Add your first boss</b><small>Choose a subject from STU UIS</small></button>`}
         </div>
         ${subjects.length ? `<button class="stu-boss-enter" type="button" data-boss-open title="Open campaign details"><span>${syncing ? "Scores are updating automatically" : relativeTime(latestUpdate)}</span><b>Details ${ICONS.chevron}</b></button>` : ""}` : ""}`;
     const foot = sidebar.querySelector(".stu-sidebar-foot");
@@ -566,13 +566,13 @@
       <section class="stu-boss-dialog" role="dialog" aria-modal="true" aria-label="Boss Fight">
         <header class="stu-boss-header">
           <div class="stu-boss-emblem">${ICONS.swords}</div>
-          <div><small>AIS+ · FUN MODE</small><h2>Boss Fight</h2></div>
+          <div><small>UIS+ · FUN MODE</small><h2>Boss Fight</h2></div>
           <div class="stu-boss-header-meta"><span>VICTORY AT <b>${VICTORY_SCORE} DMG</b></span><span>MAX <b>${MAX_SCORE} HP</b></span></div>
           <button class="stu-boss-close" type="button" data-boss-close aria-label="Close Boss Fight">${ICONS.close}</button>
         </header>
         <nav class="stu-boss-tabs" aria-label="Boss Fight sections"></nav>
         <div class="stu-boss-content"></div>
-        <footer class="stu-boss-footer"><span></span>Scores update automatically from STU AIS · Data stays in this browser</footer>
+        <footer class="stu-boss-footer"><span></span>Scores update automatically from STU UIS · Data stays in this browser</footer>
       </section>`;
     document.body.appendChild(panel);
     panel.addEventListener("click", handlePanelClick);
@@ -638,10 +638,10 @@
         ${defeated ? `
           <div class="stu-boss-victory"><span>💥</span><div><b>BOSS DEFEATED!</b><small>${escapeHTML(boss.name)} has been defeated.</small></div></div>
           <div class="stu-boss-rewards"><span>🎓 Subject completed</span><span>⭐ +${credits === null || credits === undefined ? "?" : displayNumber(credits)} credits</span></div>` : `
-          <div class="stu-boss-progress-copy"><span>${score === null ? "◇ AWAITING SCORE" : "⚔ BATTLE IN PROGRESS"}</span><b>${score === null ? "AIS+ is checking SÚČET automatically" : `${displayNumber(remaining)} DMG until victory`}</b></div>`}
+          <div class="stu-boss-progress-copy"><span>${score === null ? "◇ AWAITING SCORE" : "⚔ BATTLE IN PROGRESS"}</span><b>${score === null ? "UIS+ is checking SÚČET automatically" : `${displayNumber(remaining)} DMG until victory`}</b></div>`}
         ${result.error ? `<p class="stu-boss-error">${escapeHTML(result.error)}</p>` : ""}
         <footer>
-          <span>${pendingScores.has(subject.key) ? "Updating from STU AIS…" : escapeHTML(updated)}</span>
+          <span>${pendingScores.has(subject.key) ? "Updating from STU UIS…" : escapeHTML(updated)}</span>
           <div><button type="button" data-boss-remove="${escapeAttribute(subject.key)}">Remove</button><a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener">Subject info ↗</a></div>
         </footer>
       </article>`;
@@ -650,7 +650,7 @@
   function renderArena() {
     const subjects = (state.bossRoster || []).map((key) => state.bossCatalog?.[key]).filter(Boolean);
     if (!subjects.length) {
-      return `<div class="stu-boss-empty"><div class="stu-boss-empty-icon">⚔</div><small>YOUR ARENA IS EMPTY</small><h3>Choose your first subject boss</h3><p>Add subjects from any discovered semester. AIS+ will turn each SÚČET score into battle damage.</p><button type="button" data-boss-show-manage>Choose Bosses</button></div>`;
+      return `<div class="stu-boss-empty"><div class="stu-boss-empty-icon">⚔</div><small>YOUR ARENA IS EMPTY</small><h3>Choose your first subject boss</h3><p>Add subjects from any discovered semester. UIS+ will turn each SÚČET score into battle damage.</p><button type="button" data-boss-show-manage>Choose Bosses</button></div>`;
     }
     const defeated = subjects.filter((subject) => clampScore(state.bossScores?.[subject.key]?.points) >= VICTORY_SCORE).length;
     return `
@@ -682,7 +682,7 @@
         const selected = roster.has(subject.key);
         const theme = themeFor(subject);
         return `<button type="button" data-boss-select="${escapeAttribute(subject.key)}" aria-pressed="${selected}" class="${selected ? "is-selected" : ""}" style="--boss-color:${theme.color}"><i>${theme.icon}</i><span><small>${escapeHTML(subject.code)} · ${escapeHTML(subject.semesterLabel)}</small><b>${escapeHTML(subject.name)}</b><em>${escapeHTML(theme.name)}</em></span><strong>${selected ? "IN ARENA" : "ADD BOSS"}</strong></button>`;
-      }).join("")}</div>` : `<div class="stu-boss-manager-empty"><b>No subjects cached for this semester.</b><span>Open the STU subject list or press “Refresh semester”.</span><button type="button" data-boss-discover>Scan STU AIS</button></div>`}`;
+      }).join("")}</div>` : `<div class="stu-boss-manager-empty"><b>No subjects cached for this semester.</b><span>Open the STU subject list or press “Refresh semester”.</span><button type="button" data-boss-discover>Scan STU UIS</button></div>`}`;
   }
 
   function renderRanks() {

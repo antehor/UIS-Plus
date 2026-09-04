@@ -13,7 +13,7 @@ foreach ($path in $required) {
 
 $manifest = Get-Content -Raw -Encoding UTF8 (Join-Path $root "manifest.json") | ConvertFrom-Json
 if ($manifest.manifest_version -ne 3) { throw "manifest_version must be 3" }
-if ($manifest.name -ne "AIS+") { throw "Extension name must be AIS+" }
+if ($manifest.name -ne "UIS+") { throw "Extension name must be UIS+" }
 if ($manifest.permissions -contains "tabs") { throw "Unexpected tabs permission" }
 
 $node = Get-Command node -ErrorAction SilentlyContinue
@@ -29,4 +29,4 @@ if ($runtimeText -match "(?:studium|rozvrh_student|obdobi)=\d+") {
   throw "A personal student identifier is hard-coded in content.js"
 }
 
-Write-Host "AIS+ checks passed (version $($manifest.version))." -ForegroundColor Green
+Write-Host "UIS+ checks passed (version $($manifest.version))." -ForegroundColor Green

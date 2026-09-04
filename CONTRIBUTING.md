@@ -1,7 +1,7 @@
-# Contributing to AIS+
+# Contributing to UIS+
 
-Thank you for improving AIS+. Bug fixes, accessibility improvements, translations and support for
-additional STU AIS pages are welcome.
+Thank you for improving UIS+ (formerly AIS+). Bug fixes, accessibility improvements, translations
+and support for additional STU UIS pages are welcome.
 
 ## Local workflow
 

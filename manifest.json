@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "AIS+",
-  "short_name": "AIS+",
-  "version": "2.2.0",
-  "description": "A better way to use STU AIS — experimental Boss Fight edition.",
+  "name": "UIS+",
+  "short_name": "UIS+",
+  "version": "2.3.0",
+  "description": "Modern interface for STU UIS (formerly AIS): dark mode, faster navigation, compact layout and private local operation.",
   "author": "Yehor Halytskyi",
-  "homepage_url": "https://github.com/antehor/AIS-Plus",
+  "homepage_url": "https://github.com/antehor/UIS-Plus",
   "permissions": [
     "storage"
   ],
@@ -13,7 +13,7 @@
     "https://is.stuba.sk/*"
   ],
   "action": {
-    "default_title": "AIS+ · Boss Fight Experimental",
+    "default_title": "UIS+ · Modern STU UIS (formerly AIS)",
     "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon-16.png",

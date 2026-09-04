@@ -1,16 +1,16 @@
 name: Bug report
-description: Report a reproducible problem in AIS+
+description: Report a reproducible problem in UIS+
 title: "[Bug]: "
 labels: [bug]
 body:
   - type: markdown
     attributes:
-      value: Thanks for helping improve AIS+. Do not include passwords, sessions, grades or student identifiers.
+      value: Thanks for helping improve UIS+. Do not include passwords, sessions, grades or student identifiers.
   - type: input
     id: version
     attributes:
-      label: AIS+ version
-      placeholder: 2.0.0
+      label: UIS+ version
+      placeholder: 2.3.0
     validations:
       required: true
   - type: dropdown
@@ -27,7 +27,7 @@ body:
     id: steps
     attributes:
       label: Steps to reproduce
-      description: Include the STU AIS section, but remove personal data from screenshots and URLs.
+      description: Include the STU UIS section, but remove personal data from screenshots and URLs.
     validations:
       required: true
   - type: textarea

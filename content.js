@@ -33,7 +33,7 @@
 
   const LABELS = {
     en: {
-      app: "Academic information system", dashboard: "Dashboard", study: "My studies",
+      app: "University information system", dashboard: "Dashboard", study: "My studies",
       calendar: "Timetable", exams: "Exams", grades: "Grades", credits: "Credits",
       courses: "Courses", documents: "Documents", messages: "Messages",
       announcements: "Announcements", settings: "Settings", navigation: "Navigation",
@@ -43,7 +43,7 @@
       language: "Language", unavailable: "The requested section was not found"
     },
     sk: {
-      app: "Akademický informačný systém", dashboard: "Prehľad", study: "Moje štúdium",
+      app: "Univerzitný informačný systém", dashboard: "Prehľad", study: "Moje štúdium",
       calendar: "Rozvrh", exams: "Skúšky", grades: "Hodnotenie", credits: "Kredity",
       courses: "Predmety", documents: "Dokumenty", messages: "Správy",
       announcements: "Oznamy", settings: "Nastavenia", navigation: "Navigácia",
@@ -53,7 +53,7 @@
       language: "Jazyk", unavailable: "Požadovaná sekcia sa nenašla"
     },
     cs: {
-      app: "Akademický informační systém", dashboard: "Přehled", study: "Moje studium",
+      app: "Univerzitní informační systém", dashboard: "Přehled", study: "Moje studium",
       calendar: "Rozvrh", exams: "Zkoušky", grades: "Hodnocení", credits: "Kredity",
       courses: "Předměty", documents: "Dokumenty", messages: "Zprávy",
       announcements: "Oznámení", settings: "Nastavení", navigation: "Navigace",
@@ -90,8 +90,8 @@
     const queryLang = new URLSearchParams(location.search).get("lang");
     const htmlLang = (document.documentElement.lang || "").toLowerCase();
     const sample = (document.body?.innerText || "").slice(0, 3000);
-    if (queryLang === "sk" || htmlLang.startsWith("sk") || /Osobná administratíva|Prihlásiť do systému|Akademický informačný systém/.test(sample)) return "sk";
-    if (queryLang === "cz" || htmlLang.startsWith("cs") || /Osobní administrativa|Přihlásit do systému|Akademický informační systém/.test(sample)) return "cs";
+    if (queryLang === "sk" || htmlLang.startsWith("sk") || /Osobná administratíva|Prihlásiť do systému|(?:Akademický|Univerzitný) informačný systém/.test(sample)) return "sk";
+    if (queryLang === "cz" || htmlLang.startsWith("cs") || /Osobní administrativa|Přihlásit do systému|(?:Akademický|Univerzitní) informační systém/.test(sample)) return "cs";
     return "en";
   }
 
@@ -351,9 +351,9 @@
       <div class="stu-mobile-scrim" data-stu-close-menu></div>
       <aside class="stu-sidebar" aria-label="${escapeAttribute(label("navigation"))}">
         <div class="stu-sidebar-head">
-          <a class="stu-brand" href="${escapeAttribute(new URL("/auth/", location.origin).href)}" aria-label="AIS+">
+          <a class="stu-brand" href="${escapeAttribute(new URL("/auth/", location.origin).href)}" aria-label="UIS+">
             <span class="stu-brand-mark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-            <span class="stu-brand-copy"><b>AIS+</b><small>STU · Better</small></span>
+            <span class="stu-brand-copy"><b>UIS+</b><small>STU · Better</small></span>
           </a>
           <button class="stu-sidebar-toggle" type="button" data-stu-sidebar-toggle aria-label="${escapeAttribute(settings.sidebarCollapsed ? label("expand") : label("collapse"))}" title="${escapeAttribute(settings.sidebarCollapsed ? label("expand") : label("collapse"))}">${svg("panel")}</button>
         </div>
@@ -381,7 +381,7 @@
         </div>
       </header>
       <aside class="stu-notifications" aria-hidden="true">
-        <div class="stu-drawer-head"><div><small>AIS+</small><h2>${escapeHTML(label("notifications"))}</h2></div><button class="stu-icon-button" type="button" data-stu-notifications-close aria-label="${escapeAttribute(label("close"))}">${svg("close")}</button></div>
+        <div class="stu-drawer-head"><div><small>UIS+</small><h2>${escapeHTML(label("notifications"))}</h2></div><button class="stu-icon-button" type="button" data-stu-notifications-close aria-label="${escapeAttribute(label("close"))}">${svg("close")}</button></div>
         <div class="stu-drawer-list">
           ${alerts.length ? alerts.map((alert, index) => `<button type="button" data-stu-alert-index="${index}"><span class="stu-alert-indicator"></span><span>${escapeHTML(alert.text)}</span>${svg("chevron")}</button>`).join("") : `<div class="stu-drawer-empty">${svg("bell")}<p>${escapeHTML(label("noNotifications"))}</p></div>`}
         </div>

@@ -1,7 +1,7 @@
-# AIS+ Boss Fight — Experimental Mode
+# UIS+ Boss Fight — Optional Game Mode
 
-Boss Fight is an optional English-language game layer for STU AIS. It does not change grades or
-submit anything to STU. It reads the same subject, assessment and catalogue pages that are already
+Boss Fight is an optional English-language game layer for STU UIS (formerly STU AIS). It does not
+change grades or submit anything to STU. It reads the same subject, assessment and catalogue pages that are already
 available in the signed-in browser session.
 
 ## Game rules
@@ -20,14 +20,14 @@ available in the signed-in browser session.
 | 56–64 | E — Survivor | Boss defeated |
 | 0–55 | FX — Defeated | Mission failed / battle in progress |
 
-## Using the experiment
+## Using Boss Fight
 
-1. Reload the unpacked AIS+ extension after installing build 2.2.0.
+1. Reload the unpacked UIS+ extension after installing version 2.3.0.
 2. Open the sidebar and enable **Boss Fight — Fun Mode**.
 3. Use the **+** control in the sidebar to open **Manage**.
 4. Select a semester and add any subjects to the campaign. Selections from different semesters can
    be mixed in one campaign.
-5. Follow every selected boss, score, rank and victory bar directly in the sidebar. AIS+ updates
+5. Follow every selected boss, score, rank and victory bar directly in the sidebar. UIS+ updates
    SÚČET automatically after loading the page, returning to the tab or adding a boss.
 6. Use the small refresh control in the campaign header only when an immediate manual recheck is wanted.
 7. Open **Details** for the expanded overview and rank table, or **Info** for the official STU subject sheet.

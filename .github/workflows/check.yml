@@ -20,7 +20,7 @@ jobs:
           from pathlib import Path
           manifest = json.loads(Path("manifest.json").read_text(encoding="utf-8"))
           assert manifest["manifest_version"] == 3
-          assert manifest["name"] == "AIS+"
+          assert manifest["name"] == "UIS+"
           assert manifest["permissions"] == ["storage"]
           assert manifest["host_permissions"] == ["https://is.stuba.sk/*"]
           PY

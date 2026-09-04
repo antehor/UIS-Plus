@@ -2,7 +2,7 @@
 
 ## Supported version
 
-Security fixes are applied to the latest release of AIS+.
+Security fixes are applied to the latest release of UIS+.
 
 ## Reporting a vulnerability
 
@@ -12,5 +12,5 @@ with a concise reproduction and the affected version. You can expect an acknowle
 
 ## Extension boundaries
 
-AIS+ has no backend. Its host access is restricted to `https://is.stuba.sk/*`, and the only extension
+UIS+ has no backend. Its host access is restricted to `https://is.stuba.sk/*`, and the only extension
 permission is local settings storage.

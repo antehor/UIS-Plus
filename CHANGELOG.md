@@ -1,6 +1,34 @@
 # Changelog
 
-All notable changes to AIS+ are documented here.
+All notable changes to UIS+ (formerly AIS+) are documented here.
+
+## 2.3.0 — 2026-09-04
+
+### Changed
+
+- Renamed the extension from **AIS+** to **UIS+** after STU adopted the name
+  **Univerzitný informačný systém (UIS)**.
+- Updated the extension manifest, popup, sidebar, notification drawer and optional Boss Fight UI
+  to use the UIS+ brand.
+- Updated English, Slovak and Czech system labels from “Academic Information System” to
+  “University Information System”.
+- Renamed release archives and packaged directories from `AIS-plus` to `UIS-plus`.
+
+### Documentation and discoverability
+
+- Rebuilt the README around the current **STU UIS** name while preserving explicit references to
+  **STU AIS**, **Akademický informačný systém**, **AIS+** and **AIS Plus** for existing users and
+  search compatibility.
+- Added a migration section explaining that UIS+ is the direct continuation of AIS+ and keeps the
+  existing browser settings.
+- Updated installation, privacy, security, contribution and Boss Fight documentation.
+- Corrected all repository, issue, badge, release and clone URLs to `antehor/UIS-Plus`.
+- Updated GitHub Actions validation and release packaging for UIS+ 2.3.0.
+
+### Compatibility
+
+- Kept the existing storage keys and `is.stuba.sk` host permission, so an in-place update from
+  AIS+ preserves interface preferences and local Boss Fight data.
 
 ## 2.2.0 — Experimental, local only
 

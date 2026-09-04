@@ -1,10 +1,11 @@
-# Installing AIS+
+# Installing UIS+ (formerly AIS+)
 
-AIS+ is a Manifest V3 browser extension. It does not need Node.js, a package manager or a build command.
+UIS+ is a Manifest V3 browser extension for STU UIS, the system previously called STU AIS. It does
+not need Node.js, a package manager or a build command.
 
 ## Chrome
 
-1. Open the [latest AIS+ release](https://github.com/antehor/AIS-Plus/releases/latest).
+1. Open the [latest UIS+ release](https://github.com/antehor/UIS-Plus/releases/latest).
 2. Download the ZIP asset and extract it to a permanent directory.
 3. Open `chrome://extensions` in the address bar.
 4. Enable **Developer mode** in the top-right corner.
@@ -22,14 +23,14 @@ AIS+ is a Manifest V3 browser extension. It does not need Node.js, a package man
 
 ## Aktualizácia / Updating
 
-Replace the extension files with the newer release, press **Reload** on the AIS+ extension card and
-refresh the STU AIS tab.
+Replace the extension files with the newer release, press **Reload** on the UIS+ extension card and
+refresh the STU UIS tab.
 
-Novšiu verziu rozbaľte do rovnakého priečinka, na stránke rozšírení kliknite pri AIS+ na **Obnoviť**
-a potom obnovte kartu STU AIS.
+Novšiu verziu rozbaľte do rovnakého priečinka, na stránke rozšírení kliknite pri UIS+ na **Obnoviť**
+a potom obnovte kartu STU UIS.
 
 ## Common checks
 
-- If the redesign is not visible, confirm that AIS+ is enabled in its popup and refresh the page.
+- If the redesign is not visible, confirm that UIS+ is enabled in its popup and refresh the page.
 - If the browser says that `manifest.json` is missing, select the inner directory that directly contains it.
 - Keep the extracted directory in place; moving or deleting it disables an unpacked extension.
