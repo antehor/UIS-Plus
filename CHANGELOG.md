@@ -52,6 +52,15 @@ A full redesign of the interface, plus rebuilt layouts for the applications stud
   layout table around them.
 - Long folder names in the document server wrap instead of being clipped.
 
+### Upgrading from 2.x
+
+- Extract the archive over the existing extension folder, press **Reload** on the extension card in
+  `chrome://extensions` or `edge://extensions`, then refresh `is.stuba.sk`.
+- Your theme, language, density, sidebar state and Boss Fight data are preserved — the storage keys
+  are unchanged.
+- Open **Rozvrh hodín** once so the personal administration page can list your next lessons; the
+  timetable is cached locally in the browser.
+
 ## 2.3.0 — 2026-09-04
 
 ### Changed
