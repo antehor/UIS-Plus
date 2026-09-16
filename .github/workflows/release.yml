@@ -13,21 +13,51 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Validate source
         run: |
           node --check content.js
+          node --check pages.js
           node --check boss-fight.js
           node --check popup.js
           python -m json.tool manifest.json >/dev/null
+
+      - name: Check the tag matches the manifest version
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          if [ "v${VERSION}" != "${GITHUB_REF_NAME}" ]; then
+            echo "tag ${GITHUB_REF_NAME} does not match manifest version ${VERSION}"
+            exit 1
+          fi
+
       - name: Build unpacked extension archive
         run: |
           mkdir -p package/UIS-plus
-          cp manifest.json content.js styles.css boss-fight.js boss-fight.css popup.html popup.css popup.js INSTALL.html README.md CHANGELOG.md LICENSE PRIVACY.md package/UIS-plus/
+          cp manifest.json \
+             content.js pages.js boss-fight.js \
+             styles.css components.css pages.css boss-fight.css \
+             popup.html popup.css popup.js \
+             INSTALL.html README.md CHANGELOG.md LICENSE PRIVACY.md \
+             package/UIS-plus/
           cp -R icons package/UIS-plus/icons
           cp -R assets package/UIS-plus/assets
           cp -R docs package/UIS-plus/docs
           cd package
           zip -r "UIS-plus-${GITHUB_REF_NAME}.zip" UIS-plus
+
+      - name: Verify the archive loads as an extension
+        run: |
+          cd package/UIS-plus
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("manifest.json").read_text(encoding="utf-8"))
+          content = manifest["content_scripts"][0]
+          missing = [a for a in content["css"] + content["js"] if not Path(a).is_file()]
+          assert not missing, f"archive is missing: {missing}"
+          PY
+
       - name: Create GitHub release
         env:
           GH_TOKEN: ${{ github.token }}

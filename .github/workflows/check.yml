@@ -13,27 +13,60 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - name: Validate manifest
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
+
           manifest = json.loads(Path("manifest.json").read_text(encoding="utf-8"))
           assert manifest["manifest_version"] == 3
           assert manifest["name"] == "UIS+"
           assert manifest["permissions"] == ["storage"]
           assert manifest["host_permissions"] == ["https://is.stuba.sk/*"]
+          assert "background" not in manifest, "no background worker is needed"
+
+          content = manifest["content_scripts"][0]
+          for asset in content["css"] + content["js"]:
+              assert Path(asset).is_file(), f"manifest references a missing file: {asset}"
           PY
+
       - name: Check JavaScript syntax
         run: |
           node --check content.js
+          node --check pages.js
           node --check boss-fight.js
           node --check popup.js
+
+      - name: Check stylesheet balance
+        run: |
+          node - <<'JS'
+          const fs = require("fs");
+          for (const file of ["styles.css", "components.css", "pages.css", "popup.css", "boss-fight.css"]) {
+            const source = fs.readFileSync(file, "utf8");
+            let depth = 0;
+            for (const character of source) {
+              if (character === "{") depth += 1;
+              else if (character === "}") depth -= 1;
+              if (depth < 0) throw new Error(`${file}: unbalanced closing brace`);
+            }
+            if (depth !== 0) throw new Error(`${file}: ${depth} unclosed block(s)`);
+          }
+          JS
+
       - name: Check required files
         run: |
-          test -f styles.css
-          test -f boss-fight.css
-          test -f popup.html
-          test -f icons/icon-128.png
-          test -f LICENSE
-          test -f PRIVACY.md
+          for file in styles.css components.css pages.css boss-fight.css \
+                      content.js pages.js popup.html icons/icon-128.png \
+                      LICENSE PRIVACY.md CHANGELOG.md README.md; do
+            test -f "$file" || { echo "missing: $file"; exit 1; }
+          done
+
+      - name: Check the version is documented
+        run: |
+          VERSION=$(node -p "require('./manifest.json').version")
+          grep -q "^## ${VERSION}" CHANGELOG.md || {
+            echo "CHANGELOG.md has no entry for ${VERSION}"
+            exit 1
+          }
