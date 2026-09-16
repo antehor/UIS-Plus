@@ -1,0 +1,1392 @@
+/* ==========================================================================
+   UIS+ — component layer
+   Restyles the STU UIS markup itself: breadcrumbs, tabs, cards, tables,
+   folder trees, paginators, forms and legends.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Native decoration reset
+
+   STU paints headings with a bullet background image, a light grey bar and a
+   25px text indent, and gives table rows hard-coded light backgrounds. Both
+   leak into the UIS+ surfaces and break the dark theme, so they are stripped
+   here before anything else is painted.
+   -------------------------------------------------------------------------- */
+
+html.stu-modern #base-r h1,
+html.stu-modern #base-r h2,
+html.stu-modern #base-r h3,
+html.stu-modern #base-r h4,
+html.stu-modern #base-r h5,
+html.stu-modern .stu-page-copy h1,
+html.stu-modern .stu-hero-main h1 {
+  background: none !important;
+  border: 0 !important;
+  padding-left: 0 !important;
+  text-indent: 0 !important;
+  line-height: 1.2;
+}
+
+html.stu-modern #base-r hr {
+  border: 0;
+  border-top: 1px solid var(--stu-border);
+  margin: var(--stu-gap) 0;
+}
+
+/* Native alternating row colours must not survive into either theme. */
+html.stu-modern #base-r tr,
+html.stu-modern #base-r tr > td,
+html.stu-modern #base-r tr > th {
+  background-color: transparent;
+}
+
+html.stu-modern #base-r font[color],
+html.stu-modern #base-r [bgcolor] {
+  color: inherit !important;
+  background-color: transparent !important;
+}
+
+/* --------------------------------------------------------------------------
+   Breadcrumb bar
+   -------------------------------------------------------------------------- */
+
+.stu-crumbbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 38px;
+  margin-bottom: var(--stu-gap);
+  padding: 0 2px;
+  flex-wrap: wrap;
+}
+
+html.stu-modern nav[aria-label="breadcrumb"],
+html.stu-modern ol.breadcrumb,
+html.stu-modern li.breadcrumb-item {
+  background: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+html.stu-modern nav[aria-label="breadcrumb"] {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+html.stu-modern ol.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12.5px;
+}
+
+html.stu-modern li.breadcrumb-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--stu-text-3);
+}
+
+html.stu-modern li.breadcrumb-item + li.breadcrumb-item::before {
+  content: "";
+  flex: 0 0 auto;
+  width: 5px;
+  height: 5px;
+  margin: 0 5px 0 1px;
+  border: solid currentColor;
+  border-width: 1.4px 1.4px 0 0;
+  transform: rotate(45deg);
+  opacity: .55;
+}
+
+html.stu-modern li.breadcrumb-item a {
+  color: var(--stu-text-2);
+  text-decoration: none;
+  padding: 3px 6px;
+  border-radius: 7px;
+  transition: background .12s ease, color .12s ease;
+}
+
+html.stu-modern li.breadcrumb-item a:hover {
+  background: var(--stu-surface-3);
+  color: var(--stu-primary);
+  text-decoration: none;
+}
+
+html.stu-modern li.breadcrumb-item.active span {
+  color: var(--stu-text);
+  font-weight: 600;
+  padding: 3px 2px;
+}
+
+html.stu-modern li.breadcrumb-item .uf-icon {
+  width: 15px;
+  height: 15px;
+}
+
+html.stu-modern li.breadcrumb-item .uf-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.stu-crumb-meta {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: var(--stu-text-3);
+}
+
+.stu-crumb-meta .stu-crumb-sep {
+  width: 1px;
+  height: 14px;
+  background: var(--stu-border-strong);
+}
+
+.stu-crumb-meta b {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: .05em;
+  color: var(--stu-text-2);
+}
+
+.stu-lang {
+  position: relative;
+}
+
+.stu-lang-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--stu-text-2);
+  font: 600 11.5px/1 var(--stu-font);
+  letter-spacing: .04em;
+  cursor: pointer;
+}
+
+.stu-lang-button:hover { background: var(--stu-surface-3); border-color: var(--stu-border); }
+.stu-lang-button .stu-flag { width: 17px; height: 12px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.08); }
+.stu-lang-button .stu-icon { width: 14px; height: 14px; opacity: .6; }
+
+.stu-lang-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  display: none;
+  min-width: 168px;
+  padding: 6px;
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius-sm);
+  box-shadow: var(--stu-shadow-lg);
+}
+
+.stu-lang.is-open .stu-lang-menu { display: block; }
+
+.stu-lang-menu a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--stu-text);
+  font-size: 13px;
+  text-decoration: none;
+}
+
+.stu-lang-menu a:hover { background: var(--stu-surface-3); text-decoration: none; }
+.stu-lang-menu a.is-current { background: var(--stu-primary-soft); color: var(--stu-primary); font-weight: 600; }
+.stu-lang-menu a b { font-size: 11px; letter-spacing: .05em; color: var(--stu-text-3); margin-left: auto; }
+.stu-lang-menu a.is-current b { color: var(--stu-primary); }
+
+/* --------------------------------------------------------------------------
+   Page header
+   -------------------------------------------------------------------------- */
+
+.stu-page-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: var(--stu-gap);
+  padding: 20px 22px;
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  box-shadow: var(--stu-shadow-sm);
+}
+
+.stu-page-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-primary-soft);
+  color: var(--stu-primary);
+}
+
+.stu-page-icon .stu-icon { width: 26px; height: 26px; }
+
+.stu-page-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+html.stu-modern .stu-page-copy h1 {
+  margin: 0 0 3px;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -.015em;
+  color: var(--stu-text);
+}
+
+.stu-page-copy p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--stu-text-2);
+  max-width: 860px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.stu-page-aside {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+html.stu-modern.stu-compact .stu-page-head { padding: 14px 16px; }
+html.stu-modern.stu-compact .stu-page-icon { width: 42px; height: 42px; }
+html.stu-modern.stu-compact .stu-page-icon .stu-icon { width: 21px; height: 21px; }
+html.stu-modern.stu-compact .stu-page-copy h1 { font-size: 22px; }
+
+/* Hide the native heading once it has been lifted into the page header */
+html.stu-modern .mainpage h1.stu-lifted,
+html.stu-modern .mainpage .stu-lifted { display: none !important; }
+
+/* --------------------------------------------------------------------------
+   Content shell + cards
+   -------------------------------------------------------------------------- */
+
+.stu-layout {
+  display: grid;
+  gap: var(--stu-gap);
+  align-items: start;
+}
+
+.stu-layout.has-rail {
+  grid-template-columns: minmax(0, 1fr) var(--stu-rail-w);
+}
+
+.stu-layout-main { min-width: 0; }
+
+.stu-rail {
+  display: grid;
+  gap: var(--stu-gap);
+  align-content: start;
+  position: sticky;
+  top: calc(var(--stu-topbar-h) + 14px);
+}
+
+.stu-card {
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  box-shadow: var(--stu-shadow-sm);
+  overflow: hidden;
+}
+
+.stu-card-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--stu-border);
+}
+
+.stu-card-head .stu-icon { width: 18px; height: 18px; color: var(--stu-primary); flex: 0 0 auto; }
+
+html.stu-modern .stu-card-head h2,
+html.stu-modern .stu-card-head h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--stu-text);
+}
+
+.stu-card-head a.stu-card-action {
+  margin-left: auto;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--stu-primary);
+  text-decoration: none;
+}
+
+.stu-card-head a.stu-card-action:hover { text-decoration: underline; }
+
+.stu-card-body { padding: 16px 18px; }
+.stu-card-body.is-flush { padding: 0; }
+
+/* Surfaces that the legacy pages paint white themselves */
+html.stu-modern .stu-legacy-surface {
+  background: var(--stu-surface) !important;
+  color: var(--stu-text);
+  border-radius: var(--stu-radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Tabs (native table.portal_menu)
+   -------------------------------------------------------------------------- */
+
+html.stu-modern table.portal_menu {
+  display: block;
+  width: 100%;
+  margin: 0 0 var(--stu-gap);
+  border: 0;
+  border-bottom: 1px solid var(--stu-border);
+  background: transparent;
+  border-spacing: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+}
+
+html.stu-modern table.portal_menu::-webkit-scrollbar { height: 5px; }
+html.stu-modern table.portal_menu::-webkit-scrollbar-track { background: transparent; }
+html.stu-modern table.portal_menu::-webkit-scrollbar-thumb {
+  background: var(--stu-border-strong);
+  border-radius: 99px;
+}
+
+html.stu-modern table.portal_menu tbody,
+html.stu-modern table.portal_menu tr {
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  width: max-content;
+  min-width: 100%;
+}
+
+html.stu-modern table.portal_menu td.odsazena {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+html.stu-modern table.portal_menu td.odsazena > b { font-weight: inherit; }
+
+html.stu-modern table.portal_menu td.odsazena a {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: -1px;
+  padding: 11px 18px 12px;
+  border: 1px solid transparent;
+  border-radius: 10px 10px 0 0;
+  color: var(--stu-text-2);
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  text-decoration: none !important;
+  transition: color .13s ease, background .13s ease, border-color .13s ease;
+}
+
+html.stu-modern table.portal_menu td.odsazena a:hover {
+  color: var(--stu-text);
+  background: var(--stu-surface-3);
+  text-decoration: none;
+}
+
+html.stu-modern table.portal_menu td.odsazena.active a,
+html.stu-modern table.portal_menu td.odsazena.active b a {
+  background: var(--stu-surface);
+  border-color: var(--stu-border);
+  border-bottom-color: var(--stu-surface);
+  box-shadow: inset 0 2px 0 var(--stu-primary);
+  color: var(--stu-primary);
+  font-weight: 650;
+}
+
+html.stu-modern table.portal_menu span.badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: var(--stu-primary);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+}
+
+html.stu-modern table.portal_menu td.odsazena:not(.active) span.badge {
+  background: var(--stu-surface-3);
+  color: var(--stu-text-2);
+}
+
+/* --------------------------------------------------------------------------
+   Typography inside content
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .mainpage h1 {
+  margin: 0 0 12px;
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: -.015em;
+  color: var(--stu-text);
+}
+
+html.stu-modern .mainpage h2 {
+  margin: 22px 0 10px;
+  font-size: 18px;
+  font-weight: 650;
+  color: var(--stu-text);
+}
+
+html.stu-modern .mainpage h3,
+html.stu-modern .mainpage h4 {
+  margin: 18px 0 8px;
+  font-size: 15px;
+  font-weight: 650;
+  color: var(--stu-text);
+}
+
+html.stu-modern #base-r a {
+  color: var(--stu-primary);
+  text-decoration: none;
+}
+
+html.stu-modern #base-r a:hover { text-decoration: underline; }
+
+html.stu-modern .mainpage div.small,
+html.stu-modern .mainpage span.small {
+  font-size: 12.5px;
+  color: var(--stu-text-2);
+  line-height: 1.6;
+}
+
+html.stu-modern .mainpage div.small {
+  margin-bottom: var(--stu-gap);
+}
+
+html.stu-modern .mainpage font { font-size: inherit !important; color: inherit !important; }
+
+html.stu-modern .mainpage ul,
+html.stu-modern .mainpage ol { padding-left: 22px; }
+
+html.stu-modern .mainpage li { margin: 3px 0; }
+
+/* --------------------------------------------------------------------------
+   Data tables
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .mainpage table.stu-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  overflow: hidden;
+  font-size: 13px;
+  box-shadow: var(--stu-shadow-sm);
+}
+
+html.stu-modern .stu-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--stu-radius);
+  margin-bottom: var(--stu-gap);
+}
+
+html.stu-modern .stu-table-scroll::-webkit-scrollbar { height: 9px; }
+html.stu-modern .stu-table-scroll::-webkit-scrollbar-thumb { background: var(--stu-border-strong); border-radius: 99px; }
+
+html.stu-modern table.stu-table thead th,
+html.stu-modern table.stu-table th.zahlavi,
+html.stu-modern table.stu-table tr.zahlavi > td {
+  padding: 12px 14px !important;
+  background-color: var(--stu-surface-3) !important;
+  border-bottom: 1px solid var(--stu-border);
+  color: var(--stu-text-2);
+  font-size: 11.5px;
+  font-weight: 650;
+  text-align: left;
+  letter-spacing: .01em;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+html.stu-modern table.stu-table thead th a,
+html.stu-modern table.stu-table th.zahlavi a {
+  color: var(--stu-text-2);
+  text-decoration: none;
+}
+
+html.stu-modern table.stu-table thead th a:hover { color: var(--stu-primary); }
+
+html.stu-modern table.stu-table > tbody > tr > td {
+  padding: 11px 14px !important;
+  border-bottom: 1px solid var(--stu-border);
+  vertical-align: middle;
+  color: var(--stu-text);
+  background-color: transparent !important;
+}
+
+html.stu-modern table.stu-table tbody tr:last-child > td { border-bottom: 0; }
+
+/* Our own zebra, so the native light-grey rows cannot reach the dark theme. */
+html.stu-modern table.stu-table > tbody > tr:nth-child(even) > td {
+  background-color: var(--stu-surface-2) !important;
+}
+
+html.stu-modern table.stu-table > tbody > tr:hover > td {
+  background-color: var(--stu-primary-soft) !important;
+}
+
+/* Row operation icons line up as a single control strip. */
+html.stu-modern table.stu-table td > a > .uf-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  transition: background .12s ease;
+}
+
+html.stu-modern table.stu-table td > a:hover > .uf-icon { background: var(--stu-surface-3); }
+
+html.stu-modern table.stu-table small { font-size: 11.5px; color: var(--stu-text-3); }
+
+html.stu-modern table.stu-table .UISTMNumberCellHidden { display: none; }
+
+html.stu-modern table.stu-table td .uf-icon,
+html.stu-modern table.stu-table th .uf-icon {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+html.stu-modern table.stu-table td .uf-icon svg,
+html.stu-modern table.stu-table th .uf-icon svg { width: 18px; height: 18px; }
+
+/* Row-level operation icons */
+html.stu-modern table.stu-table td a .uf-icon { opacity: .75; transition: opacity .12s ease; }
+html.stu-modern table.stu-table td a:hover .uf-icon { opacity: 1; }
+
+/* Unread / highlighted rows */
+html.stu-modern table.stu-table tr.uis-hl-table td { font-weight: inherit; }
+
+/* Plain layout tables keep their structure but lose the legacy chrome */
+html.stu-modern .mainpage table:not(.stu-table):not(.portal_menu) {
+  border-collapse: collapse;
+  background: transparent;
+}
+
+html.stu-modern .mainpage table:not(.stu-table):not(.portal_menu) > tbody > tr > td {
+  padding: 4px 8px;
+  vertical-align: top;
+}
+
+html.stu-modern .mainpage td.odsazena { padding-left: 8px; }
+
+/* --------------------------------------------------------------------------
+   Table toolbar (jstm) + paginator
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .jstm-toolbox {
+  margin: 0 0 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+
+html.stu-modern .jstm-toolbox-inside {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+html.stu-modern .jstm-toolbox-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+html.stu-modern .jstm-toolbox a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 13px;
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-surface);
+  color: var(--stu-text-2);
+  font-size: 12.5px;
+  font-weight: 550;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color .12s ease, color .12s ease, background .12s ease;
+}
+
+html.stu-modern .jstm-toolbox a:hover {
+  border-color: var(--stu-primary);
+  color: var(--stu-primary);
+  background: var(--stu-primary-soft);
+  text-decoration: none;
+}
+
+html.stu-modern .jstm-toolbox a .uf-icon { width: 16px; height: 16px; }
+html.stu-modern .jstm-toolbox a .uf-icon svg { width: 16px; height: 16px; }
+
+html.stu-modern ul.paginator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+html.stu-modern ul.paginator li { margin: 0; }
+
+html.stu-modern ul.paginator li a,
+html.stu-modern ul.paginator li span,
+html.stu-modern ul.paginator li b {
+  display: inline-grid;
+  place-items: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 9px;
+  border: 1px solid var(--stu-border);
+  border-radius: 9px;
+  background: var(--stu-surface);
+  color: var(--stu-text-2);
+  font-size: 12.5px;
+  font-weight: 550;
+  text-decoration: none;
+}
+
+html.stu-modern ul.paginator li a:hover {
+  border-color: var(--stu-primary);
+  color: var(--stu-primary);
+  background: var(--stu-primary-soft);
+  text-decoration: none;
+}
+
+html.stu-modern ul.paginator li b,
+html.stu-modern ul.paginator li.active a,
+html.stu-modern ul.paginator li.current a {
+  background: var(--stu-primary);
+  border-color: var(--stu-primary);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Folder tree (mailbox, document server)
+   -------------------------------------------------------------------------- */
+
+html.stu-modern div.tree {
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  box-shadow: var(--stu-shadow-sm);
+  padding: 8px;
+  overflow: hidden;
+}
+
+html.stu-modern div.tree ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Strip the ASCII-style connector lines and plate backgrounds the native
+   tree draws, while leaving the folder glyphs (data-URI images) alone. */
+html.stu-modern div.tree ul,
+html.stu-modern div.tree li,
+html.stu-modern div.tree .subtree,
+html.stu-modern div.tree .node-container,
+html.stu-modern div.tree .node-icon-container,
+html.stu-modern div.tree .node-label {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  list-style: none !important;
+}
+
+html.stu-modern div.tree .node-icon,
+html.stu-modern div.tree .node-icon * { background-image: revert !important; }
+
+html.stu-modern div.tree .subtree { padding-left: 14px; }
+
+html.stu-modern div.tree .node-container {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: var(--stu-radius-sm);
+  transition: background .12s ease;
+}
+
+html.stu-modern div.tree .node-container:hover { background: var(--stu-surface-3); }
+
+html.stu-modern div.tree .node-container.active {
+  background: var(--stu-primary-soft);
+}
+
+html.stu-modern div.tree .node-container.active > .node-icon-container .node-label a,
+html.stu-modern div.tree .node-container.active > .node-icon-container .node-label {
+  color: var(--stu-primary);
+  font-weight: 650;
+}
+
+html.stu-modern div.tree .border-top,
+html.stu-modern div.tree .border-bottom,
+html.stu-modern div.tree .clear { display: none; }
+
+html.stu-modern div.tree .node-icon-container {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+}
+
+html.stu-modern div.tree .node-icon {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  color: var(--stu-text-3);
+}
+
+html.stu-modern div.tree .node-icon .uf-icon,
+html.stu-modern div.tree .node-icon .uf-icon svg { width: 17px; height: 17px; }
+
+html.stu-modern div.tree .node-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 4px 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--stu-text-2);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+/* Deeply nested document folders must not run out of the card. */
+html.stu-modern div.tree .node-container {
+  align-items: flex-start;
+  height: auto;
+}
+
+html.stu-modern div.tree .nowrap { white-space: normal !important; }
+
+html.stu-modern div.tree .node-label a {
+  color: inherit;
+  text-decoration: none;
+}
+
+html.stu-modern div.tree .node-label a:hover { color: var(--stu-primary); text-decoration: none; }
+
+html.stu-modern div.tree .nowrap { white-space: nowrap; }
+
+/* --------------------------------------------------------------------------
+   Legend
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .uisLegend {
+  margin: var(--stu-gap) 0 0;
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  overflow: hidden;
+}
+
+html.stu-modern .uisLegendTitle {
+  padding: 11px 16px;
+  background: var(--stu-surface-2);
+  border-bottom: 1px solid var(--stu-border);
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--stu-text-2);
+  cursor: pointer;
+}
+
+html.stu-modern .uisLegendTitle a { color: var(--stu-text-2) !important; text-decoration: none; }
+
+html.stu-modern .uisLegendContent {
+  padding: 14px 16px;
+  font-size: 12.5px;
+  color: var(--stu-text-2);
+}
+
+html.stu-modern .uisLegendContent table { font-size: 12.5px; }
+
+/* --------------------------------------------------------------------------
+   Notices (zasadky / uis_msg)
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .zasadky-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 12px;
+  margin-bottom: var(--stu-gap);
+}
+
+html.stu-modern .zasadka {
+  margin: 0;
+  padding: 0;
+}
+
+html.stu-modern .zasadka > table {
+  width: 100%;
+  height: 100%;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  border: 1px solid var(--stu-border);
+  border-left: 3px solid var(--stu-text-3);
+  border-radius: var(--stu-radius);
+  overflow: hidden;
+}
+
+html.stu-modern .zasadka > table > tbody > tr > td {
+  padding: 14px 15px !important;
+  vertical-align: top;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+html.stu-modern .zasadka > table > tbody > tr > td:first-child {
+  width: 46px;
+  padding-right: 0 !important;
+}
+
+html.stu-modern .zasadka > table td svg { width: 26px !important; height: 26px !important; }
+html.stu-modern .zasadka ul { margin: 0 !important; padding: 0 !important; list-style: none !important; }
+html.stu-modern .zasadka li { margin: 0 0 4px; }
+html.stu-modern .zasadka li:last-child { margin-bottom: 0; }
+html.stu-modern .zasadka p { margin: 0; }
+
+html.stu-modern .zasadka > table.zasadky-info { border-left-color: var(--stu-info); background-color: var(--stu-info-soft) !important; }
+html.stu-modern .zasadka > table.zasadky-crit { border-left-color: var(--stu-danger); background-color: var(--stu-danger-soft) !important; }
+html.stu-modern .zasadka > table.zasadky-warning { border-left-color: var(--stu-warning); background-color: var(--stu-warning-soft) !important; }
+
+html.stu-modern .zasadka > table.zasadky-info > tbody > tr > td,
+html.stu-modern .zasadka > table.zasadky-crit > tbody > tr > td,
+html.stu-modern .zasadka > table.zasadky-warning > tbody > tr > td { background-color: transparent !important; }
+
+html.stu-modern .toast.flex-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+html.stu-modern .toast_hide_item {
+  margin-left: auto;
+  padding-left: 8px;
+  opacity: .5;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+html.stu-modern .toast_hide_item:hover { opacity: 1; }
+
+html.stu-modern .uis_msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  margin: 0 0 var(--stu-gap);
+  padding: 14px 16px;
+  border: 1px solid var(--stu-border);
+  border-left: 3px solid var(--stu-info);
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-info-soft);
+  font-size: 13px;
+  color: var(--stu-text);
+}
+
+html.stu-modern .uis_msg[data-stu-kind="danger"] { border-left-color: var(--stu-danger); background: var(--stu-danger-soft); }
+html.stu-modern .uis_msg[data-stu-kind="warning"] { border-left-color: var(--stu-warning); background: var(--stu-warning-soft); }
+html.stu-modern .uis_msg[data-stu-kind="success"] { border-left-color: var(--stu-success); background: var(--stu-success-soft); }
+
+/* --------------------------------------------------------------------------
+   Forms and controls
+   -------------------------------------------------------------------------- */
+
+html.stu-modern #base-r input[type="text"],
+html.stu-modern #base-r input[type="search"],
+html.stu-modern #base-r input[type="number"],
+html.stu-modern #base-r input[type="email"],
+html.stu-modern #base-r input[type="date"],
+html.stu-modern #base-r input[type="password"],
+html.stu-modern #base-r select,
+html.stu-modern #base-r textarea {
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid var(--stu-border-strong);
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-surface);
+  color: var(--stu-text);
+  font: 400 13px/1.45 var(--stu-font);
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+
+html.stu-modern #base-r textarea { min-height: 96px; resize: vertical; }
+
+html.stu-modern #base-r input:focus,
+html.stu-modern #base-r select:focus,
+html.stu-modern #base-r textarea:focus {
+  outline: 0;
+  border-color: var(--stu-primary);
+  box-shadow: 0 0 0 3px var(--stu-primary-soft);
+}
+
+html.stu-modern #base-r input[type="checkbox"],
+html.stu-modern #base-r input[type="radio"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--stu-primary);
+  vertical-align: middle;
+  cursor: pointer;
+}
+
+html.stu-modern #base-r label { cursor: pointer; }
+
+html.stu-modern .stu-control-button,
+html.stu-modern #base-r input[type="submit"],
+html.stu-modern #base-r input[type="button"],
+html.stu-modern #base-r input[type="reset"],
+html.stu-modern #base-r button {
+  background-color: var(--stu-surface) !important;
+  color: var(--stu-text) !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 16px;
+  border: 1px solid var(--stu-border-strong);
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-surface);
+  color: var(--stu-text);
+  font: 550 13px/1 var(--stu-font);
+  cursor: pointer;
+  transition: border-color .12s ease, background .12s ease, color .12s ease;
+}
+
+html.stu-modern .stu-control-button:hover,
+html.stu-modern #base-r input[type="submit"]:hover,
+html.stu-modern #base-r input[type="button"]:hover,
+html.stu-modern #base-r button:hover {
+  border-color: var(--stu-primary);
+  color: var(--stu-primary) !important;
+  background-color: var(--stu-primary-soft) !important;
+}
+
+html.stu-modern #base-r input[type="submit"].stu-primary-button,
+html.stu-modern #base-r button.stu-primary-button,
+html.stu-modern .stu-primary-button {
+  background-color: var(--stu-primary) !important;
+  border-color: var(--stu-primary);
+  color: #fff !important;
+}
+
+html.stu-modern #base-r input[type="submit"].stu-primary-button:hover,
+html.stu-modern #base-r button.stu-primary-button:hover,
+html.stu-modern .stu-primary-button:hover {
+  background-color: var(--stu-primary-strong) !important;
+  border-color: var(--stu-primary-strong);
+  color: #fff !important;
+}
+
+html.stu-modern .ui-datepicker-trigger {
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  vertical-align: middle;
+  cursor: pointer;
+  opacity: .7;
+}
+
+html.stu-modern .ui-datepicker-trigger:hover { opacity: 1; }
+
+/* --------------------------------------------------------------------------
+   Icon links grid (a.app-ikona) and module menu (menitka)
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .rada-ikon {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 12px;
+  margin: 0 0 var(--stu-gap) !important;
+  width: 100% !important;
+  max-width: none !important;
+  float: none !important;
+}
+
+html.stu-modern a.app-ikona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  padding: 12px 14px;
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  background: var(--stu-surface);
+  color: var(--stu-text);
+  font-size: 13.5px;
+  font-weight: 550;
+  text-decoration: none;
+  box-shadow: var(--stu-shadow-sm);
+  transition: border-color .13s ease, box-shadow .13s ease, transform .13s ease;
+}
+
+html.stu-modern a.app-ikona:hover {
+  border-color: var(--stu-primary);
+  box-shadow: var(--stu-shadow);
+  transform: translateY(-1px);
+  text-decoration: none;
+  color: var(--stu-text);
+}
+
+html.stu-modern a.app-ikona .uf-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-primary-soft);
+}
+
+html.stu-modern a.app-ikona .uf-icon svg { width: 21px; height: 21px; }
+html.stu-modern a.app-ikona .app-ikona-text { flex: 1 1 auto; line-height: 1.35; }
+
+/* Module sections on the personal administration home page */
+
+/* The native module board is absolutely positioned and draggable; flatten it
+   back into normal flow so it can become a responsive card grid. */
+
+html.stu-modern .menitka-layout {
+  display: block !important;
+  position: static !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+html.stu-modern .menitko-all {
+  display: grid !important;
+  position: static !important;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  align-items: start;
+  gap: 12px;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+}
+
+html.stu-modern .polozky-obal {
+  background-image: none !important;
+  background-color: var(--stu-surface) !important;
+  color: var(--stu-text);
+  position: static !important;
+  inset: auto !important;
+  width: auto !important;
+  height: auto !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  transform: none !important;
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius);
+  box-shadow: var(--stu-shadow-sm);
+  overflow: hidden;
+  transition: border-color .13s ease, box-shadow .13s ease;
+}
+
+html.stu-modern .polozky-obal:hover { border-color: var(--stu-border-strong); box-shadow: var(--stu-shadow); }
+
+/* The drag handle is an empty bar in the native markup. */
+html.stu-modern .menu-drzak { display: none !important; }
+
+html.stu-modern .ramecek-boky {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+html.stu-modern .ramecek-boky > div {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  align-items: start !important;
+  align-content: start !important;
+  gap: 12px !important;
+  padding: 15px 16px 13px !important;
+}
+
+html.stu-modern .polozky-obr {
+  grid-column: 1;
+  display: grid !important;
+  place-items: center;
+  width: 42px !important;
+  height: 42px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: var(--stu-radius-sm);
+  background: var(--stu-primary-soft) !important;
+}
+
+html.stu-modern .polozky-obr svg { width: 23px !important; height: 23px !important; }
+
+html.stu-modern .polozky {
+  grid-column: 2;
+  align-content: start;
+  list-style: none;
+  margin: 0 !important;
+  padding: 0 !important;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+html.stu-modern .sekce-nadpis {
+  display: block !important;
+  margin: 2px 0 6px !important;
+  padding: 0 !important;
+  text-align: left !important;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--stu-text) !important;
+  background: none !important;
+}
+
+html.stu-modern .sekce-nadpis b { font-weight: 650; }
+
+html.stu-modern .polozky li {
+  margin: 0;
+  padding: 0;
+  background: none !important;
+}
+
+html.stu-modern .polozky li.polozka-hidden { display: none; }
+
+html.stu-modern .polozky ul {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+  display: grid;
+  gap: 1px;
+}
+
+html.stu-modern .polozky li {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none !important;
+}
+
+html.stu-modern .polozky a {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: var(--stu-text-2);
+  font-size: 13px;
+  font-weight: 400;
+  text-decoration: none;
+  transition: background .12s ease, color .12s ease;
+}
+
+html.stu-modern .polozky a b { font-weight: 400; }
+
+html.stu-modern .polozky a:hover {
+  background: var(--stu-primary-soft);
+  color: var(--stu-primary);
+  text-decoration: none;
+}
+
+html.stu-modern .polozky .uf-icon,
+html.stu-modern .polozky .uf-icon svg { width: 17px; height: 17px; flex: 0 0 auto; }
+
+/* --------------------------------------------------------------------------
+   Login page
+   -------------------------------------------------------------------------- */
+
+html.stu-modern.stu-login #base { padding-left: 0; }
+
+html.stu-modern.stu-login #base-r {
+  max-width: 460px;
+  margin: 8vh auto 0;
+}
+
+html.stu-modern.stu-login .mainpage {
+  padding: 28px;
+  background: var(--stu-surface);
+  border: 1px solid var(--stu-border);
+  border-radius: var(--stu-radius-lg);
+  box-shadow: var(--stu-shadow-lg);
+}
+
+html.stu-modern.stu-login .stu-sidebar { display: none; }
+
+/* --------------------------------------------------------------------------
+   Utilities
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .stu-empty-row { display: none; }
+
+html.stu-modern .stu-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: var(--stu-surface-3);
+  color: var(--stu-text-2);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+html.stu-modern .stu-chip.is-success { background: var(--stu-success-soft); color: var(--stu-success); }
+html.stu-modern .stu-chip.is-warning { background: var(--stu-warning-soft); color: var(--stu-warning); }
+html.stu-modern .stu-chip.is-danger { background: var(--stu-danger-soft); color: var(--stu-danger); }
+html.stu-modern .stu-chip.is-primary { background: var(--stu-primary-soft); color: var(--stu-primary); }
+
+/* --------------------------------------------------------------------------
+   Boss Fight entry in the light sidebar
+
+   The optional game layer was written for the old dark sidebar and paints its
+   text in near-white, which disappears on the light rail.
+   -------------------------------------------------------------------------- */
+
+html.stu-modern .stu-boss-sidebar {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--stu-border);
+}
+
+html.stu-modern .stu-boss-mode-toggle {
+  border-radius: var(--stu-radius-sm);
+}
+
+html.stu-modern .stu-boss-sidebar-copy b,
+html.stu-modern .stu-boss-sidebar-copy small,
+html.stu-modern .stu-boss-sidebar-campaign,
+html.stu-modern .stu-boss-sidebar-campaign b,
+html.stu-modern .stu-boss-sidebar-campaign small,
+html.stu-modern .stu-boss-sidebar-empty b,
+html.stu-modern .stu-boss-sidebar-empty small {
+  color: var(--stu-text) !important;
+}
+
+html.stu-modern .stu-boss-sidebar-copy small,
+html.stu-modern .stu-boss-sidebar-campaign small,
+html.stu-modern .stu-boss-sidebar-empty small {
+  color: var(--stu-text-3) !important;
+}
+
+html.stu-modern .stu-boss-mode-toggle:hover {
+  background: var(--stu-surface-3) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Link colour
+
+   Some native rules paint links black, which is invisible on the dark canvas.
+   Everything STU renders is re-coloured here; components UIS+ builds itself
+   are excluded by their "stu-" prefix and re-asserted below.
+   -------------------------------------------------------------------------- */
+
+html.stu-modern #base-r a:not([class*="stu-"]):not(.app-ikona) {
+  color: var(--stu-primary) !important;
+}
+
+html.stu-modern li.breadcrumb-item a {
+  color: var(--stu-text-2) !important;
+}
+
+html.stu-modern li.breadcrumb-item a:hover {
+  color: var(--stu-primary) !important;
+}
+
+html.stu-modern div.tree .node-label a {
+  color: var(--stu-text-2) !important;
+}
+
+html.stu-modern div.tree .node-container.active .node-label a {
+  color: var(--stu-primary) !important;
+}
+
+html.stu-modern table.portal_menu td.odsazena a {
+  color: var(--stu-text-2) !important;
+}
+
+html.stu-modern table.portal_menu td.odsazena.active a,
+html.stu-modern table.portal_menu td.odsazena.active b a {
+  color: var(--stu-primary) !important;
+}
+
+html.stu-modern .jstm-toolbox a {
+  color: var(--stu-text-2) !important;
+}
+
+html.stu-modern .jstm-toolbox a:hover {
+  color: var(--stu-primary) !important;
+}
+
+html.stu-modern a.app-ikona {
+  color: var(--stu-text) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Native glyph sprite in the dark theme
+
+   STU draws its icons as two layers: a light fill under a near-black outline.
+   On the dark canvas the outline disappears, so lightness is flipped while the
+   hue is preserved for the coloured glyphs.
+   -------------------------------------------------------------------------- */
+
+html.stu-modern[data-stu-theme="dark"] #base-r .uf-icon svg {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html.stu-modern ul.paginator .uf-icon,
+html.stu-modern ul.paginator .uf-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+html.stu-modern ul.paginator li a { gap: 0; }

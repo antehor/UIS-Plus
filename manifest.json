@@ -2,8 +2,8 @@
   "manifest_version": 3,
   "name": "UIS+",
   "short_name": "UIS+",
-  "version": "2.3.0",
-  "description": "Modern interface for STU UIS (formerly AIS): dark mode, faster navigation, compact layout and private local operation.",
+  "version": "3.0.0",
+  "description": "Modern interface for STU UIS (formerly AIS): redesigned shell, rebuilt timetable, command palette, dark mode and private local operation.",
   "author": "Yehor Halytskyi",
   "homepage_url": "https://github.com/antehor/UIS-Plus",
   "permissions": [
@@ -36,10 +36,13 @@
       ],
       "css": [
         "styles.css",
+        "components.css",
+        "pages.css",
         "boss-fight.css"
       ],
       "js": [
         "content.js",
+        "pages.js",
         "boss-fight.js"
       ],
       "run_at": "document_start"

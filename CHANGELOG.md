@@ -2,6 +2,56 @@
 
 All notable changes to UIS+ (formerly AIS+) are documented here.
 
+## 3.0.0 — 2026-09-16
+
+A full redesign of the interface, plus rebuilt layouts for the applications students open most.
+
+### Added
+
+- **Command palette** (`Ctrl + K`) that searches every UIS application discovered in your own menu,
+  the UIS+ sections and the links on the current page.
+- **Rebuilt timetable.** The native day-per-row table is parsed and re-rendered as a vertical week
+  grid with day columns, the current day highlighted, colour-coded lectures and seminars, room and
+  teacher lines, an upcoming-lessons list, per-course filters and a locally generated `.ics` export.
+- **Two-column mailbox and document server**, with the folder tree, mailbox quota and legend beside
+  a full-width listing.
+- **Message view rail** showing the sender, message details and attachments.
+- **Personal administration home** with a greeting header, notice cards grouped by severity, a
+  responsive module grid and your next lessons in the side rail.
+- **Sidebar collapse button**, alongside the existing `Ctrl + [` shortcut.
+- Keyboard shortcuts for the palette: `↑` `↓` to move, `Enter` to open, `Esc` to close.
+
+### Changed
+
+- The sidebar is now built from the live UIS menu harvested on the personal administration page and
+  cached locally, so no student-specific URL is hard-coded.
+- Navigation links carry the language you are reading, so moving between applications no longer
+  falls back to the server default.
+- Sidebar entries never resolve to the same destination twice; when a section's first application
+  already has its own entry, the label follows the application it actually opens.
+- The breadcrumb bar now carries the server date and an inline language switcher.
+- Each page gains a header block with an icon, the title and the description STU publishes for that
+  application.
+- The panel language defaults to **Auto** and follows the language of the page.
+- Stylesheets were split into `styles.css` (tokens and shell), `components.css` (native UIS
+  components) and `pages.css` (per-application layouts); page logic moved into `pages.js`.
+- The extension popup was restyled to match the in-page design system.
+
+### Fixed
+
+- Headings no longer inherit the native bullet image, grey bar and 25px indent from STU.
+- Data tables are detected by the rows they own rather than at any depth, so the outer layout table
+  of an application is no longer restyled as a grid — this had broken the mailbox layout.
+- Native alternating row colours, link colours and heading backgrounds no longer leak into the dark
+  theme; the STU glyph sprite is re-toned so its near-black outline stays visible.
+- Icons without an explicit size rule no longer stretch to the width of their container.
+- Notice text on the personal administration page is no longer hidden along with its list marker.
+- The module grid on the personal administration page is flattened out of its draggable, absolutely
+  positioned container into a responsive card grid.
+- Icon grids on the student portal are no longer collapsed into a single column by the narrow
+  layout table around them.
+- Long folder names in the document server wrap instead of being clipped.
+
 ## 2.3.0 — 2026-09-04
 
 ### Changed

@@ -1,6 +1,6 @@
 (function () {
   "use strict";
-  const defaults = { enabled: true, theme: "system", compact: false, uiLanguage: "en", bossFightEnabled: false };
+  const defaults = { enabled: true, theme: "system", compact: false, uiLanguage: "auto", bossFightEnabled: false };
   const enabled = document.querySelector("#enabled");
   const compact = document.querySelector("#compact");
   const bossFightEnabled = document.querySelector("#bossFightEnabled");

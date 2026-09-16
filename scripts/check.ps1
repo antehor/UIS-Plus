@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $required = @(
-  "manifest.json", "content.js", "styles.css", "boss-fight.js", "boss-fight.css", "popup.html", "popup.css", "popup.js",
+  "manifest.json", "content.js", "pages.js", "styles.css", "components.css", "pages.css", "boss-fight.js", "boss-fight.css", "popup.html", "popup.css", "popup.js",
   "icons/icon-16.png", "icons/icon-32.png", "icons/icon-48.png", "icons/icon-128.png"
 )
 
