@@ -23,9 +23,9 @@ jobs:
           manifest = json.loads(Path("manifest.json").read_text(encoding="utf-8"))
           assert manifest["manifest_version"] == 3
           assert manifest["name"] == "UIS+"
-          assert manifest["permissions"] == ["storage"]
+          assert manifest["permissions"] == ["storage", "alarms"]
           assert manifest["host_permissions"] == ["https://is.stuba.sk/*"]
-          assert "background" not in manifest, "no background worker is needed"
+          assert Path(manifest["background"]["service_worker"]).is_file(), "background worker is missing"
 
           content = manifest["content_scripts"][0]
           for asset in content["css"] + content["js"]:
@@ -37,6 +37,7 @@ jobs:
           node --check content.js
           node --check pages.js
           node --check boss-fight.js
+          node --check background.js
           node --check popup.js
 
       - name: Check stylesheet balance
@@ -58,7 +59,7 @@ jobs:
       - name: Check required files
         run: |
           for file in styles.css components.css pages.css boss-fight.css \
-                      content.js pages.js popup.html icons/icon-128.png \
+                      content.js pages.js background.js popup.html icons/icon-128.png \
                       LICENSE PRIVACY.md CHANGELOG.md README.md; do
             test -f "$file" || { echo "missing: $file"; exit 1; }
           done

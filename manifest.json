@@ -2,16 +2,20 @@
   "manifest_version": 3,
   "name": "UIS+",
   "short_name": "UIS+",
-  "version": "3.0.1",
+  "version": "3.1.0",
   "description": "Modern interface for STU UIS (formerly AIS): redesigned shell, rebuilt timetable, command palette, dark mode and private local operation.",
   "author": "Yehor Halytskyi",
   "homepage_url": "https://github.com/antehor/UIS-Plus",
   "permissions": [
-    "storage"
+    "storage",
+    "alarms"
   ],
   "host_permissions": [
     "https://is.stuba.sk/*"
   ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "action": {
     "default_title": "UIS+ · Modern STU UIS (formerly AIS)",
     "default_popup": "popup.html",

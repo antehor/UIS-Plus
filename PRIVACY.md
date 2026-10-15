@@ -20,9 +20,8 @@ The extension uses the browser `storage` permission only for these values:
 
 - whether UIS+ is enabled;
 - light, dark or system theme;
-- compact mode;
 - collapsed sidebar state;
-- English, Slovak or Czech panel language;
+- whether "Stay signed in" is on, and the last known sign-in state, unread count and page language;
 - whether experimental Boss Fight mode is enabled;
 - the UIS menu discovered on your personal administration page;
 - your timetable events, cached after you open the timetable, to list upcoming lessons;
@@ -33,6 +32,11 @@ These preferences stay in the browser profile and can be removed by uninstalling
 clearing its storage.
 
 ## Pages UIS+ reads on its own
+
+With **Stay signed in** on (the default), a small background worker opens `is.stuba.sk/auth/` every
+five minutes while you are signed in, so UIS does not end the session for inactivity, and reads the
+unread-message count shown on the toolbar icon. It stops when UIS reports that you are signed out.
+When you open the popup, it reads your UIS inbox to list unread messages.
 
 To show assignments due, UIS+ reads the student-portal list of submission places
 (`/auth/student/odevzdavarny.pl`) at most every ten minutes while you use the home page. When Boss

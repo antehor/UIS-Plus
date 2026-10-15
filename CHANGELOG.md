@@ -2,6 +2,27 @@
 
 All notable changes to UIS+ (formerly AIS+) are documented here.
 
+## 3.1.0 — 2026-10-15
+
+### Added
+
+- **Unread messages in the toolbar.** The UIS+ icon shows how many UIS messages are unread, and
+  the popup lists them (sender, subject, date). Clicking one opens it in the UIS tab that is
+  already open, or in a new one.
+- **Stay signed in.** While you are signed in, UIS+ opens UIS quietly every five minutes so the
+  server does not end the session for inactivity. It stops as soon as UIS reports that you are
+  signed out (for example after you sign out yourself) and resumes after the next sign-in. It can
+  be turned off in the popup. This adds a small background worker and the `alarms` permission.
+
+### Changed
+
+- **One language.** The interface always follows the language STU serves the page in; the
+  separate "panel language" setting is gone, so switching `SK` / `CZ` / `EN` on the site switches
+  everything.
+- **Simpler popup:** enable UIS+, theme and "Stay signed in". The compact layout is now always on,
+  and Boss Fight is switched on and off in the sidebar only. The popup follows the theme chosen for
+  UIS and the language of the site.
+
 ## 3.0.1 — 2026-10-15
 
 ### Added

@@ -1,38 +1,45 @@
-/* UIS+ — extension popup, matching the in-page design system */
+/* UIS+ — extension popup, using the same tokens as the in-page interface.
+   The theme follows the one chosen for UIS (data-theme is set by popup.js). */
 
 :root {
   --primary: #9b1237;
+  --primary-fill: #9b1237;
   --primary-soft: #fbe9ee;
   --canvas: #f4f4f8;
   --surface: #ffffff;
-  --surface-2: #f1f1f6;
+  --surface-2: #f6f6fa;
+  --surface-3: #ececf2;
   --text: #1a1a22;
   --text-2: #5b5b6b;
-  --text-3: #8d8d9c;
+  --text-3: #7c7c8c;
   --border: #e6e6ee;
+  --border-strong: #d6d6e1;
+  --success: #1f8a52;
   --radius: 12px;
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --primary: #e0567f;
-    --primary-soft: #2e1420;
-    --canvas: #101015;
-    --surface: #17171e;
-    --surface-2: #232330;
-    --text: #f2f2f7;
-    --text-2: #b3b3c2;
-    --text-3: #83838f;
-    --border: #2a2a36;
-    color-scheme: dark;
-  }
+:root[data-theme="dark"] {
+  --primary: #f0809f;
+  --primary-fill: #b3304f;
+  --primary-soft: #2c1720;
+  --canvas: #0f0f13;
+  --surface: #18181d;
+  --surface-2: #1d1d23;
+  --surface-3: #26262e;
+  --text: #ededf1;
+  --text-2: #c3c3ce;
+  --text-3: #9a9aa8;
+  --border: #2c2c35;
+  --border-strong: #3d3d48;
+  --success: #5fd39a;
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
 
 body {
-  width: 316px;
+  width: 340px;
   margin: 0;
   background: var(--canvas);
   color: var(--text);
@@ -40,47 +47,32 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+button { font: inherit; color: inherit; }
+
 /* Header ------------------------------------------------------------------ */
 
 header {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px 16px 15px;
+  gap: 13px;
+  padding: 15px 16px;
   background: linear-gradient(97deg, #8d1133 0%, #9b1237 45%, #a81a42 100%);
   color: #fff;
 }
 
 .mark {
   display: grid;
-  grid-template-columns: repeat(4, 5px);
-  grid-template-rows: repeat(3, 5px);
-  gap: 3px;
+  grid-template-columns: repeat(4, 4px);
+  grid-template-rows: repeat(3, 4px);
+  gap: 4px;
   flex: 0 0 auto;
 }
 
-.mark i {
-  width: 5px;
-  height: 5px;
-  border-radius: 1.5px;
-  background: #fff;
-  opacity: .95;
-}
+.mark i { width: 4px; height: 4px; border-radius: 50%; background: #fff; }
 
-header div { flex: 1 1 auto; line-height: 1.25; }
-header b { display: block; font-size: 15px; font-weight: 700; letter-spacing: .01em; }
-header small { display: block; font-size: 9.5px; font-weight: 600; letter-spacing: .08em; opacity: .85; }
-
-.local {
-  flex: 0 0 auto;
-  padding: 4px 8px;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, .18);
-  border: 1px solid rgba(255, 255, 255, .22);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: .09em;
-}
+header div { line-height: 1.25; }
+header b { display: block; font-size: 15px; font-weight: 700; }
+header small { display: block; font-size: 11px; opacity: .85; }
 
 /* Body -------------------------------------------------------------------- */
 
@@ -93,57 +85,169 @@ main {
 section { display: grid; gap: 7px; }
 
 .caption {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text-3);
   padding-left: 2px;
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .06em;
+  text-transform: uppercase;
 }
+
+/* Unread mail ------------------------------------------------------------- */
+
+.mail {
+  gap: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.mail-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mail-head b { font-size: 13px; font-weight: 650; }
+
+.count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--primary-fill);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.count[hidden] { display: none; }
+
+.mail-open {
+  margin-left: auto;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.mail-open:hover { text-decoration: underline; }
+
+.mail-list { display: grid; max-height: 296px; overflow-y: auto; }
+
+.mail-item {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 9px 13px 10px 15px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  box-shadow: inset 3px 0 0 var(--primary);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mail-item:last-child { border-bottom: 0; }
+.mail-item:hover { background: var(--surface-2); }
+.mail-item:focus-visible { outline: 2px solid var(--primary); outline-offset: -2px; }
+
+.mail-line { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+
+.mail-line b {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mail-line time { flex: 0 0 auto; color: var(--text-3); font-size: 11px; }
+
+.mail-subject {
+  color: var(--text-2);
+  font-size: 12.5px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.mail-more {
+  padding: 9px 13px;
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mail-more:hover { background: var(--surface-2); }
+
+.mail-empty {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin: 0;
+  padding: 13px;
+  color: var(--text-2);
+  font-size: 12.5px;
+}
+
+.mail-empty button {
+  padding: 6px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--primary-fill);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mail-skeleton { display: grid; gap: 6px; padding: 12px 13px; border-bottom: 1px solid var(--border); }
+.mail-skeleton:last-child { border-bottom: 0; }
+.mail-skeleton i { display: block; height: 9px; border-radius: 4px; background: var(--surface-3); animation: pulse 1.2s ease-in-out infinite; }
+.mail-skeleton i:first-child { width: 45%; }
+.mail-skeleton i:last-child { width: 80%; }
+
+@keyframes pulse { 50% { opacity: .45; } }
+
+/* Settings ---------------------------------------------------------------- */
 
 .setting {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 13px;
-  background: var(--surface);
+  padding: 11px 13px;
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  background: var(--surface);
   cursor: pointer;
 }
 
-.setting:hover { border-color: #d6d6e1; }
-
+.setting:hover { border-color: var(--border-strong); }
 .setting span { flex: 1 1 auto; line-height: 1.35; }
 .setting b { display: block; font-size: 13px; font-weight: 600; }
-.setting small { display: block; font-size: 11.5px; color: var(--text-3); }
+.setting small { display: block; color: var(--text-3); font-size: 11.5px; }
 
-.main-setting {
-  background: var(--primary-soft);
-  border-color: transparent;
-}
-
-.main-setting b { color: var(--primary); }
-
-.boss-setting b { letter-spacing: .01em; }
-
-/* Switch ------------------------------------------------------------------ */
-
-.setting input[type="checkbox"] {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
+.setting input[type="checkbox"] { position: absolute; opacity: 0; pointer-events: none; }
 
 .switch {
-  flex: 0 0 auto;
   position: relative;
-  width: 38px;
-  height: 22px;
+  flex: 0 0 auto;
+  width: 36px;
+  height: 21px;
   border-radius: 999px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  transition: background .15s ease, border-color .15s ease;
+  background: var(--border-strong);
+  transition: background .15s ease;
 }
 
 .switch::after {
@@ -151,20 +255,16 @@ section { display: grid; gap: 7px; }
   position: absolute;
   top: 2px;
   left: 2px;
-  width: 16px;
-  height: 16px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
   background: #fff;
   box-shadow: 0 1px 3px rgba(0, 0, 0, .25);
   transition: transform .15s ease;
 }
 
-.setting input:checked + .switch {
-  background: var(--primary);
-  border-color: var(--primary);
-}
-
-.setting input:checked + .switch::after { transform: translateX(16px); }
+.setting input:checked + .switch { background: var(--primary-fill); }
+.setting input:checked + .switch::after { transform: translateX(15px); }
 .setting input:focus-visible + .switch { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 /* Segmented control ------------------------------------------------------- */
@@ -175,38 +275,28 @@ section { display: grid; gap: 7px; }
   grid-auto-columns: 1fr;
   gap: 3px;
   padding: 3px;
-  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  background: var(--surface);
 }
 
 .segments label { position: relative; }
-
-.segments input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
+.segments input { position: absolute; opacity: 0; pointer-events: none; }
 
 .segments span {
   display: grid;
   place-items: center;
   height: 30px;
   border-radius: 9px;
-  font-size: 12px;
-  font-weight: 600;
   color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 600;
   cursor: pointer;
   transition: background .13s ease, color .13s ease;
 }
 
 .segments span:hover { background: var(--surface-2); }
-
-.segments input:checked + span {
-  background: var(--primary);
-  color: #fff;
-}
-
+.segments input:checked + span { background: var(--primary-fill); color: #fff; }
 .segments input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
 
 /* Footer ------------------------------------------------------------------ */
@@ -215,17 +305,19 @@ footer {
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 11px 16px 13px;
+  padding: 10px 16px 12px;
   border-top: 1px solid var(--border);
-  font-size: 10.5px;
-  letter-spacing: .05em;
   color: var(--text-3);
+  font-size: 11px;
 }
 
-footer span {
+footer .dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #1f8a52;
-  box-shadow: 0 0 0 3px rgba(31, 138, 82, .16);
+  background: var(--success);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mail-skeleton i { animation: none; }
 }

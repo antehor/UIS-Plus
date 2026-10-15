@@ -15,6 +15,8 @@ Please read the [Code of Conduct](CODE_OF_CONDUCT.md) first.
 | `content.js` | Builds the topbar, sidebar, breadcrumb bar, command palette and drawer |
 | `pages.js` | Parses and rebuilds individual applications from the served markup |
 | `boss-fight.js` | The optional local game layer |
+| `background.js` | Toolbar badge and the Stay-signed-in keep-alive |
+| `popup.html` / `popup.js` | The toolbar popup |
 
 Anything added to `manifest.json` must also be added to `scripts/check.ps1`,
 `scripts/package.ps1` and the release workflow, otherwise the published archive will be incomplete.

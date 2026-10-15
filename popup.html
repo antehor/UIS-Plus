@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="sk">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -8,42 +8,44 @@
 </head>
 <body>
   <header>
-    <span class="mark"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
-    <div><b>UIS+</b><small>STU UIS · FORMERLY AIS+</small></div>
-    <span class="local">LOCAL</span>
+    <span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    <div><b>UIS+</b><small data-copy="subtitle">STU UIS · formerly AIS+</small></div>
   </header>
+
   <main>
-    <label class="setting main-setting">
-      <span><b>Enable UIS+</b><small>For STU UIS at is.stuba.sk</small></span>
+    <section class="mail" aria-live="polite">
+      <div class="mail-head">
+        <b data-copy="unread">Unread messages</b>
+        <span class="count" data-count hidden></span>
+        <a class="mail-open" href="#" data-open-mailbox data-copy="mailbox">Mailbox</a>
+      </div>
+      <div class="mail-list" data-mail-list>
+        <div class="mail-skeleton"><i></i><i></i></div>
+        <div class="mail-skeleton"><i></i><i></i></div>
+      </div>
+    </section>
+
+    <label class="setting">
+      <span><b data-copy="enable">Enable UIS+</b><small data-copy="enableHint">Modern interface for is.stuba.sk</small></span>
       <input id="enabled" type="checkbox"><i class="switch"></i>
     </label>
+
     <section>
-      <span class="caption">Appearance</span>
-      <div class="segments" role="radiogroup" aria-label="Appearance">
-        <label><input type="radio" name="theme" value="system"><span>System</span></label>
-        <label><input type="radio" name="theme" value="light"><span>Light</span></label>
-        <label><input type="radio" name="theme" value="dark"><span>Dark</span></label>
+      <span class="caption" data-copy="appearance">Appearance</span>
+      <div class="segments" role="radiogroup">
+        <label><input type="radio" name="theme" value="system"><span data-copy="system">System</span></label>
+        <label><input type="radio" name="theme" value="light"><span data-copy="light">Light</span></label>
+        <label><input type="radio" name="theme" value="dark"><span data-copy="dark">Dark</span></label>
       </div>
     </section>
-    <section>
-      <span class="caption">Panel language</span>
-      <div class="segments" role="radiogroup" aria-label="Panel language">
-        <label><input type="radio" name="language" value="auto"><span>Auto</span></label>
-        <label><input type="radio" name="language" value="en"><span>EN</span></label>
-        <label><input type="radio" name="language" value="sk"><span>SK</span></label>
-        <label><input type="radio" name="language" value="cs"><span>CZ</span></label>
-      </div>
-    </section>
+
     <label class="setting">
-      <span><b>Compact layout</b><small>Show more information at once</small></span>
-      <input id="compact" type="checkbox"><i class="switch"></i>
-    </label>
-    <label class="setting boss-setting">
-      <span><b>⚔ Boss Fight</b><small>Experimental fun mode</small></span>
-      <input id="bossFightEnabled" type="checkbox"><i class="switch"></i>
+      <span><b data-copy="keep">Stay signed in</b><small data-copy="keepHint">Keeps your UIS session alive while the browser is open</small></span>
+      <input id="keepSignedIn" type="checkbox"><i class="switch"></i>
     </label>
   </main>
-  <footer><span></span>UIS+ 3.0 · STU UIS</footer>
+
+  <footer><span class="dot"></span><span data-version>UIS+</span><span>·</span><span>is.stuba.sk</span></footer>
   <script src="popup.js"></script>
 </body>
 </html>

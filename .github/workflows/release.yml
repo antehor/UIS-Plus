@@ -19,6 +19,7 @@ jobs:
           node --check content.js
           node --check pages.js
           node --check boss-fight.js
+          node --check background.js
           node --check popup.js
           python -m json.tool manifest.json >/dev/null
 
@@ -34,7 +35,7 @@ jobs:
         run: |
           mkdir -p package/UIS-plus
           cp manifest.json \
-             content.js pages.js boss-fight.js \
+             content.js pages.js boss-fight.js background.js \
              styles.css components.css pages.css boss-fight.css \
              popup.html popup.css popup.js \
              INSTALL.html README.md CHANGELOG.md LICENSE PRIVACY.md \

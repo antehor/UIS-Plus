@@ -17,9 +17,7 @@
   const DEFAULTS = Object.freeze({
     enabled: true,
     theme: "system",
-    compact: false,
-    sidebarCollapsed: false,
-    uiLanguage: "auto"
+    sidebarCollapsed: false
   });
 
   /* ------------------------------------------------------------------ icons */
@@ -281,8 +279,9 @@
     return "en";
   }
 
+  /* The interface always speaks the language STU serves the page in; the
+     language picker in the breadcrumb bar switches both at once. */
   function language() {
-    if (["sk", "cs", "en"].includes(settings.uiLanguage)) return settings.uiLanguage;
     return pageLanguage();
   }
 
@@ -939,7 +938,7 @@
     }
     const root = document.documentElement;
     root.classList.add(ROOT_CLASS, BOOT_CLASS);
-    root.classList.toggle("stu-compact", Boolean(settings.compact));
+    root.classList.add("stu-compact");
     root.classList.toggle("stu-login", isLoginPage());
     applySidebarState();
     applyTheme();
@@ -994,6 +993,18 @@
     });
   }
 
+  /* Tells the background worker whether this browser is signed in to UIS and
+     how many messages are unread, for the toolbar badge and the keep-alive.
+     The page language is kept so the popup can speak it too. */
+  function reportState() {
+    const signedIn = !isLoginPage() && Boolean(document.querySelector("#base-r, #base"));
+    const state = { signedIn, unread: signedIn ? readCounters().messages : 0, lang: pageLanguage() };
+    storageSet({ uisPageLanguage: state.lang });
+    try {
+      chrome.runtime.sendMessage({ type: "uis-state", ...state }, () => void chrome.runtime.lastError);
+    } catch (_) { /* The extension context can be reloading. */ }
+  }
+
   /* ------------------------------------------------------------- public API */
 
   window.UISPlus = {
@@ -1035,6 +1046,7 @@
     }
 
     apply();
+    reportState();
     if (settings.enabled) {
       observe();
       bindGlobalKeys();

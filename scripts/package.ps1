@@ -18,7 +18,7 @@ $extension = Join-Path $stage "UIS-plus"
 
 New-Item -ItemType Directory -Path $extension -Force | Out-Null
 try {
-  $files = @("manifest.json", "content.js", "pages.js", "styles.css", "components.css", "pages.css", "boss-fight.js", "boss-fight.css", "popup.html", "popup.css", "popup.js", "INSTALL.html", "README.md", "CHANGELOG.md", "LICENSE", "PRIVACY.md")
+  $files = @("manifest.json", "content.js", "pages.js", "styles.css", "components.css", "pages.css", "boss-fight.js", "boss-fight.css", "background.js", "popup.html", "popup.css", "popup.js", "INSTALL.html", "README.md", "CHANGELOG.md", "LICENSE", "PRIVACY.md")
   foreach ($file in $files) { Copy-Item -LiteralPath (Join-Path $root $file) -Destination $extension }
   Copy-Item -LiteralPath (Join-Path $root "icons") -Destination $extension -Recurse
   Copy-Item -LiteralPath (Join-Path $root "assets") -Destination $extension -Recurse

@@ -51,7 +51,7 @@ as the university serves it.
 
 ## Contents
 
-- [What's new in 3.0.1](#whats-new-in-301)
+- [What's new in 3.1](#whats-new-in-31)
 - [Why UIS+](#why-uis)
 - [Features](#features)
 - [Installation](#installation)
@@ -65,15 +65,15 @@ as the university serves it.
 - [Slovenčina](#slovenčina)
 - [Contributing](#contributing)
 
-## What's new in 3.0.1
+## What's new in 3.1
 
-- **Sign-in page fixed.** The login form no longer disappears under the dashboard; it gets its own
-  card with labelled fields, a show/hide password toggle and password-manager support.
-- **Assignments due.** "Úlohy" now counts the open submission places from the student portal
-  (*Miesta odovzdania*) and lists what is still due, with the time left.
-- **Unread mail stands out** in both themes.
-- **Readable dark theme**, an aligned applications directory on the home page, and a redesigned,
-  localized Boss Fight.
+- **Unread messages on the toolbar icon**, and a popup that lists them — one click opens the
+  message in UIS.
+- **Stay signed in.** UIS+ keeps your UIS session alive while the browser is open, so you are not
+  signed out after a break.
+- **One language everywhere** — the interface follows the language you pick on the site.
+- From 3.0.1: a fixed sign-in page, **assignments due** on the home page, clearly marked unread
+  mail, a readable dark theme and a redesigned Boss Fight.
 
 See the full [changelog](CHANGELOG.md).
 
@@ -86,7 +86,7 @@ See the full [changelog](CHANGELOG.md).
 | Deadlines hide inside the student portal | Assignments due appear on the home page with the time left |
 | Reaching an application takes several clicks | `Ctrl + K` opens a command palette over every UIS application |
 | A long wall of module boxes on the home page | One aligned applications directory with line icons |
-| One fixed visual style | Light, dark and system themes, plus a compact density |
+| One fixed visual style | Light, dark and system themes in a denser, cleaner layout |
 | Navigation language can change between pages | Your reading language is carried through every link |
 
 ## Features
@@ -99,6 +99,8 @@ See the full [changelog](CHANGELOG.md).
 - **Command palette** (`Ctrl + K`) that searches every UIS application, the UIS+ sections and the
   links on the current page.
 - **Counters** for unread messages, new documents and tasks, with a notification drawer.
+- **Toolbar badge and popup** with your unread messages; a click opens the message in UIS.
+- **Stay signed in** keeps the UIS session alive while the browser is open.
 
 ### Rebuilt applications
 
@@ -116,8 +118,8 @@ See the full [changelog](CHANGELOG.md).
 
 ### Interface
 
-- **Light, dark and system themes**, tuned for contrast, plus an optional compact density.
-- **English, Slovak and Czech** interface controls, or `Auto` to follow the page.
+- **Light, dark and system themes**, tuned for contrast, in a dense layout that fits more on screen.
+- **English, Slovak and Czech**, always matching the language of the site.
 - **Real STU UIS functionality stays intact** — UIS+ restyles existing pages and never replaces
   STU forms, links, sessions or server responses.
 - **Optional Boss Fight mode** turns your semester score (`SÚČET`) into a private, local game layer
@@ -141,7 +143,7 @@ See the full [changelog](CHANGELOG.md).
 
 ### Google Chrome
 
-1. Download `UIS-plus-v3.0.1.zip` from the
+1. Download `UIS-plus-v3.1.0.zip` from the
    [latest release](https://github.com/antehor/UIS-Plus/releases/latest).
 2. Extract the archive to a permanent folder.
 3. Open `chrome://extensions`.
@@ -177,15 +179,16 @@ no package manager.
 2. Open `chrome://extensions` or `edge://extensions` and press **Reload** on the UIS+ card.
 3. Refresh the `is.stuba.sk` tab.
 
-UIS+ is a direct continuation of AIS+, and the storage keys are unchanged, so themes, language,
-compact mode, sidebar state and Boss Fight data remain available after updating.
+UIS+ is a direct continuation of AIS+, and the storage keys are unchanged, so themes,
+sidebar state and Boss Fight data remain available after updating.
 
 ## Using UIS+
 
-- Click the **UIS+ extension icon** to enable or disable the redesign and choose a theme, language
-  or density.
+- Click the **UIS+ extension icon** to see unread messages, turn the redesign on or off, choose a
+  theme and switch **Stay signed in**.
 - Use the **moon and sun button** in the top bar to switch between light and dark.
-- Use the **flag button** in the breadcrumb bar to switch between `SK`, `CZ` and `EN`.
+- Use the **flag button** in the breadcrumb bar to switch between `SK`, `CZ` and `EN`; the whole
+  interface, including the popup, follows.
 - Use **Collapse sidebar** at the bottom of the navigation rail to shrink it to icons.
 - Open the **timetable once** so the home page can list your next lessons; the events are cached
   locally in the browser.
@@ -221,19 +224,22 @@ UIS+ runs entirely in your browser and talks to nothing but `is.stuba.sk`.
 
 - It **never reads, stores or sends your password**; the sign-in form is submitted by STU's own
   page, exactly as without the extension.
-- To show assignments due and Boss Fight scores it **reads a few student-portal pages from
+- To show unread messages, assignments due and Boss Fight scores it **reads a few pages from
   `is.stuba.sk`** inside your own signed-in session — the same pages you could open yourself. It
   never submits a form or changes anything in UIS.
+- With **Stay signed in** on, it opens `is.stuba.sk/auth/` every five minutes while you are signed
+  in, so the session does not expire. It stops when UIS reports that you are signed out.
 - Everything it keeps — preferences, the discovered menu, cached timetable events, assignments and
   Boss Fight data — stays in the browser's extension storage on this device.
 - There is no analytics, no remote server and no third-party request.
 
 | Permission | Why it is needed |
 |---|---|
-| `storage` | Keeps your theme, language, density, sidebar state and local caches on this device |
+| `storage` | Keeps your theme, sidebar state and local caches on this device |
+| `alarms` | Wakes the small background worker every five minutes for the unread badge and Stay signed in |
 | `https://is.stuba.sk/*` | The only site the extension is allowed to touch |
 
-No `tabs`, no host access beyond `is.stuba.sk`, no background worker. See the full
+No `tabs` permission and no host access beyond `is.stuba.sk`. See the full
 [privacy policy](PRIVACY.md).
 
 ## How it works
@@ -248,6 +254,8 @@ UIS+ is a Manifest V3 content script that runs on `is.stuba.sk`:
 | `content.js` | Builds the topbar, sidebar, breadcrumb bar, command palette and drawer |
 | `pages.js` | Parses and rebuilds individual applications from the served markup |
 | `boss-fight.js` / `boss-fight.css` | The optional local game layer |
+| `background.js` | Toolbar badge with unread messages and the Stay-signed-in keep-alive |
+| `popup.html` / `popup.js` | The toolbar popup: unread messages and settings |
 
 Everything rendered comes from pages STU serves to you; nothing is invented.
 
@@ -278,6 +286,12 @@ session from `is.stuba.sk` and never leave your browser.
 UIS+ restyles the existing markup and leaves STU forms, links and server responses untouched. If
 anything ever looks wrong, disable the extension in its popup and the original interface returns
 immediately.
+
+### Why does UIS keep signing me out?
+
+UIS ends a session after a period of inactivity. Keep **Stay signed in** switched on in the popup:
+UIS+ then keeps the session alive while the browser is open. After the browser is closed, UIS may
+ask you to sign in again; the sign-in page works with your browser's password manager.
 
 ### Why is my timetable empty on the home page?
 
@@ -314,6 +328,8 @@ Projekt predtým niesol názov **AIS+** podľa staršieho označenia **Akademick
 ### Čo ponúka
 
 - prehľadnú **prihlasovaciu stránku** so zobrazením hesla a podporou správcu hesiel;
+- počet **neprečítaných správ** na ikone rozšírenia a ich zoznam po kliknutí;
+- voľbu **Zostať prihlásený**, aby vás UIS neodhlasoval pri nečinnosti;
 - bočný panel poskladaný z **vášho vlastného menu UIS**, nie z pevne zadaných odkazov;
 - **paletu príkazov** (`Ctrl + K`) na rýchly skok do ľubovoľnej aplikácie UIS;
 - **úlohy na odovzdanie** z Portálu študenta (Miesta odovzdania) priamo na úvodnej stránke;
@@ -322,7 +338,7 @@ Projekt predtým niesol názov **AIS+** podľa staršieho označenia **Akademick
 - **poštovú schránku** so zreteľne označenými neprečítanými správami a **dokumentový server**
   v dvoch stĺpcoch so stromom priečinkov;
 - čitateľnú svetlú, tmavú a systémovú tému aj kompaktné zobrazenie;
-- rozhranie v slovenčine, češtine alebo angličtine;
+- rozhranie v slovenčine, češtine alebo angličtine — vždy podľa jazyka stránky;
 - žiadne sledovanie ani analytiku; rozšírenie komunikuje iba s `is.stuba.sk`.
 
 ### Rýchla inštalácia
