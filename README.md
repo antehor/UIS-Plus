@@ -75,6 +75,8 @@ as the university serves it.
 - From 3.0.1: a fixed sign-in page, **assignments due** on the home page, clearly marked unread
   mail, a readable dark theme and a redesigned Boss Fight.
 
+<p align="center"><img src="assets/uis-plus-popup.png" width="560" alt="UIS+ toolbar popup with unread UIS messages, in the light and dark theme"></p>
+
 See the full [changelog](CHANGELOG.md).
 
 ## Why UIS+
