@@ -2,6 +2,56 @@
 
 All notable changes to UIS+ (formerly AIS+) are documented here.
 
+## 3.0.1 — 2026-10-15
+
+### Added
+
+- **Assignments due.** "Úlohy" on the home page now also counts the open submission places from
+  the student portal ("Miesta odovzdania", current period) whose deadline has not passed, and a
+  rail card lists them with the time left; deadlines within two days are highlighted. The page is
+  read at most every ten minutes, and opening it directly refreshes the list.
+
+### Fixed
+
+- **Unread mail.** STU marks an unread message only by bolding its subject, which got lost once
+  subjects shared one colour. Unread rows now carry an accent bar, a bold sender and an
+  accent-coloured subject; read rows use the regular text colour.
+
+- **Sign-in page.** STU serves the login form at `/auth/`, the same address as the personal
+  administration home, so UIS+ painted the dashboard (greeting, counters, upcoming lessons) over
+  the password field. The login screen is now detected from the form itself and gets a focused
+  sign-in card: labelled fields, password-manager hints, a show/hide password toggle, and the
+  language picker. The sidebar, search, counters and Boss Fight stay off until you sign in.
+- **STU mark** in the topbar is drawn as the 4 × 3 grid of round dots, not squares.
+- **Sidebar labels** wrap onto a second line instead of being cut off with an ellipsis.
+- **Boss Fight** state is no longer lost when the sidebar is drawn before storage has loaded.
+- **Boss Fight phantom subjects.** Assessment sub-pages of `list.pl` carry `predmet=` links
+  without a subject name and were scanned as if they were the subject list, adding entries named
+  "Predmet". Only links that carry a subject code are accepted now, a rescan replaces that
+  semester's list instead of only adding to it, and phantom entries saved earlier are removed.
+- **English interface:** the user chip and greeting no longer show "Logged in: …" / "Logged!",
+  the server date is parsed instead of shown raw with the name-day, and sidebar entries resolve
+  against the English (and Czech) UIS menu names. Cached menu wording is only reused in the
+  language it was read in.
+- **Link colours.** The base link rule out-ranked every exception, so tabs, breadcrumbs, folder
+  trees and notices were all painted in the accent colour. Tab labels are back to 13.5 px (STU
+  forces .8em).
+
+### Changed
+
+- **Boss Fight** is redesigned to match the rest of UIS+: readable type sizes, light and dark
+  theme support, line icons instead of emoji, the STU grading scale (A–FX) and Slovak, Czech and
+  English text. Sidebar cards show the subject name first and never truncate it.
+- **Module board** on the home page is a single "Applications" directory: sections flow in
+  columns with a heading rule and a plain list of links instead of a grid of boxed tiles, long
+  section names are no longer clipped, and the multicolour STU glyphs are replaced with the
+  sidebar's line icons.
+- **Dark theme** retuned for readability: brighter text tones, a softer link colour, darker
+  button fills so white labels keep their contrast, links inside notices keep the notice's text
+  colour, and links in data tables use the body text colour.
+- **Sidebar:** "Research" is no longer a top-level entry, and the collapse button and status line
+  stay pinned to the bottom while only the navigation scrolls.
+
 ## 3.0.0 — 2026-09-16
 
 A full redesign of the interface, plus rebuilt layouts for the applications students open most.

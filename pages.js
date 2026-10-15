@@ -46,7 +46,15 @@
       greeting: "Dobrý deň",
       mystudy: "Moje štúdium",
       openTimetable: "Otvoriť rozvrh",
-      openTimetableHint: "Otvorte rozvrh a najbližšie hodiny sa zobrazia aj tu."
+      openTimetableHint: "Otvorte rozvrh a najbližšie hodiny sa zobrazia aj tu.",
+      signInTitle: "Prihlásenie do UIS",
+      showPassword: "Zobraziť heslo",
+      hidePassword: "Skryť heslo",
+      assignments: "Úlohy na odovzdanie",
+      dueToday: "dnes",
+      dueTomorrow: "zajtra",
+      dueIn: (n) => `o ${n} ${n < 5 ? "dni" : "dní"}`,
+      dueUntil: "do"
     },
     cs: {
       timetable: "Rozvrh hodin",
@@ -77,7 +85,15 @@
       greeting: "Dobrý den",
       mystudy: "Moje studium",
       openTimetable: "Otevřít rozvrh",
-      openTimetableHint: "Otevřete rozvrh a nejbližší hodiny se zobrazí i zde."
+      openTimetableHint: "Otevřete rozvrh a nejbližší hodiny se zobrazí i zde.",
+      signInTitle: "Přihlášení do UIS",
+      showPassword: "Zobrazit heslo",
+      hidePassword: "Skrýt heslo",
+      assignments: "Úkoly k odevzdání",
+      dueToday: "dnes",
+      dueTomorrow: "zítra",
+      dueIn: (n) => `za ${n} ${n < 5 ? "dny" : "dní"}`,
+      dueUntil: "do"
     },
     en: {
       timetable: "Timetable",
@@ -108,7 +124,15 @@
       greeting: "Good day",
       mystudy: "My studies",
       openTimetable: "Open timetable",
-      openTimetableHint: "Open the timetable once and your next lessons will show up here."
+      openTimetableHint: "Open the timetable once and your next lessons will show up here.",
+      signInTitle: "Sign in to UIS",
+      showPassword: "Show password",
+      hidePassword: "Hide password",
+      assignments: "Assignments due",
+      dueToday: "today",
+      dueTomorrow: "tomorrow",
+      dueIn: (n) => `in ${n} days`,
+      dueUntil: "until"
     }
   };
 
@@ -123,8 +147,9 @@
     return COPY[value] ? value : "en";
   }
 
-  function t(key) {
-    return COPY[lang()][key] || COPY.en[key] || key;
+  function t(key, ...args) {
+    const entry = COPY[lang()][key] || COPY.en[key] || key;
+    return typeof entry === "function" ? entry(...args) : entry;
   }
 
   function svg(name) {
@@ -739,6 +764,7 @@
   }
 
   function mailboxPage() {
+    markUnreadMail();
     const built = splitWithTree({ title: t("mailbox"), icon: "mail" });
     if (!built) return;
 
@@ -925,10 +951,277 @@
   }
 
   /* ====================================================================== */
+  /*  Sign-in                                                               */
+  /* ====================================================================== */
+
+  /* STU serves the sign-in form at /auth/, the same address as the home page,
+     so this has to run before the route table or the dashboard is painted on
+     top of the password field. The form, its ids and its scripts stay as STU
+     wrote them; only labels, autofill hints and order are adjusted. */
+  function loginPage() {
+    const box = document.querySelector("#loginform");
+    const form = box ? box.closest("form") || box : null;
+    const stack = form ? form.parentElement : null;
+    if (!stack || stack.dataset.stuLogin) return;
+    stack.dataset.stuLogin = "1";
+    stack.classList.add("stu-login-stack");
+
+    const head = el(`
+      <div class="stu-login-head">
+        <span class="stu-login-mark" aria-hidden="true">${"<i></i>".repeat(12)}</span>
+        <h1>${esc(t("signInTitle"))}</h1>
+        <p>${esc(api().label("university"))}</p>
+      </div>`);
+    const crumbbar = stack.querySelector(":scope > .stu-crumbbar");
+    if (crumbbar) crumbbar.after(head);
+    else stack.prepend(head);
+
+    stack.querySelectorAll(":scope > .login-vypisek:not(#errors_place)").forEach((node) => {
+      node.classList.add("stu-login-note");
+    });
+
+    box.querySelectorAll(".login-input").forEach((row) => {
+      const caption = row.querySelector(".login-input-label");
+      const input = row.querySelector("input");
+      if (!caption || !input || !input.id || caption.tagName === "LABEL") return;
+      const labelNode = document.createElement("label");
+      labelNode.className = caption.className;
+      labelNode.htmlFor = input.id;
+      labelNode.textContent = txt(caption);
+      caption.replaceWith(labelNode);
+    });
+
+    const login = box.querySelector("#credential_0");
+    const password = box.querySelector("#credential_1");
+    if (login) login.setAttribute("autocomplete", "username");
+    if (password) {
+      password.setAttribute("autocomplete", "current-password");
+      const field = document.createElement("span");
+      field.className = "stu-password-field";
+      password.parentNode.insertBefore(field, password);
+      field.appendChild(password);
+      const reveal = el(`<button class="stu-password-toggle" type="button" aria-pressed="false"
+        aria-label="${esc(t("showPassword"))}" title="${esc(t("showPassword"))}">${svg("eye")}</button>`);
+      field.appendChild(reveal);
+      reveal.addEventListener("click", () => {
+        const shown = password.type === "password";
+        password.type = shown ? "text" : "password";
+        const caption = shown ? t("hidePassword") : t("showPassword");
+        reveal.setAttribute("aria-pressed", String(shown));
+        reveal.setAttribute("aria-label", caption);
+        reveal.title = caption;
+        reveal.innerHTML = svg(shown ? "eyeOff" : "eye");
+        password.focus();
+      });
+      /* Never submit the password while it is visible on screen. */
+      form.addEventListener("submit", () => { password.type = "password"; });
+    }
+  }
+
+  /* ====================================================================== */
+  /*  Module board on the personal administration home                      */
+  /* ====================================================================== */
+
+  /* STU paints every section with its own multicolour clip-art glyph. They are
+     swapped for the line icons the sidebar uses, so the board reads as one set. */
+  /* Order matters: "Mobilná aplikácia Moje štúdium" must not match "štúdium",
+     and "Ochrana osobných údajov" must not match "Osobný manažment". */
+  const MODULE_ICONS = [
+    [/mobiln|mobile/i, "phone"],
+    [/verejn|ve[řr]ejn|public/i, "globe"],
+    [/elearn/i, "elearning"],
+    [/dokument[áa]ci|documentation|n[áa]pov[ěe]d/i, "help"],
+    [/her[ňn]a|oddych|game/i, "game"],
+    [/prisp[ôo]sob|p[řr]izp[ůu]sob|custom|adjust/i, "sliders"],
+    [/nastaven|setting|set-?up/i, "settings"],
+    [/ochran|privacy|protection|gdpr/i, "lock"],
+    [/[šs]t[úu]di|stud(y|ies)|college/i, "study"],
+    [/veda|v[ěe]da|research/i, "research"],
+    [/agend/i, "clipboard"],
+    [/osobn|personal/i, "personal"],
+    [/technol|spr[áa]v|admin/i, "tech"],
+    [/[ľl]udia|lid[ée]|people/i, "users"],
+    [/dokument/i, "docs"],
+    [/po[šs]t|mail/i, "mail"]
+  ];
+
+  function enhanceModules() {
+    const blocks = document.querySelectorAll("#base-r .polozky-obal");
+    if (!blocks.length) return;
+
+    blocks.forEach((block) => {
+      if (block.dataset.stuModule) return;
+      block.dataset.stuModule = "1";
+      /* STU separates the heading from the list with "&nbsp;&nbsp;", which
+         renders as an empty line under the heading; drop such filler. */
+      block.querySelectorAll(".ramecek-boky > div, .polozky").forEach((box) => {
+        [...box.childNodes].forEach((node) => {
+          if (node.nodeType === 3 && !node.nodeValue.replace(/[\s ]/g, "")) node.remove();
+        });
+      });
+      const slot = block.querySelector(".polozky-obr");
+      if (!slot) return;
+      const title = txt(block.querySelector(".sekce-nadpis"));
+      const hit = MODULE_ICONS.find(([pattern]) => pattern.test(title));
+      slot.classList.add("stu-module-icon");
+      slot.insertAdjacentHTML("beforeend", svg(hit ? hit[1] : "layers"));
+    });
+
+    /* A heading for the board, sharing its row with STU's own "open all"
+       links so they stay where STU's script expects them. */
+    const bar = document.querySelector("#base-r .menitko-all");
+    if (bar && !bar.querySelector(".stu-modules-title")) {
+      bar.insertAdjacentHTML("afterbegin", `<h2 class="stu-modules-title">${esc(api().label("applications"))}</h2>`);
+    }
+  }
+
+  /* ====================================================================== */
+  /*  Assignments (student portal → "Miesta odovzdania")                    */
+  /* ====================================================================== */
+
+  /* odevzdavarny.pl lists, for the current period, the open submission
+     places first ("Kam môžem odovzdať"), then the ones already handed in and
+     the closed ones. Only the first table matters: an open place whose
+     deadline has not passed is something still to hand in. */
+  const ASSIGNMENTS_PATH = "/auth/student/odevzdavarny.pl";
+  const ASSIGNMENTS_TTL = 1000 * 60 * 10;
+  let assignmentsRequest = null;
+
+  /* Slovak and Czech pages write "03.03.2026 23:59", the English one
+     "03/03/2026 23:59" as month/day. */
+  function parseDeadline(value) {
+    const dotted = value.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})(?:\s+(\d{1,2})[:.](\d{2}))?/);
+    const slashed = value.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2})[:.](\d{2}))?/);
+    let day;
+    let month;
+    let parts;
+    if (dotted) { parts = dotted; day = dotted[1]; month = dotted[2]; }
+    else if (slashed) { parts = slashed; day = slashed[2]; month = slashed[1]; }
+    else return null;
+    const hasTime = parts[4] !== undefined;
+    const date = new Date(Number(parts[3]), Number(month) - 1, Number(day),
+      hasTime ? Number(parts[4]) : 23, hasTime ? Number(parts[5]) : 59);
+    return Number.isNaN(date.getTime()) ? null : date.getTime();
+  }
+
+  function parseAssignments(doc) {
+    const table = [...doc.querySelectorAll("table")].find((node) =>
+      [...node.querySelectorAll("thead th, tr.zahlavi th, tr.zahlavi td")]
+        .some((cell) => /^(dokedy|do kdy|until)$/i.test(txt(cell))));
+    if (!table) return [];
+
+    const headers = [...table.querySelectorAll("thead th, tr.zahlavi th, tr.zahlavi td")].map(txt);
+    const at = (pattern, fallback) => {
+      const index = headers.findIndex((name) => pattern.test(name));
+      return index >= 0 ? index : fallback;
+    };
+    const subjectAt = at(/^(n[áa]zov predmetu|n[áa]zev p[řr]edm[ěe]tu|course title)$/i, 0);
+    const nameAt = at(/^(n[áa]zov|n[áa]zev|name)$/i, 1);
+    const deadlineAt = at(/^(dokedy|do kdy|until)$/i, 4);
+
+    return [...table.querySelectorAll("tr")]
+      .filter((row) => !row.classList.contains("zahlavi") && row.cells.length > deadlineAt)
+      .map((row) => {
+        const cells = [...row.cells];
+        const deadline = parseDeadline(txt(cells[deadlineAt]));
+        const upload = cells[cells.length - 1].querySelector("a[href]");
+        return {
+          subject: txt(cells[subjectAt]),
+          title: txt(cells[nameAt]),
+          deadline,
+          href: upload ? api().withLang(upload.getAttribute("href")) : ""
+        };
+      })
+      .filter((item) => item.deadline && item.title);
+  }
+
+  function loadAssignments() {
+    const known = api().assignments();
+    if (Date.now() - (known.savedAt || 0) < ASSIGNMENTS_TTL) return Promise.resolve(known.items);
+    if (!assignmentsRequest) {
+      assignmentsRequest = fetch(api().withLang(ASSIGNMENTS_PATH), {
+        credentials: "include",
+        headers: { Accept: "text/html" }
+      })
+        .then((response) => (response.ok ? response.text() : Promise.reject(response.status)))
+        .then((html) => {
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          if (doc.querySelector("#loginform")) return api().assignments().items;
+          api().setAssignments(parseAssignments(doc));
+          return api().assignments().items;
+        })
+        .catch(() => api().assignments().items)
+        .finally(() => { assignmentsRequest = null; });
+    }
+    return assignmentsRequest;
+  }
+
+  /* Opening the page itself refreshes the list for free — but only for the
+     current period; an older period picked in the selector is not "due". */
+  function assignmentsPage() {
+    if (/[?;&]obdobi=/.test(location.search)) return;
+    api().setAssignments(parseAssignments(document));
+  }
+
+  function dueLabel(deadline) {
+    const due = new Date(deadline);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const days = Math.round((new Date(due.getFullYear(), due.getMonth(), due.getDate()) - today) / 86400000);
+    const relative = days <= 0 ? t("dueToday") : (days === 1 ? t("dueTomorrow") : t("dueIn", days));
+    const time = due.toLocaleTimeString(lang() === "en" ? "en-GB" : lang(), { hour: "2-digit", minute: "2-digit" });
+    const date = lang() === "en"
+      ? due.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+      : `${due.getDate()}. ${due.getMonth() + 1}.`;
+    return { text: `${t("dueUntil")} ${date} ${time}`, relative, soon: deadline - Date.now() < 1000 * 60 * 60 * 48 };
+  }
+
+  function assignmentsCard(items) {
+    if (!items.length) return "";
+    const listHref = api().withLang(ASSIGNMENTS_PATH);
+    return `
+      <div class="stu-rail-card stu-assignments">
+        <div class="stu-rail-head">${svg("clipboard")}<h2>${esc(t("assignments"))}</h2>
+          <a class="stu-rail-action" href="${esc(listHref)}">${esc(t("showAll"))}</a>
+        </div>
+        <div class="stu-rail-body">
+          <div class="stu-assignment-list">
+            ${items.slice(0, 5).map((item) => {
+              const due = dueLabel(item.deadline);
+              return `<a class="stu-assignment${due.soon ? " is-soon" : ""}" href="${esc(item.href || listHref)}">
+                <b>${esc(item.title)}</b>
+                <span>${esc(item.subject)}</span>
+                <small>${svg("clock")}${esc(due.text)} · <em>${esc(due.relative)}</em></small>
+              </a>`;
+            }).join("")}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  /* ====================================================================== */
+  /*  Mailbox read state                                                    */
+  /* ====================================================================== */
+
+  /* STU marks an unread message only by wrapping its subject in <b>, which
+     is easy to miss once every subject shares one colour. Rows get a class so
+     the theme can mark them unmistakably. */
+  function markUnreadMail() {
+    if (!/^\/auth\/posta\//.test(location.pathname)) return;
+    document.querySelectorAll("#base-r tr.uis-hl-table").forEach((row) => {
+      if (row.cells.length < 5) return;
+      const unread = Boolean(row.querySelector("td > a > b, td > b > a"));
+      row.classList.toggle("stu-mail-unread", unread);
+      row.classList.toggle("stu-mail-read", !unread);
+    });
+  }
+
+  /* ====================================================================== */
   /*  Personal administration home                                          */
   /* ====================================================================== */
 
   function homePage() {
+    enhanceModules();
     const root = contentRoot();
     if (!root || root.querySelector(".stu-hero")) return;
 
@@ -953,9 +1246,9 @@
           <a class="stu-hero-row" href="${esc(api() ? api().withLang("/auth/dok_server/nove_dok.pl") : "#")}">
             ${svg("docs")}<span>${esc(api() ? api().label("documents") : "")}</span><b>${esc(counters.documents)}</b>
           </a>
-          <div class="stu-hero-row">
+          <a class="stu-hero-row" href="${esc(api() ? api().withLang(ASSIGNMENTS_PATH) : "#")}" data-stu-tasks>
             ${svg("checkCircle")}<span>${esc(api() ? api().label("tasks") : "")}</span><b>${esc(counters.tasks)}</b>
-          </div>
+          </a>
         </div>
       </div>`);
 
@@ -968,6 +1261,7 @@
     cacheLoad().then((events) => {
       const upcoming = upcomingList(events);
       const railHTML = `
+        <div data-stu-assignments></div>
         <div class="stu-rail-card">
           <div class="stu-rail-head">${svg("clock")}<h2>${esc(t("upcoming"))}</h2>
             <a class="stu-rail-action" href="${esc(timetableHref)}">${esc(t("showAll"))}</a>
@@ -990,7 +1284,19 @@
           <div class="stu-tip-copy"><b>${esc(t("tip"))}</b><p>${esc(t("tipBody"))}</p></div>
         </div>`;
       buildLayout(railHTML);
+      renderAssignments();
     });
+
+    /* Counted on every visit (at most every ten minutes); the card only
+       appears while something is actually due. */
+    function renderAssignments() {
+      const items = api().assignments().items;
+      const slot = document.querySelector("[data-stu-assignments]");
+      if (slot) slot.innerHTML = assignmentsCard(items);
+      const count = document.querySelector("[data-stu-tasks] b");
+      if (count) count.textContent = String(api().counters().tasks);
+    }
+    loadAssignments().then(renderAssignments);
   }
 
   /* ====================================================================== */
@@ -1002,12 +1308,17 @@
     { test: (path) => /^\/auth\/posta\/email\.pl/.test(path), run: messagePage },
     { test: (path) => /^\/auth\/posta\//.test(path), run: mailboxPage },
     { test: (path) => /^\/auth\/dok_server\//.test(path), run: docServerPage },
+    { test: (path) => /^\/auth\/student\/odevzdavarny\.pl/.test(path), run: () => { studentPage(); assignmentsPage(); } },
     { test: (path) => /^\/auth\/student\//.test(path), run: studentPage },
     { test: (path) => /^\/auth\/?$/.test(path), run: homePage }
   ];
 
   function run() {
     if (!api()) return;
+    if (api().isLoginPage()) {
+      loginPage();
+      return;
+    }
     enhanceTables();
 
     const path = location.pathname;
@@ -1020,8 +1331,10 @@
   }
 
   function refresh() {
-    if (!api()) return;
+    if (!api() || api().isLoginPage()) return;
     enhanceTables();
+    enhanceModules();
+    markUnreadMail();
   }
 
   window.UISPlusPages = { run, refresh };

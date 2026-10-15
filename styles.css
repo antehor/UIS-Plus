@@ -11,6 +11,11 @@ html.stu-modern {
   --stu-primary-soft-2: #f6dae2;
   --stu-on-primary: #ffffff;
   --stu-accent: #c2185b;
+  /* Filled controls (white label) and inline links get their own tokens so the
+     dark theme can lighten links without washing out button labels. */
+  --stu-primary-fill: #9b1237;
+  --stu-primary-fill-hover: #7d0e2c;
+  --stu-link: #9b1237;
 
   /* Surfaces */
   --stu-canvas: #f4f4f8;
@@ -69,40 +74,45 @@ html.stu-modern {
 /* Dark theme ------------------------------------------------------------- */
 
 html.stu-modern[data-stu-theme="dark"] {
-  --stu-primary: #e0567f;
-  --stu-primary-strong: #f07396;
-  --stu-primary-soft: #2e1420;
-  --stu-primary-soft-2: #3a1a29;
+  /* Text tones are tuned for >= 4.5:1 on every surface below; the brand rose
+     is used for accents and links, the deeper fill for white-label buttons. */
+  --stu-primary: #f0809f;
+  --stu-primary-strong: #f59ab3;
+  --stu-primary-soft: #2c1720;
+  --stu-primary-soft-2: #3b1d2a;
+  --stu-primary-fill: #b3304f;
+  --stu-primary-fill-hover: #c43c5d;
+  --stu-link: #f4a3b9;
   --stu-accent: #f06292;
 
-  --stu-canvas: #101015;
-  --stu-surface: #17171e;
-  --stu-surface-2: #1c1c25;
-  --stu-surface-3: #232330;
-  --stu-sidebar: #15151c;
+  --stu-canvas: #0f0f13;
+  --stu-surface: #18181d;
+  --stu-surface-2: #1d1d23;
+  --stu-surface-3: #26262e;
+  --stu-sidebar: #141418;
   --stu-topbar: linear-gradient(97deg, #5c0b21 0%, #6d0f29 45%, #7c1533 100%);
 
-  --stu-text: #f2f2f7;
-  --stu-text-2: #b3b3c2;
-  --stu-text-3: #83838f;
+  --stu-text: #ededf1;
+  --stu-text-2: #c3c3ce;
+  --stu-text-3: #9a9aa8;
 
-  --stu-border: #2a2a36;
-  --stu-border-strong: #383846;
+  --stu-border: #2c2c35;
+  --stu-border-strong: #3d3d48;
 
-  --stu-success: #4ec98a;
-  --stu-success-soft: #142c20;
-  --stu-info: #6aaef0;
-  --stu-info-soft: #14243a;
-  --stu-warning: #e0a44a;
-  --stu-warning-soft: #33260f;
-  --stu-danger: #f0777d;
-  --stu-danger-soft: #331618;
+  --stu-success: #5fd39a;
+  --stu-success-soft: #13291e;
+  --stu-info: #79b8f3;
+  --stu-info-soft: #13223a;
+  --stu-warning: #e8b25e;
+  --stu-warning-soft: #2e2310;
+  --stu-danger: #f38a90;
+  --stu-danger-soft: #311619;
 
-  --stu-lesson-a: #4ec98a;
-  --stu-lesson-a-soft: #163023;
-  --stu-lesson-b: #63a9ef;
-  --stu-lesson-b-soft: #16273c;
-  --stu-lesson-c: #a78bfa;
+  --stu-lesson-a: #5fd39a;
+  --stu-lesson-a-soft: #15301f;
+  --stu-lesson-b: #74b3f2;
+  --stu-lesson-b-soft: #15263b;
+  --stu-lesson-c: #b39cfb;
   --stu-lesson-c-soft: #241d3a;
 
   --stu-shadow-sm: 0 1px 2px rgba(0, 0, 0, .5);
@@ -255,29 +265,31 @@ html.stu-modern .mainpage {
 
 .stu-brand:hover { text-decoration: none; color: #fff; }
 
+/* The STU mark is a 4 × 3 grid of round dots, spaced wider than they are
+   wide — not a block of squares. */
 .stu-brand-mark {
   display: grid;
-  grid-template-columns: repeat(4, 6px);
-  grid-template-rows: repeat(3, 6px);
-  gap: 3px;
+  grid-template-columns: repeat(4, 5px);
+  grid-template-rows: repeat(3, 5px);
+  gap: 5px;
   flex: 0 0 auto;
 }
 
 .stu-brand-mark i {
   display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 1.5px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
   background: #fff;
-  opacity: .95;
 }
 
 .stu-brand-wordmark {
   flex: 0 0 auto;
-  font-size: 25px;
-  font-weight: 800;
-  letter-spacing: .02em;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: .14em;
   line-height: 1;
+  margin-right: -.14em;
 }
 
 .stu-brand-copy {
@@ -480,17 +492,33 @@ html.stu-modern .mainpage {
   width: var(--stu-sidebar-w);
   display: flex;
   flex-direction: column;
-  padding: 14px 12px 12px;
+  padding: 0;
   background: var(--stu-sidebar);
   border-right: 1px solid var(--stu-border);
-  overflow-y: auto;
-  overscroll-behavior: contain;
+  overflow: hidden;
   transition: width .18s ease, transform .2s ease;
 }
 
-.stu-sidebar::-webkit-scrollbar { width: 8px; }
-.stu-sidebar::-webkit-scrollbar-thumb { background: var(--stu-border-strong); border-radius: 99px; }
-.stu-sidebar::-webkit-scrollbar-track { background: transparent; }
+.stu-sidebar-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 14px 12px 12px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--stu-border-strong) transparent;
+}
+
+.stu-sidebar-scroll::-webkit-scrollbar { width: 8px; }
+.stu-sidebar-scroll::-webkit-scrollbar-thumb { background: var(--stu-border-strong); border-radius: 99px; }
+.stu-sidebar-scroll::-webkit-scrollbar-track { background: transparent; }
+
+.stu-sidebar-bottom {
+  flex: 0 0 auto;
+  padding: 4px 12px 12px;
+  border-top: 1px solid var(--stu-border);
+  background: var(--stu-sidebar);
+}
 
 .stu-nav {
   display: grid;
@@ -534,11 +562,14 @@ html.stu-modern .mainpage {
 
 .stu-nav-item.is-active .stu-icon { opacity: 1; }
 
+/* Long labels (English, Czech, renamed section targets) wrap onto a second
+   line instead of being cut off with an ellipsis. */
 .stu-nav-item span {
   flex: 1 1 auto;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  min-width: 0;
+  padding: 9px 0;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
 }
 
 .stu-nav-item b {
@@ -562,8 +593,7 @@ html.stu-modern .mainpage {
 }
 
 .stu-sidebar-foot {
-  margin-top: auto;
-  padding: 12px 12px 4px;
+  padding: 8px 12px 4px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -602,7 +632,8 @@ html.stu-modern .mainpage {
   border-radius: var(--stu-radius-sm);
   background: var(--stu-surface);
   color: var(--stu-text-2);
-  font: 500 12.5px/1 var(--stu-font);
+  font: 500 12.5px/1.3 var(--stu-font);
+  text-align: left;
   cursor: pointer;
   transition: border-color .13s ease, color .13s ease, background .13s ease;
 }
@@ -617,7 +648,9 @@ html.stu-modern .mainpage {
 
 /* Collapsed --------------------------------------------------------------- */
 
-html.stu-sidebar-collapsed .stu-sidebar { width: 72px; padding-left: 10px; padding-right: 10px; }
+html.stu-sidebar-collapsed .stu-sidebar { width: 72px; }
+html.stu-sidebar-collapsed .stu-sidebar-scroll,
+html.stu-sidebar-collapsed .stu-sidebar-bottom { padding-left: 10px; padding-right: 10px; }
 html.stu-sidebar-collapsed .stu-nav-item { justify-content: center; padding: 0; }
 html.stu-sidebar-collapsed .stu-nav-item span,
 html.stu-sidebar-collapsed .stu-sidebar-foot span,
@@ -923,7 +956,9 @@ html.stu-notifications-open .stu-drawer { transform: none; }
   }
 
   html.stu-menu-open .stu-sidebar { transform: none; }
-  html.stu-sidebar-collapsed .stu-sidebar { width: 282px; padding-left: 12px; padding-right: 12px; }
+  html.stu-sidebar-collapsed .stu-sidebar { width: 282px; }
+  html.stu-sidebar-collapsed .stu-sidebar-scroll,
+  html.stu-sidebar-collapsed .stu-sidebar-bottom { padding-left: 12px; padding-right: 12px; }
   html.stu-sidebar-collapsed .stu-nav-item { justify-content: flex-start; padding: 0 12px; }
   html.stu-sidebar-collapsed .stu-nav-item span,
   html.stu-sidebar-collapsed .stu-sidebar-foot span,

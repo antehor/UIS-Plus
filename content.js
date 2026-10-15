@@ -12,6 +12,7 @@
   const SHELL_SELECTOR = "[data-stu-shell]";
   const MENU_CACHE_KEY = "uisMenuCache";
   const MENU_CACHE_TTL = 1000 * 60 * 60 * 24 * 14;
+  const ASSIGNMENTS_KEY = "uisAssignments";
 
   const DEFAULTS = Object.freeze({
     enabled: true,
@@ -64,7 +65,16 @@
     layers: '<path d="m12 3 9 4.8-9 4.9-9-4.9z"/><path d="m3.6 12 8.4 4.6 8.4-4.6"/><path d="m3.6 16.4 8.4 4.6 8.4-4.6"/>',
     book: '<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 1 5.5 18H19v3.5H5.5A1.5 1.5 0 0 1 4 20z"/>',
     award: '<circle cx="12" cy="9" r="5.5"/><path d="m8.5 13.8-1.3 7.2 4.8-2.6 4.8 2.6-1.3-7.2"/>',
-    chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'
+    chart: '<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+    eye: '<path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12"/><circle cx="12" cy="12" r="3"/>',
+    eyeOff: '<path d="M10.6 5.6A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-2.4 3.2M6.6 6.6C3.9 8.3 2.5 12 2.5 12S6 18.5 12 18.5a9 9 0 0 0 5.4-1.9"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/><path d="M3 3l18 18"/>',
+    clipboard: '<rect x="5" y="4" width="14" height="17.5" rx="2"/><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1M9 10.5h6M9 14.5h6M9 18h3.5"/>',
+    users: '<circle cx="9" cy="8" r="3.4"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M15.5 4.8a3.4 3.4 0 0 1 0 6.4M18 14.2a6.5 6.5 0 0 1 3.5 5.8"/>',
+    lock: '<rect x="4.5" y="10.5" width="15" height="10.5" rx="2.2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1"/>',
+    sliders: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+    phone: '<rect x="6.5" y="2.5" width="11" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+    game: '<rect x="2.5" y="7" width="19" height="11" rx="4"/><path d="M7 12.5h4M9 10.5v4M15.5 11.5h.01M17.5 13.5h.01"/>'
   };
 
   /* ------------------------------------------------------------- vocabulary */
@@ -190,17 +200,16 @@
 
   const NAV_ITEMS = [
     { key: "home", icon: "home", fallback: "/auth/", match: [/^\/auth\/?$/] },
-    { key: "study", icon: "study", menu: [/^port[áa]l št?ud[ei]nta$/i], fallback: "/auth/student/moje_studium.pl?_m=3110", match: [/^\/auth\/student\//] },
-    { key: "timetable", icon: "calendar", menu: [/^osobn[ýy] rozvrh$/i], fallback: "/auth/katalog/rozvrhy_view.pl?rozvrh_student_obec=1;zobraz=1", match: [/rozvrhy_view/] },
+    { key: "study", icon: "study", menu: [/^port[áa]l [šs]t?ud[ei]nta$/i, /^student'?s portal$/i], fallback: "/auth/student/moje_studium.pl?_m=3110", match: [/^\/auth\/student\//] },
+    { key: "timetable", icon: "calendar", menu: [/^osobn[ýyí] rozvrh$/i, /^(?:personal|my) timetable$/i], fallback: "/auth/katalog/rozvrhy_view.pl?rozvrh_student_obec=1;zobraz=1", match: [/rozvrhy_view/] },
     { key: "elearning", icon: "elearning", section: [/^elearning$/i], fallback: "/auth/el/", match: [/^\/auth\/el\//] },
-    { key: "research", icon: "research", section: [/veda a v[ýy]/i], fallback: "/auth/veda/", match: [/^\/auth\/veda\//] },
-    { key: "personal", icon: "personal", section: [/osobn[ýy] mana[žz]/i], fallback: "/auth/lide/", match: [/^\/auth\/lide\//] },
-    { key: "mail", icon: "mail", counter: "messages", menu: [/^po[šs]tov[áa] schr[áa]nka$/i], fallback: "/auth/posta/", match: [/^\/auth\/posta\//] },
-    { key: "docs", icon: "docs", counter: "documents", menu: [/^dokumentov[ýy] server$/i], fallback: "/auth/dok_server/", match: [/^\/auth\/dok_server\//] },
-    { key: "tech", icon: "tech", section: [/technol[óo]gi/i], fallback: "/auth/sprava/", match: [/^\/auth\/sprava\//] },
+    { key: "personal", icon: "personal", section: [/osobn[ýyí] mana[žz]/i, /personal management/i], fallback: "/auth/lide/", match: [/^\/auth\/lide\//] },
+    { key: "mail", icon: "mail", counter: "messages", menu: [/^po[šs]tov[áa] schr[áa]nka$/i, /^po[šs]tovn[íi] schr[áa]nka$/i, /^mail ?box$/i], fallback: "/auth/posta/", match: [/^\/auth\/posta\//] },
+    { key: "docs", icon: "docs", counter: "documents", menu: [/^dokumentov[ýy] server$/i, /^document server$/i], fallback: "/auth/dok_server/", match: [/^\/auth\/dok_server\//] },
+    { key: "tech", icon: "tech", section: [/technol[óo]g/i], fallback: "/auth/sprava/", match: [/^\/auth\/sprava\//] },
     { key: "separator" },
-    { key: "contact", icon: "contact", menu: [/^kontaktn[ée] centrum$/i], fallback: "/auth/kontakt/", match: [/^\/auth\/kontakt/] },
-    { key: "help", icon: "help", menu: [/dokument[áa]cia uis/i, /^n[áa]pov[ěe]da/i], fallback: "/auth/dokumentace/", match: [/^\/auth\/dokumentace/, /help\.pl/] }
+    { key: "contact", icon: "contact", menu: [/^kontaktn[éeíi] centrum$/i, /^contact cent(?:re|er)$/i], fallback: "/auth/kontakt/", match: [/^\/auth\/kontakt/] },
+    { key: "help", icon: "help", menu: [/dokument[áa]cia uis/i, /dokumentace uis/i, /uis documentation/i, /^n[áa]pov[ěe]da/i], fallback: "/auth/dokumentace/", match: [/^\/auth\/dokumentace/, /help\.pl/] }
   ];
 
   /* --------------------------------------------------------------- state */
@@ -208,6 +217,9 @@
   let settings = { ...DEFAULTS };
   let menuCache = { sections: [], savedAt: 0 };
   let counters = { messages: 0, documents: 0, tasks: 0 };
+  /* Open submission places ("Miesta odovzdania") read by the page layer from
+     the student portal; kept so every page can count what is still due. */
+  let assignments = { items: [], savedAt: 0 };
   let observer = null;
   let observerTimer = 0;
 
@@ -325,7 +337,7 @@
     }).filter((section) => section.title && section.items.length);
 
     if (!sections.length) return false;
-    menuCache = { sections, savedAt: Date.now() };
+    menuCache = { sections, lang: pageLanguage(), savedAt: Date.now() };
     storageSet({ [MENU_CACHE_KEY]: menuCache });
     return true;
   }
@@ -354,7 +366,10 @@
         /* When the section's own first entry is already in the rail we fall
            through to another application, so the label follows the target
            rather than promising the section. */
-        const renamed = picked !== section.items[0] ? picked.text : "";
+        /* The cached menu is in the language of the page it was read from;
+           its wording is only borrowed while the interface uses that language. */
+        const sameLanguage = menuCache.lang === (document.documentElement.dataset.stuLanguage || language());
+        const renamed = picked !== section.items[0] && sameLanguage ? picked.text : "";
         return { href: withLang(picked.href), text: renamed };
       }
     }
@@ -369,10 +384,22 @@
 
   /* --------------------------------------------------------- page metadata */
 
+  function dueAssignments() {
+    const now = Date.now();
+    return (assignments.items || [])
+      .filter((item) => Number(item.deadline) > now)
+      .sort((a, b) => a.deadline - b.deadline);
+  }
+
+  /* "Úlohy" counts the native UIS tasks plus every open submission place
+     whose deadline has not passed yet. */
   function readCounters() {
     const result = { messages: 0, documents: 0, tasks: 0 };
     const ema = document.querySelector("#ema");
-    if (!ema) return result;
+    if (!ema) {
+      result.tasks = dueAssignments().length;
+      return result;
+    }
     const raw = text(ema);
     const pairs = [
       ["messages", /(\d+)\s*(?:spr[áa]v|zpr[áa]v|message)/i],
@@ -383,17 +410,30 @@
       const found = raw.match(pattern);
       if (found) result[key] = Number(found[1]) || 0;
     });
+    result.tasks += dueAssignments().length;
     return result;
   }
 
+  function setAssignments(items) {
+    assignments = { items: Array.isArray(items) ? items : [], savedAt: Date.now() };
+    storageSet({ [ASSIGNMENTS_KEY]: assignments });
+    counters = readCounters();
+    const bell = document.querySelector(".stu-topbar [data-stu-drawer-open]");
+    if (bell) {
+      const count = pageAlerts().length + counters.tasks;
+      bell.querySelector("b")?.remove();
+      if (count) bell.insertAdjacentHTML("beforeend", `<b>${count > 9 ? "9+" : count}</b>`);
+    }
+  }
+
   function counterHref(kind) {
-    const map = { messages: "/auth/posta/", documents: "/auth/dok_server/nove_dok.pl", tasks: "/auth/" };
-    return absolute(map[kind] || "/auth/");
+    const map = { messages: "/auth/posta/", documents: "/auth/dok_server/nove_dok.pl", tasks: "/auth/student/odevzdavarny.pl" };
+    return withLang(map[kind] || "/auth/");
   }
 
   function userDetails() {
     const raw = text(document.querySelector("#log"))
-      .replace(/^(login|signed in|prihl[áa]sen[ýy]|přihl[áa]šen[ýy])\s*:?\s*/i, "");
+      .replace(/^(logged in(?: as)?|login|signed in(?: as)?|prihl[áa]sen[ýya]|p[řr]ihl[áa][šs]en[ýya]?)\s*:?\s*/i, "");
     const name = raw && raw.length < 90 ? raw : "";
     const profile = [...document.querySelectorAll("#hlavicka a[href], #base-r a[href]")]
       .find((link) => /^(profil|profile|osobn[éa] [úu]daje|m[ôo]j profil)$/i.test(text(link)));
@@ -410,24 +450,38 @@
     return faculty ? `${role}, ${faculty[1]}` : role;
   }
 
-  /* "#svatek" reads "16. 9. 2026 18:52 Ľudomila, Ľudmila" — the server date and
-     time followed by the name-day. Only the moment is useful in the bar, and
-     the weekday is prepended so it reads like a calendar header. */
+  /* "#svatek" reads "16. 9. 2026 18:52 Ľudomila, Ľudmila" on the Slovak and
+     Czech pages and "Oct 13, 2026 6:02 p.m. Koloman" on the English one — the
+     server date and time followed by the name-day. Only the moment is useful
+     in the bar, and the weekday is prepended so it reads like a calendar
+     header. */
+  const MONTHS = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+
   function serverMoment() {
     const raw = text(document.querySelector("#svatek"));
-    const stamp = raw.match(/\d{1,2}\.\s*\d{1,2}\.\s*\d{4}(?:\s+\d{1,2}[:.]\d{2})?/);
-    if (!stamp) return raw;
-    const parts = stamp[0].match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})/);
+    let stamp = raw.match(/(\d{1,2})\.\s*(\d{1,2})\.\s*(\d{4})(?:\s+\d{1,2}[:.]\d{2})?/);
+    let date = stamp ? new Date(Number(stamp[3]), Number(stamp[2]) - 1, Number(stamp[1])) : null;
+    if (!stamp) {
+      stamp = raw.match(/\b([a-z]{3})[a-z]*\.?\s+(\d{1,2}),?\s+(\d{4})(?:\s+\d{1,2}[:.]\d{2}(?:\s*[ap]\.?\s?m\.?)?)?/i);
+      const month = stamp ? MONTHS.indexOf(stamp[1].toLowerCase()) : -1;
+      date = month >= 0 ? new Date(Number(stamp[3]), month, Number(stamp[2])) : null;
+    }
+    if (!stamp || !date) return raw;
     const lang = document.documentElement.dataset.stuLanguage || language();
     const names = {
       sk: ["Nedeľa", "Pondelok", "Utorok", "Streda", "Štvrtok", "Piatok", "Sobota"],
       cs: ["Neděle", "Pondělí", "Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"],
       en: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     };
-    if (!parts) return stamp[0];
-    const date = new Date(Number(parts[3]), Number(parts[2]) - 1, Number(parts[1]));
     const weekday = (names[lang] || names.en)[date.getDay()] || "";
-    return weekday ? `${weekday} ${stamp[0]}` : stamp[0];
+    const moment = stamp[0].trim();
+    return weekday ? `${weekday}${lang === "en" ? "," : ""} ${moment}` : moment;
+  }
+
+  /* The sign-in form is served at /auth/ itself, so the path alone cannot tell
+     the login screen from the personal administration home. */
+  function isLoginPage() {
+    return Boolean(document.querySelector('#loginform, form[action*="/system/login.pl"]'));
   }
 
   function pageAlerts() {
@@ -488,6 +542,26 @@
   }
 
   /* -------------------------------------------------------------- topbar */
+
+  /* Nobody is signed in yet: no search, counters or profile, only the brand
+     and the controls that make sense before signing in. */
+  function buildGuestTopbar() {
+    const header = document.createElement("header");
+    header.className = "stu-topbar is-guest";
+    header.dataset.stuShell = "true";
+    header.innerHTML = `
+      <a class="stu-brand" href="${escapeHTML(withLang("/"))}">
+        <span class="stu-brand-mark">${"<i></i>".repeat(12)}</span>
+        <span class="stu-brand-wordmark">STU</span>
+        <span class="stu-brand-copy"><b>Slovenská technická</b><small>Univerzita v Bratislave</small></span>
+      </a>
+      <div class="stu-top-actions">
+        <button class="stu-top-button" type="button" data-stu-theme-toggle aria-label="${escapeHTML(label("theme"))}" title="${escapeHTML(label("theme"))}">${svg("moon")}</button>
+        <a class="stu-top-button" href="${escapeHTML(withLang("/navod/"))}" aria-label="${escapeHTML(label("help"))}" title="${escapeHTML(label("help"))}">${svg("help")}</a>
+      </div>`;
+    document.body.appendChild(header);
+    header.querySelector("[data-stu-theme-toggle]").addEventListener("click", toggleTheme);
+  }
 
   function buildTopbar() {
     const user = userDetails();
@@ -567,18 +641,24 @@
     }).join("");
 
     const collapsed = Boolean(settings.sidebarCollapsed);
+    /* Only the upper part scrolls; the status line and the collapse button are
+       pinned to the bottom so they are reachable without scrolling. */
     aside.innerHTML = `
-      <nav class="stu-nav">${nav}</nav>
-      <div class="stu-sidebar-foot">
-        <span class="stu-status-dot"></span>
-        <span>is.stuba.sk</span>
-        <b>LOCAL</b>
+      <div class="stu-sidebar-scroll">
+        <nav class="stu-nav">${nav}</nav>
       </div>
-      <button class="stu-sidebar-toggle" type="button" data-stu-sidebar-toggle
-        aria-label="${escapeHTML(collapsed ? label("expand") : label("collapse"))}"
-        title="${escapeHTML(collapsed ? label("expand") : label("collapse"))}">
-        ${svg("panel")}<span>${escapeHTML(label("collapse"))}</span>
-      </button>`;
+      <div class="stu-sidebar-bottom">
+        <div class="stu-sidebar-foot">
+          <span class="stu-status-dot"></span>
+          <span>is.stuba.sk</span>
+          <b>LOCAL</b>
+        </div>
+        <button class="stu-sidebar-toggle" type="button" data-stu-sidebar-toggle
+          aria-label="${escapeHTML(collapsed ? label("expand") : label("collapse"))}"
+          title="${escapeHTML(collapsed ? label("expand") : label("collapse"))}">
+          ${svg("panel")}<span>${escapeHTML(label("collapse"))}</span>
+        </button>
+      </div>`;
 
     document.body.appendChild(aside);
 
@@ -828,6 +908,11 @@
   function buildShell() {
     document.querySelectorAll(SHELL_SELECTOR).forEach((node) => node.remove());
     document.documentElement.dataset.stuLanguage = language();
+    if (isLoginPage()) {
+      buildGuestTopbar();
+      buildCrumbBar();
+      return;
+    }
     counters = readCounters();
     buildTopbar();
     buildSidebar();
@@ -855,12 +940,12 @@
     const root = document.documentElement;
     root.classList.add(ROOT_CLASS, BOOT_CLASS);
     root.classList.toggle("stu-compact", Boolean(settings.compact));
-    root.classList.toggle("stu-login", Boolean(document.querySelector("#loginform")));
+    root.classList.toggle("stu-login", isLoginPage());
     applySidebarState();
     applyTheme();
     if (!document.body) return;
 
-    if (location.pathname === "/auth/" || location.pathname === "/auth") harvestMenu();
+    if ((location.pathname === "/auth/" || location.pathname === "/auth") && !isLoginPage()) harvestMenu();
 
     buildShell();
     if (window.UISPlusPages && typeof window.UISPlusPages.run === "function") {
@@ -927,8 +1012,11 @@
     menu: () => menuCache,
     menuItems,
     counters: () => ({ ...counters }),
+    assignments: () => ({ items: dueAssignments(), savedAt: assignments.savedAt }),
+    setAssignments,
     user: userDetails,
     userRole,
+    isLoginPage,
     shellSelector: SHELL_SELECTOR
   };
 
@@ -938,8 +1026,9 @@
   document.documentElement.dataset.stuTheme = effectiveTheme("system");
 
   async function start() {
-    const stored = await storageGet({ ...DEFAULTS, [MENU_CACHE_KEY]: null });
+    const stored = await storageGet({ ...DEFAULTS, [MENU_CACHE_KEY]: null, [ASSIGNMENTS_KEY]: null });
     settings = { ...DEFAULTS, ...stored };
+    if (stored[ASSIGNMENTS_KEY] && Array.isArray(stored[ASSIGNMENTS_KEY].items)) assignments = stored[ASSIGNMENTS_KEY];
     const cached = stored[MENU_CACHE_KEY];
     if (cached && cached.sections && Date.now() - (cached.savedAt || 0) < MENU_CACHE_TTL) {
       menuCache = cached;

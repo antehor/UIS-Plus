@@ -14,25 +14,34 @@
   const PANEL_SELECTOR = "[data-stu-boss-panel]";
   const SIDEBAR_SELECTOR = "[data-stu-boss-sidebar]";
 
+  /* Grades follow the STU scale; the boss is beaten from E (56 points) up. */
   const RANKS = [
-    { min: 92, max: 100, grade: "A", title: "LEGENDARY", color: "#ff4d92" },
-    { min: 83, max: 91, grade: "B", title: "EPIC", color: "#ff6b9e" },
-    { min: 74, max: 82, grade: "C", title: "ELITE", color: "#67d7ff" },
-    { min: 65, max: 73, grade: "D", title: "VETERAN", color: "#8de5c0" },
-    { min: 56, max: 64, grade: "E", title: "SURVIVOR", color: "#f8cf6a" },
-    { min: 0, max: 55, grade: "FX", title: "DEFEATED", color: "#a8afc2" }
+    { min: 92, max: 100, grade: "A", key: "gradeA" },
+    { min: 83, max: 91, grade: "B", key: "gradeB" },
+    { min: 74, max: 82, grade: "C", key: "gradeC" },
+    { min: 65, max: 73, grade: "D", key: "gradeD" },
+    { min: 56, max: 64, grade: "E", key: "gradeE" },
+    { min: 0, max: 55, grade: "FX", key: "gradeFX" }
   ];
 
+  /* Muted hues that hold up on both the light and the dark surface. */
   const BOSS_THEMES = [
-    { pattern: /B-SPSS|širokopásmové systémy a siete/i, name: "ELECTRO OVERLORD", icon: "⚡", color: "#ffd25f" },
-    { pattern: /siet|network|prenos|broadband|širokopás/i, name: "NETWORK OVERLORD", icon: "⚡", color: "#4fd8ff" },
-    { pattern: /elektr|obvod|circuit|energy|napät/i, name: "ELECTRO OVERLORD", icon: "⚡", color: "#ffd25f" },
-    { pattern: /program|software|algorit|code|web/i, name: "CODE TYRANT", icon: "⌁", color: "#8a7dff" },
-    { pattern: /matem|algebra|analýz|calculus|štatist/i, name: "CALCULUS COLOSSUS", icon: "Σ", color: "#ff7b72" },
-    { pattern: /fyz|quant|optic|physics/i, name: "QUANTUM WARDEN", icon: "◈", color: "#63e6be" },
-    { pattern: /bezpe|security|crypto|šifr/i, name: "CIPHER REAPER", icon: "◆", color: "#f06595" },
-    { pattern: /komunik|signal|digitálne komunik/i, name: "SIGNAL SOVEREIGN", icon: "⌁", color: "#74c0fc" },
-    { pattern: /projekt|project|bakalár/i, name: "PROJECT LEVIATHAN", icon: "♜", color: "#ffa94d" }
+    { pattern: /B-SPSS|širokopásmové systémy a siete/i, name: "Electro Overlord", icon: "bolt", color: "#c98a0c" },
+    { pattern: /siet|network|prenos|broadband|širokopás/i, name: "Network Overlord", icon: "network", color: "#2f80d8" },
+    { pattern: /elektr|obvod|circuit|energy|napät/i, name: "Electro Overlord", icon: "bolt", color: "#c98a0c" },
+    { pattern: /program|software|algorit|code|web/i, name: "Code Tyrant", icon: "code", color: "#7357e0" },
+    { pattern: /matem|algebra|analýz|calculus|štatist/i, name: "Calculus Colossus", icon: "sigma", color: "#d4524f" },
+    { pattern: /fyz|quant|optic|physics/i, name: "Quantum Warden", icon: "atom", color: "#1f9a76" },
+    { pattern: /bezpe|security|crypto|šifr/i, name: "Cipher Reaper", icon: "lock", color: "#c2185b" },
+    { pattern: /komunik|signal|digitálne komunik/i, name: "Signal Sovereign", icon: "wave", color: "#2a8fc9" },
+    { pattern: /projekt|project|bakalár/i, name: "Project Leviathan", icon: "flag", color: "#d0702a" }
+  ];
+
+  const FALLBACK_THEMES = [
+    { name: "Academic Titan", icon: "shield", color: "#5967d1" },
+    { name: "Credit Devourer", icon: "crown", color: "#c24f86" },
+    { name: "Semester Warden", icon: "book", color: "#a88412" },
+    { name: "Knowledge Hydra", icon: "spark", color: "#2f9467" }
   ];
 
   let state = { ...STORAGE_DEFAULTS };
@@ -45,14 +54,338 @@
   const pendingScores = new Set();
   const pendingSemesters = new Set();
 
-  const ICONS = Object.freeze({
-    swords: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14.5 5.5 4-4 1 1-4 4m-1-1 4 4M9.5 18.5l-4 4-1-1 4-4m1 1-4-4M5 2l17 17-3 3L2 5l3-3Z"/></svg>',
-    plus: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
-    refresh: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M6.1 8a7 7 0 0 1 11.6-2.1L20 8M4 16l2.3 2.1A7 7 0 0 0 18 16"/></svg>',
-    close: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>',
-    external: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 5h5v5M19 5l-8 8M18 13v6H5V6h6"/></svg>',
-    chevron: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>'
-  });
+  const ICON_PATHS = {
+    swords: '<path d="M14.5 17.5 3 6V3h3l11.5 11.5"/><path d="m13 19 6-6M16 16l4 4M19 21l2-2"/><path d="M14.5 6.5 18 3h3v3l-3.5 3.5"/><path d="m5 14 4 4M7 17l-3 3M3 19l2 2"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    refresh: '<path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><path d="M20.5 4v5h-5"/>',
+    close: '<path d="m7 7 10 10M17 7 7 17"/>',
+    external: '<path d="M14 4.5h5.5V10"/><path d="M19 5 11 13"/><path d="M18 13.5v5a1 1 0 0 1-1 1H5.5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    chevron: '<path d="m9 6 6 6-6 6"/>',
+    check: '<path d="M4.5 12.5 9.5 17.5 19.5 7"/>',
+    grid: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/>',
+    list: '<path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/>',
+    star: '<path d="m12 3.5 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.9z"/>',
+    trophy: '<path d="M7.5 4h9v5a4.5 4.5 0 0 1-9 0z"/><path d="M7.5 6h-3a3 3 0 0 0 3 4M16.5 6h3a3 3 0 0 1-3 4M12 13.5V17M8.5 20.5h7M9.5 17h5"/>',
+    cap: '<path d="m3 8 9-4.5L21 8l-9 4.5z"/><path d="M7 10.6V16c3 1.9 7 1.9 10 0v-5.4"/><path d="M21 8v6"/>',
+    bolt: '<path d="M13 2.5 4.5 13.5H12l-1 8 8.5-11H12z"/>',
+    network: '<circle cx="12" cy="5" r="2.2"/><circle cx="5" cy="19" r="2.2"/><circle cx="19" cy="19" r="2.2"/><path d="M12 7.2v4.3M12 11.5l-5.6 5.8M12 11.5l5.6 5.8"/>',
+    code: '<path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5M13.5 4.5l-3 15"/>',
+    sigma: '<path d="M17.5 6V4h-11l6 8-6 8h11v-2"/>',
+    atom: '<circle cx="12" cy="12" r="1.4"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9.5" ry="3.8" transform="rotate(120 12 12)"/>',
+    lock: '<rect x="4.5" y="10.5" width="15" height="10.5" rx="2.2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+    wave: '<path d="M2.5 12h3l2.5-6 4 12 3-9 2 3h4.5"/>',
+    flag: '<path d="M5 21V4M5 4.5h11.5l-2 4 2 4H5"/>',
+    shield: '<path d="M12 3 4.5 6v5.5c0 4.6 3.2 8.2 7.5 9.5 4.3-1.3 7.5-4.9 7.5-9.5V6z"/>',
+    crown: '<path d="m3.5 8 4.2 3.5L12 5l4.3 6.5L20.5 8l-1.8 10H5.3z"/>',
+    book: '<path d="M4 4.5A1.5 1.5 0 0 1 5.5 3H19v15H5.5A1.5 1.5 0 0 0 4 19.5z"/><path d="M4 19.5A1.5 1.5 0 0 1 5.5 18H19v3.5H5.5A1.5 1.5 0 0 1 4 20z"/>',
+    spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/>'
+  };
+
+  function icon(name) {
+    return `<svg class="stu-boss-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${ICON_PATHS[name] || ICON_PATHS.shield}</svg>`;
+  }
+
+  /* ------------------------------------------------------------- copy */
+
+  const COPY = {
+    sk: {
+      modeLabel: "Herný režim",
+      enable: "Zapnúť Boss Fight",
+      disable: "Vypnúť Boss Fight",
+      campaign: "Kampaň",
+      defeatedOf: (d, n) => `${d} z ${n} porazených`,
+      refreshNow: "Aktualizovať body",
+      manage: "Pridať alebo odobrať bossov",
+      removeBoss: "Odobrať bossa",
+      firstBoss: "Pridajte prvého bossa",
+      firstBossHint: "Vyberte si predmet z UIS",
+      updating: "Aktualizuje sa…",
+      awaiting: "Čaká sa na body",
+      toVictory: (n) => `Ešte ${n} b. do víťazstva`,
+      defeated: "Boss porazený",
+      details: "Detaily",
+      points: "b.",
+      waitingFirst: "Čaká sa na prvú aktualizáciu",
+      updatedNow: "Aktualizované práve teraz",
+      updatedMin: (n) => `Aktualizované pred ${n} min`,
+      updatedAt: (time) => `Aktualizované o ${time}`,
+      scoresUpdating: "Body sa aktualizujú",
+      info: "Predmet",
+      openInfo: (code) => `Otvoriť informácie o predmete ${code}`,
+      lead: "Body zo stĺpca SÚČET sa menia na poškodenie bossa.",
+      victoryAt: (n) => `Víťazstvo od ${n} b.`,
+      maxHp: (n) => `Maximum ${n} b.`,
+      close: "Zavrieť",
+      sections: "Sekcie Boss Fight",
+      tabOverview: "Prehľad",
+      tabManage: "Spravovať",
+      tabRanks: "Hodnotenie",
+      footer: "Body sa aktualizujú automaticky z UIS · údaje zostávajú v tomto prehliadači",
+      emptyEyebrow: "Aréna je prázdna",
+      emptyTitle: "Vyberte si prvého bossa",
+      emptyBody: "Pridajte predmety z ľubovoľného semestra. UIS+ premení body zo stĺpca SÚČET na poškodenie.",
+      chooseBosses: "Vybrať bossov",
+      semesterCampaign: "Semestrálna kampaň",
+      bossesDefeated: (d, n) => `${d} z ${n} bossov porazených`,
+      autoOn: "Automatická aktualizácia je zapnutá",
+      updatingScores: "Body sa aktualizujú…",
+      manageBosses: "Spravovať bossov",
+      finalScore: "Konečné body",
+      damageDealt: "Udelené poškodenie",
+      victoryMark: (n) => `víťazstvo ${n}`,
+      defeatedBody: (name) => `${name} je porazený.`,
+      subjectDone: "Predmet absolvovaný",
+      credits: (c) => `+${c} kreditov`,
+      checking: "UIS+ automaticky hľadá SÚČET",
+      inProgress: "Boj prebieha",
+      updatingFromUis: "Aktualizuje sa z UIS…",
+      remove: "Odobrať",
+      subjectInfo: "Informácie o predmete",
+      managerEyebrow: "Zostavte si kampaň",
+      managerTitle: "Vyberte predmety",
+      managerBody: "Kombinujte predmety z rôznych semestrov. Výber sa ukladá len v tomto prehliadači.",
+      openList: "Zoznam predmetov v UIS",
+      semester: "Semester",
+      noSemesters: "Žiadne semestre",
+      loading: "Načítava sa…",
+      refreshSemester: "Obnoviť semester",
+      inArena: "V aréne",
+      add: "Pridať",
+      noSubjects: "Pre tento semester nie sú uložené žiadne predmety.",
+      noSubjectsHint: "Otvorte zoznam predmetov v UIS alebo stlačte „Obnoviť semester“.",
+      scan: "Načítať z UIS",
+      ranksEyebrow: "Výsledok boja",
+      ranksTitle: "Stupnica hodnotenia",
+      ranksBody: "Konečný SÚČET určuje známku po skončení semestra.",
+      colScore: "Body",
+      colGrade: "Známka",
+      colStatus: "Výsledok",
+      pass: "Boss porazený",
+      fail: "Boss prežil",
+      ruleHp: "HP bossa = maximum bodov",
+      ruleWin: "Poškodenie potrebné na víťazstvo",
+      ruleLive: "Vaše priebežné poškodenie",
+      ruleEcts: "Kredity za víťazstvo",
+      scanning: "Načítavam predmety z UIS…",
+      loaded: "Predmety sú načítané z UIS.",
+      listFailed: "Zoznam predmetov sa nepodarilo načítať.",
+      fromCache: "Načítané z uloženej kópie.",
+      loadingSemester: (label) => `Načítavam ${label}…`,
+      foundSubjects: (n, label) => `${label}: nájdené predmety — ${n}.`,
+      semesterFailed: "Semester sa nepodarilo načítať.",
+      linkUnavailable: "Tento odkaz UIS nie je dostupný.",
+      httpError: (status) => `UIS vrátil chybu ${status}.`,
+      signIn: "Prihláste sa do UIS a skúste to znova.",
+      noTotal: "Na stránke hodnotenia sa nenašiel SÚČET.",
+      refreshFailed: "Body sa nepodarilo aktualizovať.",
+      currentSemester: "Aktuálny semester",
+      unnamed: "Predmet bez názvu",
+      gradeA: "výborne", gradeB: "veľmi dobre", gradeC: "dobre", gradeD: "uspokojivo", gradeE: "dostatočne", gradeFX: "nedostatočne", gradeNone: "bez bodov"
+    },
+    cs: {
+      modeLabel: "Herní režim",
+      enable: "Zapnout Boss Fight",
+      disable: "Vypnout Boss Fight",
+      campaign: "Kampaň",
+      defeatedOf: (d, n) => `${d} z ${n} poražených`,
+      refreshNow: "Aktualizovat body",
+      manage: "Přidat nebo odebrat bosse",
+      removeBoss: "Odebrat bosse",
+      firstBoss: "Přidejte prvního bosse",
+      firstBossHint: "Vyberte si předmět z UIS",
+      updating: "Aktualizuje se…",
+      awaiting: "Čeká se na body",
+      toVictory: (n) => `Ještě ${n} b. do vítězství`,
+      defeated: "Boss poražen",
+      details: "Podrobnosti",
+      points: "b.",
+      waitingFirst: "Čeká se na první aktualizaci",
+      updatedNow: "Aktualizováno právě teď",
+      updatedMin: (n) => `Aktualizováno před ${n} min`,
+      updatedAt: (time) => `Aktualizováno v ${time}`,
+      scoresUpdating: "Body se aktualizují",
+      info: "Předmět",
+      openInfo: (code) => `Otevřít informace o předmětu ${code}`,
+      lead: "Body ze sloupce SOUČET se mění na poškození bosse.",
+      victoryAt: (n) => `Vítězství od ${n} b.`,
+      maxHp: (n) => `Maximum ${n} b.`,
+      close: "Zavřít",
+      sections: "Sekce Boss Fight",
+      tabOverview: "Přehled",
+      tabManage: "Spravovat",
+      tabRanks: "Hodnocení",
+      footer: "Body se aktualizují automaticky z UIS · data zůstávají v tomto prohlížeči",
+      emptyEyebrow: "Aréna je prázdná",
+      emptyTitle: "Vyberte si prvního bosse",
+      emptyBody: "Přidejte předměty z libovolného semestru. UIS+ promění body ze sloupce SOUČET na poškození.",
+      chooseBosses: "Vybrat bosse",
+      semesterCampaign: "Semestrální kampaň",
+      bossesDefeated: (d, n) => `${d} z ${n} bossů poraženo`,
+      autoOn: "Automatická aktualizace je zapnutá",
+      updatingScores: "Body se aktualizují…",
+      manageBosses: "Spravovat bosse",
+      finalScore: "Konečné body",
+      damageDealt: "Udělené poškození",
+      victoryMark: (n) => `vítězství ${n}`,
+      defeatedBody: (name) => `${name} je poražen.`,
+      subjectDone: "Předmět absolvován",
+      credits: (c) => `+${c} kreditů`,
+      checking: "UIS+ automaticky hledá SOUČET",
+      inProgress: "Boj probíhá",
+      updatingFromUis: "Aktualizuje se z UIS…",
+      remove: "Odebrat",
+      subjectInfo: "Informace o předmětu",
+      managerEyebrow: "Sestavte si kampaň",
+      managerTitle: "Vyberte předměty",
+      managerBody: "Kombinujte předměty z různých semestrů. Výběr se ukládá jen v tomto prohlížeči.",
+      openList: "Seznam předmětů v UIS",
+      semester: "Semestr",
+      noSemesters: "Žádné semestry",
+      loading: "Načítá se…",
+      refreshSemester: "Obnovit semestr",
+      inArena: "V aréně",
+      add: "Přidat",
+      noSubjects: "Pro tento semestr nejsou uloženy žádné předměty.",
+      noSubjectsHint: "Otevřete seznam předmětů v UIS nebo stiskněte „Obnovit semestr“.",
+      scan: "Načíst z UIS",
+      ranksEyebrow: "Výsledek boje",
+      ranksTitle: "Stupnice hodnocení",
+      ranksBody: "Konečný SOUČET určuje známku po skončení semestru.",
+      colScore: "Body",
+      colGrade: "Známka",
+      colStatus: "Výsledek",
+      pass: "Boss poražen",
+      fail: "Boss přežil",
+      ruleHp: "HP bosse = maximum bodů",
+      ruleWin: "Poškození potřebné k vítězství",
+      ruleLive: "Vaše průběžné poškození",
+      ruleEcts: "Kredity za vítězství",
+      scanning: "Načítám předměty z UIS…",
+      loaded: "Předměty jsou načtené z UIS.",
+      listFailed: "Seznam předmětů se nepodařilo načíst.",
+      fromCache: "Načteno z uložené kopie.",
+      loadingSemester: (label) => `Načítám ${label}…`,
+      foundSubjects: (n, label) => `${label}: nalezené předměty — ${n}.`,
+      semesterFailed: "Semestr se nepodařilo načíst.",
+      linkUnavailable: "Tento odkaz UIS není dostupný.",
+      httpError: (status) => `UIS vrátil chybu ${status}.`,
+      signIn: "Přihlaste se do UIS a zkuste to znovu.",
+      noTotal: "Na stránce hodnocení nebyl nalezen SOUČET.",
+      refreshFailed: "Body se nepodařilo aktualizovat.",
+      currentSemester: "Aktuální semestr",
+      unnamed: "Předmět bez názvu",
+      gradeA: "výborně", gradeB: "velmi dobře", gradeC: "dobře", gradeD: "uspokojivě", gradeE: "dostatečně", gradeFX: "nedostatečně", gradeNone: "bez bodů"
+    },
+    en: {
+      modeLabel: "Game mode",
+      enable: "Turn Boss Fight on",
+      disable: "Turn Boss Fight off",
+      campaign: "Campaign",
+      defeatedOf: (d, n) => `${d} of ${n} defeated`,
+      refreshNow: "Update scores now",
+      manage: "Add or remove bosses",
+      removeBoss: "Remove boss",
+      firstBoss: "Add your first boss",
+      firstBossHint: "Pick a subject from UIS",
+      updating: "Updating…",
+      awaiting: "Waiting for a score",
+      toVictory: (n) => `${n} pts to victory`,
+      defeated: "Boss defeated",
+      details: "Details",
+      points: "pts",
+      waitingFirst: "Waiting for the first update",
+      updatedNow: "Updated just now",
+      updatedMin: (n) => `Updated ${n} min ago`,
+      updatedAt: (time) => `Updated at ${time}`,
+      scoresUpdating: "Scores are updating",
+      info: "Subject",
+      openInfo: (code) => `Open information about ${code}`,
+      lead: "Your SÚČET points turn into damage against the boss.",
+      victoryAt: (n) => `Victory at ${n} pts`,
+      maxHp: (n) => `Maximum ${n} pts`,
+      close: "Close",
+      sections: "Boss Fight sections",
+      tabOverview: "Overview",
+      tabManage: "Manage",
+      tabRanks: "Grades",
+      footer: "Scores update automatically from UIS · data stays in this browser",
+      emptyEyebrow: "The arena is empty",
+      emptyTitle: "Choose your first boss",
+      emptyBody: "Add subjects from any semester. UIS+ turns each SÚČET score into damage.",
+      chooseBosses: "Choose bosses",
+      semesterCampaign: "Semester campaign",
+      bossesDefeated: (d, n) => `${d} of ${n} bosses defeated`,
+      autoOn: "Automatic updates are on",
+      updatingScores: "Updating scores…",
+      manageBosses: "Manage bosses",
+      finalScore: "Final score",
+      damageDealt: "Damage dealt",
+      victoryMark: (n) => `victory ${n}`,
+      defeatedBody: (name) => `${name} has been defeated.`,
+      subjectDone: "Subject completed",
+      credits: (c) => `+${c} credits`,
+      checking: "UIS+ is looking for SÚČET automatically",
+      inProgress: "Battle in progress",
+      updatingFromUis: "Updating from UIS…",
+      remove: "Remove",
+      subjectInfo: "Subject information",
+      managerEyebrow: "Build your campaign",
+      managerTitle: "Choose subjects",
+      managerBody: "Mix subjects from different semesters. Your selection is stored only in this browser.",
+      openList: "Subject list in UIS",
+      semester: "Semester",
+      noSemesters: "No semesters found",
+      loading: "Loading…",
+      refreshSemester: "Refresh semester",
+      inArena: "In arena",
+      add: "Add",
+      noSubjects: "No subjects are saved for this semester.",
+      noSubjectsHint: "Open the subject list in UIS or press “Refresh semester”.",
+      scan: "Load from UIS",
+      ranksEyebrow: "Battle result",
+      ranksTitle: "Grading scale",
+      ranksBody: "Your final SÚČET decides the grade at the end of the semester.",
+      colScore: "Points",
+      colGrade: "Grade",
+      colStatus: "Result",
+      pass: "Boss defeated",
+      fail: "Boss survived",
+      ruleHp: "Boss HP = maximum points",
+      ruleWin: "Damage needed for victory",
+      ruleLive: "Your current damage",
+      ruleEcts: "Credits for victory",
+      scanning: "Loading subjects from UIS…",
+      loaded: "Subjects loaded from UIS.",
+      listFailed: "Could not read the subject list.",
+      fromCache: "Loaded from the saved copy.",
+      loadingSemester: (label) => `Loading ${label}…`,
+      foundSubjects: (n, label) => `${label}: ${n} subjects found.`,
+      semesterFailed: "Could not load this semester.",
+      linkUnavailable: "This UIS link is not available.",
+      httpError: (status) => `UIS returned ${status}.`,
+      signIn: "Sign in to UIS and try again.",
+      noTotal: "SÚČET was not found on the assessment page.",
+      refreshFailed: "Could not update the score.",
+      currentSemester: "Current semester",
+      unnamed: "Unnamed subject",
+      gradeA: "excellent", gradeB: "very good", gradeC: "good", gradeD: "satisfactory", gradeE: "sufficient", gradeFX: "fail", gradeNone: "no score"
+    }
+  };
+
+  function lang() {
+    try {
+      const value = window.UISPlus ? window.UISPlus.language() : "en";
+      return COPY[value] ? value : "en";
+    } catch (_) {
+      return "en";
+    }
+  }
+
+  function t(key, ...args) {
+    const entry = COPY[lang()][key] ?? COPY.en[key];
+    if (typeof entry === "function") return entry(...args);
+    return entry ?? key;
+  }
 
   function normalize(value) {
     return String(value || "").replace(/\s+/g, " ").trim();
@@ -95,16 +428,23 @@
 
   function relativeTime(value) {
     const timestamp = Number(value);
-    if (!Number.isFinite(timestamp) || timestamp <= 0) return "Waiting for first update";
+    if (!Number.isFinite(timestamp) || timestamp <= 0) return t("waitingFirst");
     const elapsed = Math.max(0, Date.now() - timestamp);
-    if (elapsed < 45 * 1000) return "Updated just now";
-    if (elapsed < 60 * 60 * 1000) return `Updated ${Math.max(1, Math.round(elapsed / 60000))} min ago`;
-    return `Updated ${new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+    if (elapsed < 45 * 1000) return t("updatedNow");
+    if (elapsed < 60 * 60 * 1000) return t("updatedMin", Math.max(1, Math.round(elapsed / 60000)));
+    return t("updatedAt", new Date(timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
   }
 
   function rankFor(value) {
     const score = clampScore(value) ?? 0;
     return RANKS.find((rank) => score >= rank.min) || RANKS[RANKS.length - 1];
+  }
+
+  function rankBadge(score) {
+    if (score === null) return `<span class="stu-boss-grade is-empty" title="${escapeAttribute(t("gradeNone"))}">—</span>`;
+    const rank = rankFor(score);
+    const passed = score >= VICTORY_SCORE;
+    return `<span class="stu-boss-grade${passed ? " is-pass" : ""}" title="${escapeAttribute(t(rank.key))}">${rank.grade}</span>`;
   }
 
   function themeFor(subject) {
@@ -113,13 +453,16 @@
     if (matched) return matched;
     let hash = 0;
     for (const character of `${subject?.key || text}`) hash = ((hash << 5) - hash + character.charCodeAt(0)) | 0;
-    const fallback = [
-      { name: "ACADEMIC TITAN", icon: "◆", color: "#67d7ff" },
-      { name: "CREDIT DEVOURER", icon: "✦", color: "#f783ac" },
-      { name: "SEMESTER WARDEN", icon: "◈", color: "#ffd43b" },
-      { name: "KNOWLEDGE HYDRA", icon: "⚔", color: "#63e6be" }
-    ];
-    return fallback[Math.abs(hash) % fallback.length];
+    return FALLBACK_THEMES[Math.abs(hash) % FALLBACK_THEMES.length];
+  }
+
+  /* Subject links read "B-DK2 Digitálne komunikácie 2"; the code is shown on
+     its own, so it is dropped from the title. */
+  function subjectTitle(subject) {
+    const name = normalize(subject?.name);
+    const code = normalize(subject?.code);
+    const rest = code && code !== "SUBJECT" && name.toUpperCase().startsWith(code) ? name.slice(code.length).replace(/^[\s·:–-]+/, "") : name;
+    return rest || name || t("unnamed");
   }
 
   function writeStorage(patch) {
@@ -192,7 +535,7 @@
 
     const id = queryValue(sourceUrl, "obdobi");
     const pageText = normalize((doc.querySelector("#base-r") || doc.body)?.textContent);
-    const label = pageText.match(/\b(?:ZS|LS)\s*\d{4}\s*\/\s*\d{4}(?:\s*-\s*[^,;|]+)?/i)?.[0] || (id ? `Semester ${id}` : "Current semester");
+    const label = pageText.match(/\b(?:ZS|LS)\s*\d{4}\s*\/\s*\d{4}(?:\s*-\s*[^,;|]+)?/i)?.[0] || (id ? `Semester ${id}` : t("currentSemester"));
     return id ? [{ id, label, url: buildSemesterUrl(id, doc, sourceUrl), selected: true }] : [];
   }
 
@@ -245,11 +588,20 @@
     if (namedLinks.length) return namedLinks.sort((a, b) => b.length - a.length)[0];
     const firstCell = container?.querySelector("td,th");
     const cellText = normalize(firstCell?.textContent);
-    return cellText.length >= 4 ? cellText : "Unnamed subject";
+    return cellText.length >= 4 ? cellText : t("unnamed");
   }
 
   function subjectCode(name) {
     return normalize(name).match(/^[A-ZČŠŽĽĎŤŇ0-9]+(?:-[A-ZČŠŽĽĎŤŇ0-9]+)+/i)?.[0]?.toUpperCase() || "SUBJECT";
+  }
+
+  /* A real subject link always reads "B-DK2 Digitálne komunikácie 2". The
+     assessment detail of a single subject (sometimes served at a bare
+     list.pl after a form post) is a vertical table whose first cell says
+     "Predmet" next to icon-only links carrying the same predmet= parameter;
+     without this check that page produced phantom subjects named "Predmet". */
+  function isRealSubject(subject) {
+    return Boolean(subject) && subjectCode(subject.name) !== "SUBJECT";
   }
 
   function parseSubjects(doc, sourceUrl, semester) {
@@ -272,6 +624,8 @@
     groups.forEach((group) => {
       const key = semesterKey(semester.id, group.id);
       if (seen.has(key)) return;
+      const name = subjectNameFromContainer(group.container, group.links);
+      if (!isRealSubject({ name })) return;
       seen.add(key);
       const urls = group.links.map((link) => sameOriginHref(link.getAttribute("href"), sourceUrl)).filter(Boolean);
       const pointsUrl = urls.find((url) => queryValue(url, "prubezne") === "1") || urls.find((url) => /\/student\/list\.pl/i.test(url)) || urls[0];
@@ -281,7 +635,6 @@
         || urls.find((url) => url !== pointsUrl)
         || sameOriginHref(group.links.find((link) => normalize(link.textContent).length >= 4)?.getAttribute("href"), sourceUrl)
         || pointsUrl;
-      const name = subjectNameFromContainer(group.container, group.links);
       subjects.push({
         key,
         subjectId: group.id,
@@ -298,9 +651,22 @@
     return subjects;
   }
 
-  function mergeDiscovery(semesters, subjects) {
+  /* A fresh scan is the truth for the semester it covers: entries of that
+     semester it no longer lists are dropped (unless they are in the arena),
+     so the manager does not accumulate stale or broken rows. An empty scan
+     changes nothing, in case the page was not the subject list after all. */
+  function mergeDiscovery(semesters, subjects, scannedSemesterId) {
     const nextSemesters = uniqueSemesters([...(state.bossSemesters || []), ...semesters]);
     const nextCatalog = { ...(state.bossCatalog || {}) };
+    if (scannedSemesterId && subjects.length) {
+      const fresh = new Set(subjects.map((subject) => subject.key));
+      const roster = new Set(state.bossRoster || []);
+      Object.values(nextCatalog).forEach((subject) => {
+        if (subject.semesterId === String(scannedSemesterId) && !fresh.has(subject.key) && !roster.has(subject.key)) {
+          delete nextCatalog[subject.key];
+        }
+      });
+    }
     subjects.forEach((subject) => {
       const existing = nextCatalog[subject.key] || {};
       nextCatalog[subject.key] = {
@@ -312,34 +678,48 @@
     writeStorage({ bossSemesters: nextSemesters, bossCatalog: nextCatalog });
   }
 
+  /* Cleans catalogs saved by earlier versions, which could hold such
+     phantom "Predmet" entries — also out of the arena. */
+  function dropPhantomSubjects() {
+    const catalog = state.bossCatalog || {};
+    const phantom = Object.keys(catalog).filter((key) => !isRealSubject(catalog[key]));
+    if (!phantom.length) return;
+    const nextCatalog = { ...catalog };
+    phantom.forEach((key) => delete nextCatalog[key]);
+    writeStorage({
+      bossCatalog: nextCatalog,
+      bossRoster: (state.bossRoster || []).filter((key) => !phantom.includes(key))
+    });
+  }
+
   function scanIndexDocument(doc, sourceUrl) {
     const semesters = discoverSemesters(doc, sourceUrl);
     const selected = semesters.find((semester) => semester.selected)
       || semesters.find((semester) => semester.id === queryValue(sourceUrl, "obdobi"))
       || semesters[0]
-      || { id: queryValue(sourceUrl, "obdobi") || "current", label: "Current semester", url: sourceUrl };
+      || { id: queryValue(sourceUrl, "obdobi") || "current", label: t("currentSemester"), url: sourceUrl };
     const subjects = parseSubjects(doc, sourceUrl, selected);
-    mergeDiscovery(semesters.length ? semesters : [selected], subjects);
+    mergeDiscovery(semesters.length ? semesters : [selected], subjects, selected.id);
     if (!activeSemester) activeSemester = selected.id;
     return { semesters, selected, subjects };
   }
 
   async function fetchDocument(rawUrl) {
     const url = sameOriginHref(rawUrl);
-    if (!url) throw new Error("This STU link is not available.");
+    if (!url) throw new Error(t("linkUnavailable"));
     const response = await fetch(url, { credentials: "include", headers: { Accept: "text/html" } });
-    if (!response.ok) throw new Error(`STU returned ${response.status}.`);
+    if (!response.ok) throw new Error(t("httpError", response.status));
     const html = await response.text();
     const doc = new DOMParser().parseFromString(html, "text/html");
     if (doc.querySelector("#loginform") || /prihl[aá]si[ťt]|sign in/i.test(normalize(doc.title)) && !/list|portal/i.test(normalize(doc.title))) {
-      throw new Error("Sign in to STU UIS and try again.");
+      throw new Error(t("signIn"));
     }
     return { doc, url: response.url || url };
   }
 
   async function ensureIndexData(force = false) {
     if (!force && state.bossSemesters?.length && Object.keys(state.bossCatalog || {}).length) return;
-    managerStatus = "Scanning STU UIS…";
+    managerStatus = t("scanning");
     renderPanel();
     try {
       const isIndex = /\/student\/list\.pl$/i.test(location.pathname) && !queryValue(location.href, "predmet");
@@ -350,11 +730,11 @@
         const { doc, url } = await fetchDocument(endpoint);
         scanIndexDocument(doc, url);
       }
-      managerStatus = "Subjects loaded from STU UIS.";
+      managerStatus = t("loaded");
       const first = state.bossSemesters?.find((semester) => semester.id === activeSemester) || state.bossSemesters?.[0];
       if (first) activeSemester = first.id;
     } catch (error) {
-      managerStatus = error.message || "Could not read the subject list.";
+      managerStatus = error.message || t("listFailed");
     }
     renderPanel();
     if (state.bossFightEnabled) scheduleAutoSync(80);
@@ -366,19 +746,19 @@
     activeSemester = periodId;
     const cached = Object.values(state.bossCatalog || {}).some((subject) => subject.semesterId === periodId);
     if (cached && !force) {
-      managerStatus = "Loaded from local cache.";
+      managerStatus = t("fromCache");
       renderPanel();
       return;
     }
     pendingSemesters.add(periodId);
-    managerStatus = `Loading ${semester.label}…`;
+    managerStatus = t("loadingSemester", semester.label);
     renderPanel();
     try {
       const { doc, url } = await fetchDocument(semester.url);
       const parsed = scanIndexDocument(doc, url);
-      managerStatus = `${parsed.subjects.length} subjects found in ${semester.label}.`;
+      managerStatus = t("foundSubjects", parsed.subjects.length, semester.label);
     } catch (error) {
-      managerStatus = error.message || "Could not load this semester.";
+      managerStatus = error.message || t("semesterFailed");
     } finally {
       pendingSemesters.delete(periodId);
       renderPanel();
@@ -398,7 +778,7 @@
     try {
       const pointsPage = await fetchDocument(subject.pointsUrl);
       const freshScore = extractSemesterScore(pointsPage.doc);
-      if (freshScore === null) throw new Error("SÚČET was not found on the assessment page.");
+      if (freshScore === null) throw new Error(t("noTotal"));
       score = freshScore;
       credits = extractCredits(pointsPage.doc) ?? credits;
       if (credits === null && subject.infoUrl && subject.infoUrl !== subject.pointsUrl) {
@@ -407,7 +787,7 @@
       }
       succeeded = true;
     } catch (caught) {
-      error = caught.message || "Score refresh failed.";
+      error = caught.message || t("refreshFailed");
     }
 
     const nextScores = {
@@ -488,61 +868,89 @@
     if (changed) writeStorage({ bossCatalog: nextCatalog });
   }
 
-  function sidebarBossCard(subject) {
+  function scoreOf(subject) {
     const result = state.bossScores?.[subject.key] || {};
-    const score = Number.isFinite(Number(result.points)) ? clampScore(result.points) : null;
-    const progress = score ?? 0;
+    return Number.isFinite(Number(result.points)) ? clampScore(result.points) : null;
+  }
+
+  function progressBar(score, large) {
+    const value = score ?? 0;
+    const passed = score !== null && score >= VICTORY_SCORE;
+    return `<div class="stu-boss-bar${large ? " is-lg" : ""}${passed ? " is-pass" : ""}" role="progressbar" aria-valuemin="0" aria-valuemax="${MAX_SCORE}" aria-valuenow="${value}" aria-label="${escapeAttribute(`${displayNumber(value)} / ${MAX_SCORE} ${t("points")}`)}">
+      <i style="width:${value}%"></i><b style="left:${VICTORY_SCORE}%" title="${escapeAttribute(t("victoryAt", VICTORY_SCORE))}"></b>
+    </div>`;
+  }
+
+  function sidebarBossCard(subject) {
+    const score = scoreOf(subject);
     const defeated = score !== null && score >= VICTORY_SCORE;
-    const rank = score === null ? { grade: "—", title: "WAITING", color: "#d7af5e" } : rankFor(score);
     const boss = themeFor(subject);
     const remaining = Math.max(0, VICTORY_SCORE - (score ?? 0));
     const syncing = pendingScores.has(subject.key);
+    const status = syncing ? t("updating") : defeated ? t("defeated") : score === null ? t("awaiting") : t("toVictory", displayNumber(remaining));
+    const code = subject.code && subject.code !== "SUBJECT" ? subject.code : "";
     return `
-      <article class="stu-boss-sidebar-card${defeated ? " is-defeated" : ""}${syncing ? " is-syncing" : ""}" style="--boss-color:${boss.color};--rank-color:${rank.color}" title="${escapeAttribute(subject.name)}">
-        <div class="stu-boss-sidebar-card-head">
-          <span class="stu-boss-sidebar-avatar">${boss.icon}</span>
-          <span class="stu-boss-sidebar-name"><b>${escapeHTML(boss.name)}</b><small>${escapeHTML(subject.code)} · ${escapeHTML(subject.semesterLabel)}</small></span>
-          <button type="button" data-boss-remove="${escapeAttribute(subject.key)}" aria-label="Remove ${escapeAttribute(subject.code)} from Boss Fight" title="Remove boss">${ICONS.close}</button>
+      <article class="stu-boss-mini${defeated ? " is-defeated" : ""}${syncing ? " is-syncing" : ""}" style="--boss-color:${boss.color}" title="${escapeAttribute(subject.name)}">
+        <div class="stu-boss-mini-head">
+          <span class="stu-boss-avatar">${icon(boss.icon)}</span>
+          <span class="stu-boss-mini-name"><b>${escapeHTML(subjectTitle(subject))}</b><small>${escapeHTML(boss.name)}${code ? ` · <span class="stu-boss-code">${escapeHTML(code)}</span>` : ""}</small></span>
+          <button class="stu-boss-icon-button is-quiet" type="button" data-boss-remove="${escapeAttribute(subject.key)}" aria-label="${escapeAttribute(`${t("removeBoss")}: ${subjectTitle(subject)}`)}" title="${escapeAttribute(t("removeBoss"))}">${icon("close")}</button>
         </div>
-        <div class="stu-boss-sidebar-score"><span>${syncing ? "Updating…" : defeated ? "Boss defeated" : score === null ? "Awaiting score" : `${displayNumber(remaining)} DMG left`}</span><b>${score === null ? "—" : displayNumber(score)}<small> / ${MAX_SCORE}</small></b></div>
-        <div class="stu-boss-sidebar-hp" aria-label="${score === null ? "Score is being discovered" : `${score} points out of 100`}"><i style="width:${progress}%"></i><b style="left:${VICTORY_SCORE}%"></b></div>
-        <div class="stu-boss-sidebar-card-foot"><span style="--rank-color:${rank.color}">${rank.grade} · ${rank.title}</span><a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener" aria-label="Open ${escapeAttribute(subject.code)} information">Info ${ICONS.external}</a></div>
+        <div class="stu-boss-mini-score">
+          <strong>${score === null ? "—" : displayNumber(score)}</strong><span>/ ${MAX_SCORE} ${escapeHTML(t("points"))}</span>
+          ${rankBadge(score)}
+        </div>
+        ${progressBar(score, false)}
+        <div class="stu-boss-mini-foot">
+          <span class="${defeated ? "is-pass" : ""}">${defeated ? icon("check") : ""}${escapeHTML(status)}</span>
+          <a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener" aria-label="${escapeAttribute(t("openInfo", code || subjectTitle(subject)))}">${escapeHTML(t("info"))}${icon("external")}</a>
+        </div>
       </article>`;
   }
 
   function renderSidebar() {
     const sidebar = document.querySelector(".stu-sidebar");
     if (!sidebar || sidebar.querySelector(SIDEBAR_SELECTOR)) return;
+    const enabled = Boolean(state.bossFightEnabled);
     const subjects = (state.bossRoster || []).map((key) => state.bossCatalog?.[key]).filter(Boolean);
-    const defeated = subjects.filter((subject) => clampScore(state.bossScores?.[subject.key]?.points) >= VICTORY_SCORE).length;
+    const defeated = subjects.filter((subject) => (scoreOf(subject) ?? 0) >= VICTORY_SCORE).length;
     const latestUpdate = Math.max(0, ...subjects.map((subject) => Number(state.bossScores?.[subject.key]?.updatedAt) || 0));
     const syncing = subjects.some((subject) => pendingScores.has(subject.key));
     const block = document.createElement("div");
     block.dataset.stuBossSidebar = "true";
-    block.className = `stu-boss-sidebar${state.bossFightEnabled ? " is-enabled" : ""}`;
+    block.className = `stu-boss-sidebar${enabled ? " is-enabled" : ""}`;
     block.innerHTML = `
-      <button class="stu-boss-mode-toggle" type="button" data-boss-mode-toggle aria-pressed="${Boolean(state.bossFightEnabled)}" title="${state.bossFightEnabled ? "Disable" : "Enable"} Boss Fight">
-        <span class="stu-boss-sidebar-icon">${ICONS.swords}</span>
-        <span class="stu-boss-sidebar-copy"><b>Boss Fight</b><small>FUN MODE</small></span>
-        <span class="stu-boss-mini-switch" aria-hidden="true"><i></i></span>
+      <button class="stu-boss-mode-toggle" type="button" role="switch" data-boss-mode-toggle aria-checked="${enabled}" title="${escapeAttribute(enabled ? t("disable") : t("enable"))}">
+        <span class="stu-boss-mode-icon">${icon("swords")}</span>
+        <span class="stu-boss-mode-copy"><b>Boss Fight</b><small>${escapeHTML(t("modeLabel"))}</small></span>
+        <span class="stu-boss-switch" aria-hidden="true"><i></i></span>
       </button>
-      ${state.bossFightEnabled ? `
-        <div class="stu-boss-sidebar-campaign">
-          <div><small>CAMPAIGN</small><b>${defeated} / ${subjects.length} defeated</b></div>
-          <span class="stu-boss-auto-state${syncing ? " is-syncing" : ""}"><i></i>${syncing ? "Updating" : "Auto"}</span>
-          <button type="button" data-boss-sidebar-refresh class="${syncing ? "is-syncing" : ""}" aria-label="Update scores now" title="Update scores now">${ICONS.refresh}</button>
-          <button type="button" data-boss-manage aria-label="Add or remove bosses" title="Add boss">${ICONS.plus}</button>
+      ${enabled ? `
+        <div class="stu-boss-campaign">
+          <p><b>${escapeHTML(t("campaign"))}</b><span>${escapeHTML(t("defeatedOf", defeated, subjects.length))}</span></p>
+          <button class="stu-boss-icon-button${syncing ? " is-syncing" : ""}" type="button" data-boss-sidebar-refresh aria-label="${escapeAttribute(t("refreshNow"))}" title="${escapeAttribute(t("refreshNow"))}">${icon("refresh")}</button>
+          <button class="stu-boss-icon-button" type="button" data-boss-manage aria-label="${escapeAttribute(t("manage"))}" title="${escapeAttribute(t("manage"))}">${icon("plus")}</button>
         </div>
-        <div class="stu-boss-sidebar-list">
-          ${subjects.length ? subjects.map(sidebarBossCard).join("") : `<button class="stu-boss-sidebar-empty" type="button" data-boss-manage><span>${ICONS.plus}</span><b>Add your first boss</b><small>Choose a subject from STU UIS</small></button>`}
+        <div class="stu-boss-list">
+          ${subjects.length ? subjects.map(sidebarBossCard).join("") : `
+            <button class="stu-boss-empty-mini" type="button" data-boss-manage>
+              <span>${icon("plus")}</span><b>${escapeHTML(t("firstBoss"))}</b><small>${escapeHTML(t("firstBossHint"))}</small>
+            </button>`}
         </div>
-        ${subjects.length ? `<button class="stu-boss-enter" type="button" data-boss-open title="Open campaign details"><span>${syncing ? "Scores are updating automatically" : relativeTime(latestUpdate)}</span><b>Details ${ICONS.chevron}</b></button>` : ""}` : ""}`;
+        ${subjects.length ? `
+          <button class="stu-boss-enter" type="button" data-boss-open>
+            <span>${escapeHTML(syncing ? t("scoresUpdating") : relativeTime(latestUpdate))}</span>
+            <b>${escapeHTML(t("details"))}${icon("chevron")}</b>
+          </button>` : ""}` : ""}`;
+    const scroller = sidebar.querySelector(".stu-sidebar-scroll");
     const foot = sidebar.querySelector(".stu-sidebar-foot");
-    if (foot) foot.before(block); else sidebar.appendChild(block);
+    if (scroller) scroller.appendChild(block);
+    else if (foot) foot.before(block);
+    else sidebar.appendChild(block);
     block.querySelector("[data-boss-mode-toggle]")?.addEventListener("click", () => {
-      const enabled = !state.bossFightEnabled;
-      writeStorage({ bossFightEnabled: enabled });
-      if (enabled) {
+      const next = !state.bossFightEnabled;
+      writeStorage({ bossFightEnabled: next });
+      if (next) {
         if ((state.bossRoster || []).length) scheduleAutoSync(80, true);
         else openPanel("manage");
       } else closePanel();
@@ -563,16 +971,16 @@
     panel.className = "stu-boss-overlay";
     panel.setAttribute("aria-hidden", "true");
     panel.innerHTML = `
-      <section class="stu-boss-dialog" role="dialog" aria-modal="true" aria-label="Boss Fight">
+      <section class="stu-boss-dialog" role="dialog" aria-modal="true" aria-labelledby="stu-boss-title">
         <header class="stu-boss-header">
-          <div class="stu-boss-emblem">${ICONS.swords}</div>
-          <div><small>UIS+ · FUN MODE</small><h2>Boss Fight</h2></div>
-          <div class="stu-boss-header-meta"><span>VICTORY AT <b>${VICTORY_SCORE} DMG</b></span><span>MAX <b>${MAX_SCORE} HP</b></span></div>
-          <button class="stu-boss-close" type="button" data-boss-close aria-label="Close Boss Fight">${ICONS.close}</button>
+          <span class="stu-boss-emblem">${icon("swords")}</span>
+          <div class="stu-boss-heading"><h2 id="stu-boss-title">Boss Fight</h2><p>${escapeHTML(t("lead"))}</p></div>
+          <div class="stu-boss-header-meta"><span>${escapeHTML(t("victoryAt", VICTORY_SCORE))}</span><span>${escapeHTML(t("maxHp", MAX_SCORE))}</span></div>
+          <button class="stu-boss-icon-button stu-boss-close" type="button" data-boss-close aria-label="${escapeAttribute(t("close"))}" title="${escapeAttribute(t("close"))}">${icon("close")}</button>
         </header>
-        <nav class="stu-boss-tabs" aria-label="Boss Fight sections"></nav>
+        <nav class="stu-boss-tabs" aria-label="${escapeAttribute(t("sections"))}"></nav>
         <div class="stu-boss-content"></div>
-        <footer class="stu-boss-footer"><span></span>Scores update automatically from STU UIS · Data stays in this browser</footer>
+        <footer class="stu-boss-footer"><span class="stu-boss-dot"></span>${escapeHTML(t("footer"))}</footer>
       </section>`;
     document.body.appendChild(panel);
     panel.addEventListener("click", handlePanelClick);
@@ -605,44 +1013,53 @@
   function renderTabs() {
     const rosterCount = (state.bossRoster || []).length;
     return [
-      { key: "arena", label: "Overview", icon: "⚔", count: rosterCount },
-      { key: "manage", label: "Manage", icon: "+", count: rosterCount },
-      { key: "ranks", label: "Ranks", icon: "★", count: "" }
-    ].map((tab) => `<button type="button" data-boss-tab="${tab.key}" class="${activeTab === tab.key ? "is-active" : ""}"><i>${tab.icon}</i>${tab.label}${tab.count !== "" ? `<b>${tab.count}</b>` : ""}</button>`).join("");
+      { key: "arena", label: t("tabOverview"), icon: "grid", count: rosterCount },
+      { key: "manage", label: t("tabManage"), icon: "list", count: "" },
+      { key: "ranks", label: t("tabRanks"), icon: "star", count: "" }
+    ].map((tab) => `<button type="button" data-boss-tab="${tab.key}" class="${activeTab === tab.key ? "is-active" : ""}" aria-current="${activeTab === tab.key ? "page" : "false"}">${icon(tab.icon)}<span>${escapeHTML(tab.label)}</span>${tab.count !== "" ? `<b>${tab.count}</b>` : ""}</button>`).join("");
   }
 
   function bossCard(subject) {
     const result = state.bossScores?.[subject.key] || {};
-    const hasScore = Number.isFinite(Number(result.points));
-    const score = hasScore ? clampScore(result.points) : null;
-    const progress = score ?? 0;
+    const score = scoreOf(subject);
     const defeated = score !== null && score >= VICTORY_SCORE;
-    const rank = score === null ? { grade: "?", title: "UNRANKED", color: "#748197" } : rankFor(score);
     const boss = themeFor(subject);
     const credits = result.credits ?? subject.credits;
     const remaining = score === null ? VICTORY_SCORE : Math.max(0, VICTORY_SCORE - score);
-    const updated = relativeTime(result.updatedAt);
+    const syncing = pendingScores.has(subject.key);
+    const code = subject.code && subject.code !== "SUBJECT" ? subject.code : "";
+    const meta = [code, subject.semesterLabel].filter(Boolean).map(escapeHTML).join(" · ");
     return `
       <article class="stu-boss-card${defeated ? " is-defeated" : ""}" style="--boss-color:${boss.color}">
-        <div class="stu-boss-card-glow"></div>
         <header>
-          <div class="stu-boss-avatar"><span>${boss.icon}</span></div>
-          <div class="stu-boss-identity"><small>${escapeHTML(subject.code)} · ${escapeHTML(subject.semesterLabel)}</small><h3>${escapeHTML(boss.name)}</h3><p>${escapeHTML(subject.name)}</p></div>
-          <span class="stu-boss-rank" style="--rank-color:${rank.color}"><b>${rank.grade}</b>${rank.title}</span>
+          <span class="stu-boss-avatar is-lg">${icon(boss.icon)}</span>
+          <div class="stu-boss-identity">
+            ${meta ? `<small>${meta}</small>` : ""}
+            <h3>${escapeHTML(subjectTitle(subject))}</h3>
+            <p>${escapeHTML(boss.name)}</p>
+          </div>
+          ${rankBadge(score)}
         </header>
-        <div class="stu-boss-hp-copy"><span>${defeated ? "FINAL SCORE" : "DAMAGE DEALT"}</span><strong>${score === null ? "—" : displayNumber(score)}<small> / ${MAX_SCORE}</small></strong></div>
-        <div class="stu-boss-hp" aria-label="${score === null ? "Score not synced" : `${score} points out of 100`}">
-          <i style="width:${progress}%"></i><b style="left:${VICTORY_SCORE}%" title="Victory threshold: ${VICTORY_SCORE}"></b>
+        <div class="stu-boss-hp-copy">
+          <span>${escapeHTML(defeated ? t("finalScore") : t("damageDealt"))}</span>
+          <strong>${score === null ? "—" : displayNumber(score)}<small> / ${MAX_SCORE} ${escapeHTML(t("points"))}</small></strong>
         </div>
-        <div class="stu-boss-threshold"><span>0</span><span>VICTORY ${VICTORY_SCORE}</span><span>${MAX_SCORE}</span></div>
+        ${progressBar(score, true)}
+        <div class="stu-boss-threshold"><span>0</span><span style="left:${VICTORY_SCORE}%">${escapeHTML(t("victoryMark", VICTORY_SCORE))}</span><span>${MAX_SCORE}</span></div>
         ${defeated ? `
-          <div class="stu-boss-victory"><span>💥</span><div><b>BOSS DEFEATED!</b><small>${escapeHTML(boss.name)} has been defeated.</small></div></div>
-          <div class="stu-boss-rewards"><span>🎓 Subject completed</span><span>⭐ +${credits === null || credits === undefined ? "?" : displayNumber(credits)} credits</span></div>` : `
-          <div class="stu-boss-progress-copy"><span>${score === null ? "◇ AWAITING SCORE" : "⚔ BATTLE IN PROGRESS"}</span><b>${score === null ? "UIS+ is checking SÚČET automatically" : `${displayNumber(remaining)} DMG until victory`}</b></div>`}
+          <div class="stu-boss-status is-pass">${icon("trophy")}<div><b>${escapeHTML(t("defeated"))}</b><small>${escapeHTML(t("defeatedBody", boss.name))}</small></div></div>
+          <div class="stu-boss-rewards">
+            <span>${icon("cap")}${escapeHTML(t("subjectDone"))}</span>
+            <span>${icon("star")}${escapeHTML(t("credits", credits === null || credits === undefined ? "?" : displayNumber(credits)))}</span>
+          </div>` : `
+          <div class="stu-boss-status">${icon(score === null ? "refresh" : "swords")}<div><b>${escapeHTML(score === null ? t("awaiting") : t("inProgress"))}</b><small>${escapeHTML(score === null ? t("checking") : t("toVictory", displayNumber(remaining)))}</small></div></div>`}
         ${result.error ? `<p class="stu-boss-error">${escapeHTML(result.error)}</p>` : ""}
         <footer>
-          <span>${pendingScores.has(subject.key) ? "Updating from STU UIS…" : escapeHTML(updated)}</span>
-          <div><button type="button" data-boss-remove="${escapeAttribute(subject.key)}">Remove</button><a href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener">Subject info ↗</a></div>
+          <span>${escapeHTML(syncing ? t("updatingFromUis") : relativeTime(result.updatedAt))}</span>
+          <div>
+            <button class="stu-boss-button" type="button" data-boss-remove="${escapeAttribute(subject.key)}">${escapeHTML(t("remove"))}</button>
+            <a class="stu-boss-button" href="${escapeAttribute(subject.infoUrl || subject.pointsUrl)}" target="_blank" rel="noopener">${escapeHTML(t("subjectInfo"))}${icon("external")}</a>
+          </div>
         </footer>
       </article>`;
   }
@@ -650,13 +1067,23 @@
   function renderArena() {
     const subjects = (state.bossRoster || []).map((key) => state.bossCatalog?.[key]).filter(Boolean);
     if (!subjects.length) {
-      return `<div class="stu-boss-empty"><div class="stu-boss-empty-icon">⚔</div><small>YOUR ARENA IS EMPTY</small><h3>Choose your first subject boss</h3><p>Add subjects from any discovered semester. UIS+ will turn each SÚČET score into battle damage.</p><button type="button" data-boss-show-manage>Choose Bosses</button></div>`;
+      return `
+        <div class="stu-boss-empty">
+          <span class="stu-boss-emblem is-lg">${icon("swords")}</span>
+          <small>${escapeHTML(t("emptyEyebrow"))}</small>
+          <h3>${escapeHTML(t("emptyTitle"))}</h3>
+          <p>${escapeHTML(t("emptyBody"))}</p>
+          <button class="stu-boss-button is-primary" type="button" data-boss-show-manage>${icon("plus")}${escapeHTML(t("chooseBosses"))}</button>
+        </div>`;
     }
-    const defeated = subjects.filter((subject) => clampScore(state.bossScores?.[subject.key]?.points) >= VICTORY_SCORE).length;
+    const defeated = subjects.filter((subject) => (scoreOf(subject) ?? 0) >= VICTORY_SCORE).length;
     return `
-      <div class="stu-boss-arena-head">
-        <div><small>SEMESTER CAMPAIGN</small><h3>${defeated} / ${subjects.length} BOSSES DEFEATED</h3></div>
-        <div><span class="stu-boss-panel-auto${pendingScores.size ? " is-syncing" : ""}"><i></i>${pendingScores.size ? "Updating scores…" : "Auto-sync is on"}</span><button type="button" data-boss-show-manage>Manage Bosses</button></div>
+      <div class="stu-boss-section-head">
+        <div><small>${escapeHTML(t("semesterCampaign"))}</small><h3>${escapeHTML(t("bossesDefeated", defeated, subjects.length))}</h3></div>
+        <div class="stu-boss-section-actions">
+          <span class="stu-boss-sync${pendingScores.size ? " is-syncing" : ""}"><span class="stu-boss-dot"></span>${escapeHTML(pendingScores.size ? t("updatingScores") : t("autoOn"))}</span>
+          <button class="stu-boss-button" type="button" data-boss-show-manage>${icon("list")}${escapeHTML(t("manageBosses"))}</button>
+        </div>
       </div>
       <div class="stu-boss-grid">${subjects.map(bossCard).join("")}</div>`;
   }
@@ -669,30 +1096,51 @@
       .sort((a, b) => a.name.localeCompare(b.name));
     const roster = new Set(state.bossRoster || []);
     return `
-      <div class="stu-boss-manager-head">
-        <div><small>BUILD YOUR CAMPAIGN</small><h3>Select subject bosses</h3><p>Mix subjects from different semesters. Your selection is stored only in this browser.</p></div>
-        <a href="${escapeAttribute(sameOriginHref(document.querySelector('meta[name="ais-boss-list-url"]')?.content || "/auth/student/list.pl"))}" target="_blank" rel="noopener">Open STU subject list ↗</a>
+      <div class="stu-boss-section-head">
+        <div><small>${escapeHTML(t("managerEyebrow"))}</small><h3>${escapeHTML(t("managerTitle"))}</h3><p>${escapeHTML(t("managerBody"))}</p></div>
+        <a class="stu-boss-button" href="${escapeAttribute(sameOriginHref(document.querySelector('meta[name="ais-boss-list-url"]')?.content || "/auth/student/list.pl"))}" target="_blank" rel="noopener">${escapeHTML(t("openList"))}${icon("external")}</a>
       </div>
       <div class="stu-boss-semester-bar">
-        <label><span>Semester</span><select data-boss-semester ${semesters.length ? "" : "disabled"}>${semesters.length ? semesters.map((semester) => `<option value="${escapeAttribute(semester.id)}" ${semester.id === activeSemester ? "selected" : ""}>${escapeHTML(semester.label)}</option>`).join("") : '<option>No semesters discovered</option>'}</select></label>
-        <button type="button" data-boss-rescan>${pendingSemesters.has(activeSemester) ? "Loading…" : "Refresh semester"}</button>
-        <span>${escapeHTML(managerStatus)}</span>
+        <label><span>${escapeHTML(t("semester"))}</span><select data-boss-semester ${semesters.length ? "" : "disabled"}>${semesters.length ? semesters.map((semester) => `<option value="${escapeAttribute(semester.id)}" ${semester.id === activeSemester ? "selected" : ""}>${escapeHTML(semester.label)}</option>`).join("") : `<option>${escapeHTML(t("noSemesters"))}</option>`}</select></label>
+        <button class="stu-boss-button" type="button" data-boss-rescan>${icon("refresh")}${escapeHTML(pendingSemesters.has(activeSemester) ? t("loading") : t("refreshSemester"))}</button>
+        <span role="status">${escapeHTML(managerStatus)}</span>
       </div>
       ${subjects.length ? `<div class="stu-boss-subject-list">${subjects.map((subject) => {
         const selected = roster.has(subject.key);
         const theme = themeFor(subject);
-        return `<button type="button" data-boss-select="${escapeAttribute(subject.key)}" aria-pressed="${selected}" class="${selected ? "is-selected" : ""}" style="--boss-color:${theme.color}"><i>${theme.icon}</i><span><small>${escapeHTML(subject.code)} · ${escapeHTML(subject.semesterLabel)}</small><b>${escapeHTML(subject.name)}</b><em>${escapeHTML(theme.name)}</em></span><strong>${selected ? "IN ARENA" : "ADD BOSS"}</strong></button>`;
-      }).join("")}</div>` : `<div class="stu-boss-manager-empty"><b>No subjects cached for this semester.</b><span>Open the STU subject list or press “Refresh semester”.</span><button type="button" data-boss-discover>Scan STU UIS</button></div>`}`;
+        const code = subject.code && subject.code !== "SUBJECT" ? subject.code : "";
+        const meta = [code, subject.semesterLabel, theme.name].filter(Boolean).map(escapeHTML).join(" · ");
+        return `<button type="button" data-boss-select="${escapeAttribute(subject.key)}" aria-pressed="${selected}" class="${selected ? "is-selected" : ""}" style="--boss-color:${theme.color}">
+          <span class="stu-boss-avatar">${icon(theme.icon)}</span>
+          <span class="stu-boss-subject-copy"><b>${escapeHTML(subjectTitle(subject))}</b><small>${meta}</small></span>
+          <span class="stu-boss-pick">${icon(selected ? "check" : "plus")}${escapeHTML(selected ? t("inArena") : t("add"))}</span>
+        </button>`;
+      }).join("")}</div>` : `
+        <div class="stu-boss-manager-empty">
+          <b>${escapeHTML(t("noSubjects"))}</b>
+          <span>${escapeHTML(t("noSubjectsHint"))}</span>
+          <button class="stu-boss-button is-primary" type="button" data-boss-discover>${icon("refresh")}${escapeHTML(t("scan"))}</button>
+        </div>`}`;
   }
 
   function renderRanks() {
     return `
-      <div class="stu-boss-ranks-head"><small>FINAL BATTLE RESULTS</small><h3>RANK DISTRIBUTION</h3><p>Your final SÚČET determines the rank shown after the battle.</p></div>
-      <div class="stu-boss-rank-table">
-        <div class="is-header"><span>SCORE</span><span>RANK</span><span>STATUS</span></div>
-        ${RANKS.map((rank) => `<div style="--rank-color:${rank.color}"><span>${rank.min}–${rank.max}</span><strong><i>${rank.grade}</i>${rank.grade} — ${rank.title}</strong><em>${rank.min >= VICTORY_SCORE ? "BOSS DEFEATED" : "MISSION FAILED"}</em></div>`).join("")}
+      <div class="stu-boss-section-head">
+        <div><small>${escapeHTML(t("ranksEyebrow"))}</small><h3>${escapeHTML(t("ranksTitle"))}</h3><p>${escapeHTML(t("ranksBody"))}</p></div>
       </div>
-      <div class="stu-boss-rules"><div><b>${MAX_SCORE}</b><span>Boss HP / maximum score</span></div><div><b>${VICTORY_SCORE}</b><span>Damage required for victory</span></div><div><b>SÚČET</b><span>Your live semester damage</span></div><div><b>+ECTS</b><span>Credits earned after victory</span></div></div>`;
+      <div class="stu-boss-rank-table" role="table">
+        <div class="is-header" role="row"><span role="columnheader">${escapeHTML(t("colScore"))}</span><span role="columnheader">${escapeHTML(t("colGrade"))}</span><span role="columnheader">${escapeHTML(t("colStatus"))}</span></div>
+        ${RANKS.map((rank) => {
+          const passed = rank.min >= VICTORY_SCORE;
+          return `<div role="row"><span role="cell">${rank.min}–${rank.max}</span><strong role="cell"><span class="stu-boss-grade${passed ? " is-pass" : ""}">${rank.grade}</span>${escapeHTML(t(rank.key))}</strong><em role="cell" class="${passed ? "is-pass" : ""}">${escapeHTML(passed ? t("pass") : t("fail"))}</em></div>`;
+        }).join("")}
+      </div>
+      <div class="stu-boss-rules">
+        <div><b>${MAX_SCORE}</b><span>${escapeHTML(t("ruleHp"))}</span></div>
+        <div><b>${VICTORY_SCORE}</b><span>${escapeHTML(t("ruleWin"))}</span></div>
+        <div><b>SÚČET</b><span>${escapeHTML(t("ruleLive"))}</span></div>
+        <div><b>+ECTS</b><span>${escapeHTML(t("ruleEcts"))}</span></div>
+      </div>`;
   }
 
   function renderPanel() {
@@ -763,10 +1211,16 @@
   }
 
   function start() {
+    /* Signed out: there is no sidebar to live in and every score request
+       would only bounce back to the sign-in form. */
+    if (document.querySelector('#loginform, form[action*="/system/login.pl"]')) return;
     try {
       chrome.storage.local.get(STORAGE_DEFAULTS, (stored) => {
         state = { ...STORAGE_DEFAULTS, ...(stored || {}) };
-        renderSidebar();
+        dropPhantomSubjects();
+        /* The observer below may already have drawn the block from the
+           defaults while storage was loading, so redraw rather than skip. */
+        queueRender();
         buildPanel();
         if (state.bossFightEnabled) setTimeout(() => {
           discoverCurrentPage();
