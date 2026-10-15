@@ -1,6 +1,6 @@
 # UIS+ Privacy Policy
 
-**Effective date:** 4 September 2026
+**Effective date:** 15 October 2026
 
 UIS+ (formerly AIS+) is a local browser extension for the STU University Information System at
 `is.stuba.sk`.
@@ -8,11 +8,15 @@ UIS+ (formerly AIS+) is a local browser extension for the STU University Informa
 ## Data collection
 
 UIS+ does not collect, transmit, sell or share personal, academic or browsing data. There is no
-analytics service, advertising SDK, remote API or extension-operated server.
+analytics service, advertising SDK, remote API or extension-operated server. The only site UIS+
+communicates with is `is.stuba.sk`.
+
+UIS+ never reads, stores or transmits your password. On the sign-in page it only restyles STU's own
+form, which is submitted by STU's page exactly as without the extension.
 
 ## Local storage
 
-The extension uses the browser `storage` permission only for these preferences:
+The extension uses the browser `storage` permission only for these values:
 
 - whether UIS+ is enabled;
 - light, dark or system theme;
@@ -20,13 +24,21 @@ The extension uses the browser `storage` permission only for these preferences:
 - collapsed sidebar state;
 - English, Slovak or Czech panel language;
 - whether experimental Boss Fight mode is enabled;
+- the UIS menu discovered on your personal administration page;
+- your timetable events, cached after you open the timetable, to list upcoming lessons;
+- open submission places (subject, title, deadline, link) to list assignments due;
 - selected subject bosses, cached semester links, SÚČET values and detected ECTS credits.
 
 These preferences stay in the browser profile and can be removed by uninstalling the extension or
 clearing its storage.
 
-Boss Fight reads subject and assessment pages only from `is.stuba.sk` using the currently signed-in
-browser session. The cached game data is not sent anywhere.
+## Pages UIS+ reads on its own
+
+To show assignments due, UIS+ reads the student-portal list of submission places
+(`/auth/student/odevzdavarny.pl`) at most every ten minutes while you use the home page. When Boss
+Fight is enabled, it reads your subject list and assessment pages. These are read-only requests to
+`is.stuba.sk` inside your signed-in session — the same pages you can open yourself. UIS+ never
+submits a form or changes anything in UIS, and nothing it reads is sent anywhere.
 
 ## Website access
 

@@ -37,7 +37,8 @@ There is no dependency installation or build step.
 - Test the expanded, collapsed and mobile sidebar when changing navigation.
 - Do not commit credentials, session data, student identifiers or screenshots with personal data.
 - Keep all existing STU forms and links functional.
-- Render values from the page STU already served; never invent data or make requests on the
-  student's behalf.
+- Render values from pages STU serves; never invent data. Reading an `is.stuba.sk` page in the
+  background is fine when a feature needs it (assignments, Boss Fight), but never submit a form,
+  change anything in UIS or contact another host.
 
 By contributing, you agree that your contribution is licensed under the MIT License.

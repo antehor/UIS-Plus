@@ -3,8 +3,9 @@
   <h1>UIS+</h1>
   <p><strong>A modern interface for STU UIS — the university information system at is.stuba.sk.</strong></p>
   <p>
-    Redesigned navigation, a rebuilt weekly timetable, a command palette and a dark theme<br>
-    for students of the Slovak University of Technology in Bratislava. Formerly AIS+.
+    A clean sign-in, a sidebar built from your own menu, a rebuilt weekly timetable, assignments due,<br>
+    a command palette and a readable dark theme for students of the Slovak University of Technology
+    in Bratislava. Formerly AIS+.
   </p>
 
   <p>
@@ -22,8 +23,10 @@
   </p>
 
   <p>
-    <img alt="Latest UIS+ release" src="https://img.shields.io/github/v/release/antehor/UIS-Plus?display_name=tag&style=flat-square&color=9b1237">
-    <img alt="MIT license" src="https://img.shields.io/github/license/antehor/UIS-Plus?style=flat-square&color=9b1237">
+    <a href="https://github.com/antehor/UIS-Plus/releases/latest"><img alt="Latest UIS+ release" src="https://img.shields.io/github/v/release/antehor/UIS-Plus?display_name=tag&style=flat-square&color=9b1237"></a>
+    <a href="https://github.com/antehor/UIS-Plus/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/antehor/UIS-Plus/total?style=flat-square&color=9b1237"></a>
+    <a href="https://github.com/antehor/UIS-Plus/actions/workflows/check.yml"><img alt="Checks" src="https://img.shields.io/github/actions/workflow/status/antehor/UIS-Plus/check.yml?branch=main&style=flat-square&label=checks"></a>
+    <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/github/license/antehor/UIS-Plus?style=flat-square&color=9b1237"></a>
     <img alt="Chrome Manifest V3" src="https://img.shields.io/badge/Chrome-Manifest%20V3-9b1237?style=flat-square">
     <img alt="Chrome and Edge" src="https://img.shields.io/badge/browser-Chrome%20%7C%20Edge-9b1237?style=flat-square">
     <img alt="No tracking" src="https://img.shields.io/badge/tracking-none-1f8a52?style=flat-square">
@@ -44,14 +47,15 @@
 STU pages instead of replacing them, so every form, link, session and server response stays exactly
 as the university serves it.
 
-![UIS+ light theme for the STU University Information System, formerly AIS+](assets/uis-plus-light.png)
+![UIS+ home page: sidebar, notices, applications directory, assignments due and upcoming lessons](assets/uis-plus-light.png)
 
 ## Contents
 
+- [What's new in 3.0.1](#whats-new-in-301)
 - [Why UIS+](#why-uis)
 - [Features](#features)
 - [Installation](#installation)
-- [Updating from AIS+](#updating-from-ais)
+- [Updating](#updating)
 - [Using UIS+](#using-uis)
 - [Keyboard shortcuts](#keyboard-shortcuts)
 - [Privacy and permissions](#privacy-and-permissions)
@@ -61,14 +65,27 @@ as the university serves it.
 - [Slovenčina](#slovenčina)
 - [Contributing](#contributing)
 
+## What's new in 3.0.1
+
+- **Sign-in page fixed.** The login form no longer disappears under the dashboard; it gets its own
+  card with labelled fields, a show/hide password toggle and password-manager support.
+- **Assignments due.** "Úlohy" now counts the open submission places from the student portal
+  (*Miesta odovzdania*) and lists what is still due, with the time left.
+- **Unread mail stands out** in both themes.
+- **Readable dark theme**, an aligned applications directory on the home page, and a redesigned,
+  localized Boss Fight.
+
+See the full [changelog](CHANGELOG.md).
+
 ## Why UIS+
 
 | Standard STU UIS workflow | With UIS+ |
 |---|---|
 | Study tools are spread across several nested menus | A persistent sidebar built from your own live UIS menu |
 | The timetable is a wide day-per-row table | A vertical week grid with colour-coded lectures and seminars |
+| Deadlines hide inside the student portal | Assignments due appear on the home page with the time left |
 | Reaching an application takes several clicks | `Ctrl + K` opens a command palette over every UIS application |
-| Dense tables are hard to scan on large screens | Readable data tables, balanced spacing and responsive layouts |
+| A long wall of module boxes on the home page | One aligned applications directory with line icons |
 | One fixed visual style | Light, dark and system themes, plus a compact density |
 | Navigation language can change between pages | Your reading language is carried through every link |
 
@@ -78,30 +95,33 @@ as the university serves it.
 
 - **Sidebar built from the live UIS menu.** Destinations are read from the personal administration
   page of your own signed-in session and cached locally, so no student-specific URL is hard-coded.
+  The collapse button stays pinned to the bottom.
 - **Command palette** (`Ctrl + K`) that searches every UIS application, the UIS+ sections and the
   links on the current page.
-- **Collapsible sidebar** that remembers its state and turns into a drawer on small screens.
-- **Unread counters** for messages and new documents, taken from the header UIS already renders.
+- **Counters** for unread messages, new documents and tasks, with a notification drawer.
 
 ### Rebuilt applications
 
+- **Sign-in.** A focused login card: labelled fields, a show/hide password toggle, password-manager
+  hints and the language picker. Nothing else is drawn until you are signed in.
+- **Home.** A greeting header, notice cards grouped by severity, an aligned applications directory,
+  your **assignments due** and your **next lessons** in the side rail.
 - **Timetable.** The native day-per-row table is parsed and re-rendered as a vertical week grid:
   day columns, the current day highlighted, colour-coded lectures and seminars, room and teacher
   lines, an upcoming-lessons list, per-course filters and a local `.ics` export.
 - **Mailbox and document server.** A two-column layout with the folder tree, mailbox quota and
-  legend beside a full-width listing, modern toolbars and pill paginators.
+  legend beside a full-width listing; unread messages are clearly marked.
 - **Message view.** The message itself beside a rail with the sender, message details and
   attachments.
-- **Personal administration.** A greeting header, notice cards grouped by severity, a responsive
-  module grid and your next lessons in the side rail.
 
 ### Interface
 
-- **Light, dark and system themes**, plus an optional compact density.
+- **Light, dark and system themes**, tuned for contrast, plus an optional compact density.
 - **English, Slovak and Czech** interface controls, or `Auto` to follow the page.
 - **Real STU UIS functionality stays intact** — UIS+ restyles existing pages and never replaces
   STU forms, links, sessions or server responses.
-- **Optional Boss Fight mode** turns course assessment progress into a private, local game layer.
+- **Optional Boss Fight mode** turns your semester score (`SÚČET`) into a private, local game layer
+  using the STU grading scale.
 
 <details>
 <summary><strong>Show the dark theme</strong></summary>
@@ -110,12 +130,19 @@ as the university serves it.
 
 </details>
 
+<details>
+<summary><strong>Show the sign-in page</strong></summary>
+
+![UIS+ sign-in card for the STU University Information System](assets/uis-plus-login.png)
+
+</details>
+
 ## Installation
 
 ### Google Chrome
 
-1. Download [`UIS-plus-v3.0.0.zip`](https://github.com/antehor/UIS-Plus/releases/latest) from the
-   latest release.
+1. Download `UIS-plus-v3.0.1.zip` from the
+   [latest release](https://github.com/antehor/UIS-Plus/releases/latest).
 2. Extract the archive to a permanent folder.
 3. Open `chrome://extensions`.
 4. Enable **Developer mode**.
@@ -144,17 +171,14 @@ no package manager.
 
 </details>
 
-## Updating from AIS+
+## Updating
 
-UIS+ is a direct continuation of AIS+. To migrate:
-
-1. Download and extract the latest UIS+ release over the existing extension folder, or install it
-   as a new unpacked extension.
-2. Open `chrome://extensions` or `edge://extensions` and press **Reload**.
+1. Download the latest release and extract it over the existing extension folder.
+2. Open `chrome://extensions` or `edge://extensions` and press **Reload** on the UIS+ card.
 3. Refresh the `is.stuba.sk` tab.
 
-The storage keys are unchanged, so themes, language, compact mode, sidebar state and Boss Fight data
-remain available when the same browser extension installation is updated.
+UIS+ is a direct continuation of AIS+, and the storage keys are unchanged, so themes, language,
+compact mode, sidebar state and Boss Fight data remain available after updating.
 
 ## Using UIS+
 
@@ -163,17 +187,21 @@ remain available when the same browser extension installation is updated.
 - Use the **moon and sun button** in the top bar to switch between light and dark.
 - Use the **flag button** in the breadcrumb bar to switch between `SK`, `CZ` and `EN`.
 - Use **Collapse sidebar** at the bottom of the navigation rail to shrink it to icons.
-- Open the **timetable once** so the personal administration page can list your next lessons; the
-  events are cached locally in the browser.
+- Open the **timetable once** so the home page can list your next lessons; the events are cached
+  locally in the browser.
+- **Assignments due** refresh on their own when you open the home page (at most every ten minutes)
+  or the *Miesta odovzdania* tab.
 - Enable **Boss Fight** only if you want the optional local game layer; see
   [Boss Fight documentation](docs/BOSS-FIGHT.md).
 
 <details>
 <summary><strong>Preview Boss Fight</strong></summary>
 
+![UIS+ Boss Fight campaign details with grades on the STU scale](assets/boss-fight-arena.png)
+
 ![UIS+ Boss Fight progress in the sidebar](assets/boss-fight-sidebar.png)
 
-![UIS+ Boss Fight campaign details](assets/boss-fight-arena.png)
+![UIS+ Boss Fight subject selection in the dark theme](assets/boss-fight-manager.png)
 
 </details>
 
@@ -185,21 +213,27 @@ remain available when the same browser extension installation is updated.
 | `Ctrl + [` | Collapse or expand the sidebar |
 | `↑` `↓` | Move through palette results |
 | `Enter` | Open the selected result |
-| `Esc` | Close the palette, drawer or mobile menu |
+| `Esc` | Close the palette, drawer, dialog or mobile menu |
 
 ## Privacy and permissions
 
-UIS+ runs entirely in the browser. It stores interface preferences, the UIS menu it discovered on
-your personal administration page, and — when Boss Fight is enabled — selected course links and the
-last score detected from STU UIS. It does not collect, sell, share or send personal or academic data
-to an external service, and it makes no network request of its own.
+UIS+ runs entirely in your browser and talks to nothing but `is.stuba.sk`.
+
+- It **never reads, stores or sends your password**; the sign-in form is submitted by STU's own
+  page, exactly as without the extension.
+- To show assignments due and Boss Fight scores it **reads a few student-portal pages from
+  `is.stuba.sk`** inside your own signed-in session — the same pages you could open yourself. It
+  never submits a form or changes anything in UIS.
+- Everything it keeps — preferences, the discovered menu, cached timetable events, assignments and
+  Boss Fight data — stays in the browser's extension storage on this device.
+- There is no analytics, no remote server and no third-party request.
 
 | Permission | Why it is needed |
 |---|---|
-| `storage` | Keeps your theme, language, density, sidebar state and cached menu on this device |
+| `storage` | Keeps your theme, language, density, sidebar state and local caches on this device |
 | `https://is.stuba.sk/*` | The only site the extension is allowed to touch |
 
-No `tabs`, no host access beyond `is.stuba.sk`, no background worker, no analytics. See the full
+No `tabs`, no host access beyond `is.stuba.sk`, no background worker. See the full
 [privacy policy](PRIVACY.md).
 
 ## How it works
@@ -208,15 +242,14 @@ UIS+ is a Manifest V3 content script that runs on `is.stuba.sk`:
 
 | File | Responsibility |
 |---|---|
-| `styles.css` | Design tokens, native chrome reset and the application shell |
-| `components.css` | Restyles the STU markup: breadcrumbs, tabs, tables, folder trees, forms |
+| `styles.css` | Design tokens (light and dark), native chrome reset and the application shell |
+| `components.css` | Restyles the STU markup: breadcrumbs, tabs, tables, notices, forms, sign-in |
 | `pages.css` | Layouts for individual applications, such as the timetable grid |
 | `content.js` | Builds the topbar, sidebar, breadcrumb bar, command palette and drawer |
 | `pages.js` | Parses and rebuilds individual applications from the served markup |
-| `boss-fight.js` | The optional local game layer |
+| `boss-fight.js` / `boss-fight.css` | The optional local game layer |
 
-Everything rendered comes from the page STU already served to you; nothing is invented and no
-request is made on your behalf.
+Everything rendered comes from pages STU serves to you; nothing is invented.
 
 ## Compatibility
 
@@ -224,7 +257,7 @@ request is made on your behalf.
 |---|---|
 | Google Chrome (current) | Supported |
 | Microsoft Edge (current) | Supported |
-| Other Chromium browsers | Expected to work; not officially tested |
+| Other Chromium browsers (Brave, Opera, Vivaldi) | Expected to work; not officially tested |
 | Firefox | Not packaged yet |
 
 ## Frequently asked questions
@@ -236,8 +269,9 @@ by the Slovak University of Technology in Bratislava.
 
 ### Does UIS+ see my password or my grades?
 
-No. UIS+ never handles credentials and makes no network requests. It only restyles pages that your
-browser has already loaded inside your own signed-in session.
+UIS+ never touches your password. It reads your assessment page only if you turn on Boss Fight,
+and the student-portal submission list to count assignments due; both are read inside your own
+session from `is.stuba.sk` and never leave your browser.
 
 ### Will it break STU UIS?
 
@@ -262,12 +296,10 @@ Not yet. The extension targets Chromium's Manifest V3; a Firefox package is not 
 
 The following names all refer to the system or this extension's history:
 
-- **STU UIS**, **UIS STU**, **Univerzitný informačný systém STU** — the current name;
+- **STU UIS**, **UIS STU**, **Univerzitný informačný systém STU**, **is.stuba.sk** — the current name;
 - **STU AIS**, **AIS STU**, **Akademický informačný systém STU** — the former name;
 - **UIS+** — the current extension name;
 - **AIS+** or **AIS Plus** — the former extension name.
-
-The official service remains at `is.stuba.sk`; UIS+ works with that domain.
 
 ## Slovenčina
 
@@ -281,15 +313,17 @@ Projekt predtým niesol názov **AIS+** podľa staršieho označenia **Akademick
 
 ### Čo ponúka
 
+- prehľadnú **prihlasovaciu stránku** so zobrazením hesla a podporou správcu hesiel;
 - bočný panel poskladaný z **vášho vlastného menu UIS**, nie z pevne zadaných odkazov;
 - **paletu príkazov** (`Ctrl + K`) na rýchly skok do ľubovoľnej aplikácie UIS;
+- **úlohy na odovzdanie** z Portálu študenta (Miesta odovzdania) priamo na úvodnej stránke;
 - **prestavaný rozvrh**: zvislá týždenná mriežka, farebne odlíšené prednášky a cvičenia,
   najbližšie hodiny, filtre predmetov a export do `.ics`;
-- **poštovú schránku a dokumentový server** v dvoch stĺpcoch so stromom priečinkov;
-- svetlú, tmavú a systémovú tému aj kompaktné zobrazenie;
-- stabilné rozhranie v slovenčine, češtine alebo angličtine;
-- žiadne sledovanie, analytiku ani odosielanie osobných údajov;
-- iba lokálne uloženie nastavení a prístup k `is.stuba.sk`.
+- **poštovú schránku** so zreteľne označenými neprečítanými správami a **dokumentový server**
+  v dvoch stĺpcoch so stromom priečinkov;
+- čitateľnú svetlú, tmavú a systémovú tému aj kompaktné zobrazenie;
+- rozhranie v slovenčine, češtine alebo angličtine;
+- žiadne sledovanie ani analytiku; rozšírenie komunikuje iba s `is.stuba.sk`.
 
 ### Rýchla inštalácia
 
@@ -307,7 +341,7 @@ Podrobný návod je v súbore [docs/INSTALLATION.md](docs/INSTALLATION.md).
 
 Bug fixes, accessibility improvements, translations and support for additional UIS pages are
 welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md). There is no build step; reload the unpacked
-extension to test changes.
+extension to test changes. If UIS+ helps you, a ⭐ on GitHub helps other STU students find it.
 
 ## Author
 
